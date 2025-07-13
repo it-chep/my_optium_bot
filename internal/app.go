@@ -2,15 +2,22 @@ package internal
 
 import (
 	"context"
-	"github.com/it-chep/my_optium_bot.git/internal/config"
+	"log"
 	"log/slog"
-	"net/http"
+
+	"github.com/it-chep/my_optium_bot.git/internal/config"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
+	"github.com/it-chep/my_optium_bot.git/internal/server"
+	"github.com/jackc/pgx/v5"
 )
 
 type App struct {
 	logger *slog.Logger
 	config *config.Config
-	server *http.Server
+	conn   *pgx.Conn
+
+	server *server.Server
+	bot    *tg_bot.Bot
 }
 
 func New(ctx context.Context) *App {
@@ -19,20 +26,15 @@ func New(ctx context.Context) *App {
 	app := &App{
 		config: cfg,
 	}
+
+	app.initDB(ctx).
+		initTgBot(ctx).
+		initServer(ctx)
+
 	return app
 }
 
-func (app *App) Run(ctx context.Context) {
-	defer func() {
-		if r := recover(); r != nil {
-			app.logger.Error("application recovered from panic", slog.Any("error", r))
-		}
-	}()
-
-	app.logger.Info("start server")
-	err := app.server.ListenAndServe()
-	if err != nil {
-		app.logger.Error("Не удалось запустить приложение")
-		return
-	}
+func (a *App) Run(context.Context) {
+	a.logger.Info("start server")
+	log.Fatal(a.server.ListenAndServe())
 }
