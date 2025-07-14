@@ -16,7 +16,7 @@ create table if not exists doctors
     id          serial             not null,
     tg_id       bigint primary key not null,
     full_name   text               not null,
-    tп_username text               not null,
+    tg_username text               not null,
     is_active   boolean default true
 );
 
