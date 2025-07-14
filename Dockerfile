@@ -1,5 +1,4 @@
 FROM golang:alpine
-RUN apk add ffmpeg
 WORKDIR /app
 COPY . .
 RUN go mod download
