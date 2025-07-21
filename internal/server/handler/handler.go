@@ -36,6 +36,7 @@ func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler
 		router:    chi.NewRouter(),
 	}
 
+	h.setupMiddleware()
 	h.setupRoutes(cfg)
 
 	return h
