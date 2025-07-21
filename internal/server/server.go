@@ -15,7 +15,7 @@ func New(handler *handler.Handler) *Server {
 	srv := &http.Server{
 		// todo: подумать
 		Addr:         ":8080",
-		Handler:      handler.HandleAll(),
+		Handler:      handler,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
