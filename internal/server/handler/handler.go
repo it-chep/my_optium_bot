@@ -2,11 +2,16 @@ package handler
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
 )
+
+type Config interface {
+	Token() string
+}
 
 // TgHookParser .
 type TgHookParser interface {
@@ -18,30 +23,31 @@ type Handler struct {
 	botParser TgHookParser
 	botModule *bot.Bot
 	// admin svc
+	router *chi.Mux
 }
 
-func NewHandler(botParser TgHookParser, botModule *bot.Bot) *Handler {
-	return &Handler{
+func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler {
+	h := &Handler{
 		botParser: botParser,
 		botModule: botModule,
+		router:    chi.NewRouter(),
 	}
+
+	h.setupRoutes(cfg)
+
+	return h
 }
 
-func (h Handler) HandleAll() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				fmt.Println(fmt.Sprintf("произошло восстановление системы: %v", err))
-			}
-		}()
+func (h Handler) setupRoutes(cfg Config) {
+	h.router.Route("/", func(r chi.Router) {
+		r.Post(fmt.Sprintf("%s/", cfg.Token()), h.bot())
+	})
 
-		switch r.URL.Path {
-		case "/telegram-webhook":
-			h.bot().ServeHTTP(w, r)
-		case "/admin":
-			h.admin().ServeHTTP(w, r)
-		default:
-			_, _ = w.Write([]byte("По-моему, ты перепутал"))
-		}
-	}
+	h.router.Route("/admin", func(r chi.Router) {
+		r.Get("/", h.admin())
+	})
+}
+
+func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.router.ServeHTTP(w, r)
 }
