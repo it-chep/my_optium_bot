@@ -38,7 +38,7 @@ func (a *App) initDB(ctx context.Context) *App {
 }
 
 func (a *App) initTgBot(context.Context) *App {
-	bot, err := tg_bot.NewTgBot()
+	bot, err := tg_bot.NewTgBot(a.config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func (a *App) initTgBot(context.Context) *App {
 
 func (a *App) initServer(context.Context) *App {
 	// todo: в NewHandler передаем сервис для админки или бота
-	h := handler.NewHandler()
+	h := handler.NewHandler(a.config, a.bot, a.botService)
 	srv := server.New(h)
 	a.server = srv
 	return a

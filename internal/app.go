@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
 	"log"
 	"log/slog"
 
@@ -18,6 +19,8 @@ type App struct {
 
 	server *server.Server
 	bot    *tg_bot.Bot
+
+	botService *bot.Bot
 }
 
 func New(ctx context.Context) *App {
