@@ -3,8 +3,6 @@ package internal
 import (
 	"context"
 	"log"
-	"log/slog"
-	"os"
 
 	"github.com/georgysavva/scany/v2/dbscan"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -53,11 +51,6 @@ func (a *App) initModules(context.Context) *App {
 	a.modules = Modules{
 		Bot: bot.New(a.pool, a.bot),
 	}
-	return a
-}
-
-func (a *App) initLogger(ctx context.Context) *App {
-	a.logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	return a
 }
 
