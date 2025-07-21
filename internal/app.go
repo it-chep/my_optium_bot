@@ -3,6 +3,8 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"log"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
@@ -41,7 +43,25 @@ func New(ctx context.Context) *App {
 	return app
 }
 
-func (a *App) Run(context.Context) {
+func (a *App) Run(ctx context.Context) {
 	fmt.Println("start server")
+	ctx = logger.ContextWithLogger(ctx, logger.New())
+	if !a.config.UseWebhook() {
+		// Режим поллинга
+		for update := range a.bot.GetUpdates() {
+			go func() {
+				logger.Message(ctx, "Обработка ивента")
+				msg := dto.Message{
+					User: update.SentFrom().ID,
+					Text: update.Message.Text,
+					Chat: update.FromChat().ID,
+				}
+				err := a.modules.Bot.Route(ctx, msg)
+				if err != nil {
+					logger.Error(ctx, "Ошибка при обработке ивента", err)
+				}
+			}()
+		}
+	}
 	log.Fatal(a.server.ListenAndServe())
 }

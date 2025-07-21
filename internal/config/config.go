@@ -16,6 +16,7 @@ type Config struct {
 type BotConfig struct {
 	token      string
 	webhookURL string
+	useWebhook bool
 }
 
 func (c Config) PgConn() string {
@@ -30,6 +31,10 @@ func (c Config) WebhookURL() string {
 	return c.webhookURL
 }
 
+func (c Config) UseWebhook() bool {
+	return c.useWebhook
+}
+
 func NewConfig() *Config {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
@@ -39,6 +44,7 @@ func NewConfig() *Config {
 		BotConfig: BotConfig{
 			webhookURL: os.Getenv("WEBHOOK_URL"),
 			token:      os.Getenv("BOT_TOKEN"),
+			useWebhook: os.Getenv("USE_WEBHOOK") == "true",
 		},
 		pgConn: fmt.Sprintf(
 			"user=%s password=%s host=%s dbname=%s sslmode=disable",
