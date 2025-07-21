@@ -2,8 +2,8 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"log/slog"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
@@ -13,7 +13,6 @@ import (
 )
 
 type App struct {
-	logger *slog.Logger
 	config *config.Config
 	pool   *pgxpool.Pool
 
@@ -43,6 +42,6 @@ func New(ctx context.Context) *App {
 }
 
 func (a *App) Run(context.Context) {
-	a.logger.Info("start server")
+	fmt.Println("start server")
 	log.Fatal(a.server.ListenAndServe())
 }

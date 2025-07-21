@@ -8,7 +8,7 @@ import (
 
 func (b *Bot) Route(ctx context.Context, msg dto.Message) error {
 	switch msg.Text {
-	case "/init":
+	case "/init_bot":
 
 	}
 	return nil

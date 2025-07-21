@@ -2,7 +2,10 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -28,6 +31,10 @@ func (c Config) WebhookURL() string {
 }
 
 func NewConfig() *Config {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	return &Config{
 		BotConfig: BotConfig{
 			webhookURL: os.Getenv("WEBHOOK_URL"),

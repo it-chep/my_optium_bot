@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/it-chep/my_optium_bot.git/internal/server/middleware"
+
 	"github.com/go-chi/chi/v5"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -34,14 +36,19 @@ func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler
 		router:    chi.NewRouter(),
 	}
 
+	h.setupMiddleware()
 	h.setupRoutes(cfg)
 
 	return h
 }
 
+func (h *Handler) setupMiddleware() {
+	h.router.Use(middleware.LoggerMiddleware)
+}
+
 func (h *Handler) setupRoutes(cfg Config) {
 	h.router.Route("/", func(r chi.Router) {
-		r.Post(fmt.Sprintf("%s/", cfg.Token()), h.bot())
+		r.Post(fmt.Sprintf("/%s/", cfg.Token()), h.bot())
 	})
 
 	h.router.Route("/admin", func(r chi.Router) {
