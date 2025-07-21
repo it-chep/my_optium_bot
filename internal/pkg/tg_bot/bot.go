@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 )
 
 type Config interface {
@@ -63,4 +65,30 @@ func (b *Bot) HandleUpdate(r *http.Request) (*tgbotapi.Update, error) {
 
 func (b *Bot) GetUpdates() tgbotapi.UpdatesChannel {
 	return b.updates
+}
+
+func (b *Bot) GetUser(message dto.Message) (bot_dto.User, error) {
+	member, err := b.bot.GetChatMember(tgbotapi.GetChatMemberConfig{
+		ChatConfigWithUser: tgbotapi.ChatConfigWithUser{
+			ChatID: message.Chat,
+			UserID: message.User,
+		},
+	})
+	if err != nil {
+		return bot_dto.User{}, err
+	}
+
+	return bot_dto.User{
+		ID:       member.User.ID,
+		Name:     member.User.FirstName,
+		UserName: member.User.UserName,
+		IsAdmin:  member.IsCreator() || member.IsAdministrator(),
+	}, nil
+}
+
+func (b *Bot) SendMessage(msg bot_dto.Message) error {
+	message := tgbotapi.NewMessage(msg.Chat, msg.Text)
+
+	_, err := b.bot.Send(message)
+	return err
 }
