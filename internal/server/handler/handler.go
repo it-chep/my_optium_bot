@@ -38,7 +38,7 @@ func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler
 	return h
 }
 
-func (h Handler) setupRoutes(cfg Config) {
+func (h *Handler) setupRoutes(cfg Config) {
 	h.router.Route("/", func(r chi.Router) {
 		r.Post(fmt.Sprintf("%s/", cfg.Token()), h.bot())
 	})
@@ -48,6 +48,6 @@ func (h Handler) setupRoutes(cfg Config) {
 	})
 }
 
-func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.router.ServeHTTP(w, r)
 }

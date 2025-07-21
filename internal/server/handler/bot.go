@@ -27,7 +27,7 @@ func valid(event *tgbotapi.Update) bool {
 		event.Message.Text != ""
 }
 
-func (h Handler) bot() http.HandlerFunc {
+func (h *Handler) bot() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		event, err := h.botParser.HandleUpdate(r)
 		if err != nil {
