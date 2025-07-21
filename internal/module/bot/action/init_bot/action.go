@@ -1,7 +1,7 @@
-package init
+package init_bot
 
 import (
-	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/init/init_dal"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/init_bot/init_dal"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/jackc/pgx/v5/pgxpool"
 )

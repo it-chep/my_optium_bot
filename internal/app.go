@@ -34,7 +34,8 @@ func New(ctx context.Context) *App {
 		config: cfg,
 	}
 
-	app.initDB(ctx).
+	app.initLogger(ctx).
+		initDB(ctx).
 		initTgBot(ctx).
 		initModules(ctx).
 		initServer(ctx)

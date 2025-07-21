@@ -41,7 +41,7 @@ func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler
 
 func (h *Handler) setupRoutes(cfg Config) {
 	h.router.Route("/", func(r chi.Router) {
-		r.Post(fmt.Sprintf("%s/", cfg.Token()), h.bot())
+		r.Post(fmt.Sprintf("/%s/", cfg.Token()), h.bot())
 	})
 
 	h.router.Route("/admin", func(r chi.Router) {
