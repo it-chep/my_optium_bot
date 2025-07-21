@@ -11,8 +11,8 @@ type Config struct {
 }
 
 type BotConfig struct {
-	token      string `yaml:"token"`
-	webhookURL string `yaml:"webhook"`
+	token      string
+	webhookURL string
 }
 
 func (c Config) PgConn() string {
