@@ -34,5 +34,6 @@ func NewTgBot() (*Bot, error) {
 		return nil, err
 	}
 
+	bot.HandleUpdate()
 	return &Bot{bot: bot}, nil
 }
