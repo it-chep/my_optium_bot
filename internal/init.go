@@ -6,10 +6,11 @@ import (
 
 	"github.com/georgysavva/scany/v2/dbscan"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/it-chep/my_optium_bot.git/internal/server"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func init() {
@@ -28,27 +29,34 @@ func init() {
 }
 
 func (a *App) initDB(ctx context.Context) *App {
-	conn, err := pgx.Connect(ctx, a.config.PgConn())
+	pool, err := pgxpool.New(ctx, a.config.PgConn())
 	if err != nil {
 		log.Fatalf("[FATAL] не удалось создать кластер базы данных: %s", err)
 	}
 
-	a.conn = conn
+	a.pool = pool
 	return a
 }
 
 func (a *App) initTgBot(context.Context) *App {
-	bot, err := tg_bot.NewTgBot(a.config)
+	tgBot, err := tg_bot.NewTgBot(a.config)
 	if err != nil {
 		log.Fatal(err)
 	}
-	a.bot = bot
+	a.bot = tgBot
+	return a
+}
+
+func (a *App) initModules(context.Context) *App {
+	a.modules = Modules{
+		Bot: bot.New(a.pool, a.bot),
+	}
 	return a
 }
 
 func (a *App) initServer(context.Context) *App {
 	// todo: в NewHandler передаем сервис для админки или бота
-	h := handler.NewHandler(a.config, a.bot, a.botService)
+	h := handler.NewHandler(a.config, a.bot, a.modules.Bot)
 	srv := server.New(h)
 	a.server = srv
 	return a
