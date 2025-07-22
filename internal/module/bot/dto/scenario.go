@@ -9,10 +9,11 @@ type Scenario struct {
 type Steps []Step
 
 type Step struct {
-	ID      int64
-	Order   int
-	Text    string
-	IsFinal bool
+	ID         int64
+	ScenarioID int64
+	Order      int
+	Text       string
+	IsFinal    bool
 
 	Buttons StepButtons
 }

@@ -9,7 +9,26 @@ import (
 func (b *Bot) Route(ctx context.Context, msg dto.Message) error {
 	switch msg.Text {
 	case "/init_bot":
-
+		return b.Actions.CreateDoctor.CreateDoctor(ctx, msg)
+	default:
+		return b.routeScenario(ctx, msg)
 	}
-	return nil
+}
+
+func (b *Bot) routeScenario(ctx context.Context, msg dto.Message) error {
+	stat, err := b.commonDal.GetUser(ctx, msg.User)
+	if err != nil {
+		return err
+	}
+
+	if stat.StepStat == nil {
+		return nil
+	}
+
+	action, ok := b.ScenarioActions[stat.StepStat.ScenarioID]
+	if !ok {
+		return nil
+	}
+
+	return action(ctx, stat, msg)
 }

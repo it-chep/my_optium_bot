@@ -92,3 +92,13 @@ func (b *Bot) SendMessage(msg bot_dto.Message) error {
 	_, err := b.bot.Send(message)
 	return err
 }
+
+func (b *Bot) SendMessages(messages []bot_dto.Message) error {
+	for _, msg := range messages {
+		if err := b.SendMessage(msg); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
