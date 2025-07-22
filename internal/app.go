@@ -3,9 +3,10 @@ package internal
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
-	"log"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
@@ -52,9 +53,9 @@ func (a *App) Run(ctx context.Context) {
 			go func() {
 				logger.Message(ctx, "Обработка ивента")
 				msg := dto.Message{
-					User: update.SentFrom().ID,
-					Text: update.Message.Text,
-					Chat: update.FromChat().ID,
+					User:   update.SentFrom().ID,
+					Text:   update.Message.Text,
+					ChatID: update.FromChat().ID,
 				}
 				err := a.modules.Bot.Route(ctx, msg)
 				if err != nil {

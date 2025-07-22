@@ -33,7 +33,7 @@ func (a *Action) CreateDoctor(ctx context.Context, msg dto.Message) error {
 
 	if !user.IsAdmin {
 		return a.bot.SendMessage(bot_dto.Message{
-			Chat: msg.Chat, Text: "Кажется, что вы не врач)",
+			Chat: msg.ChatID, Text: "Кажется, что вы не врач)",
 		})
 	}
 
@@ -47,13 +47,13 @@ func (a *Action) CreateDoctor(ctx context.Context, msg dto.Message) error {
 	}
 
 	if err = a.bot.SendMessage(bot_dto.Message{
-		Chat: msg.Chat, Text: "MyBot активирован. Здравствуйте, хозяин!",
+		Chat: msg.ChatID, Text: "MyBot активирован. Здравствуйте, хозяин!",
 	}); err != nil {
 		return err
 	}
 
 	if err = a.bot.SendMessage(bot_dto.Message{
-		Chat: msg.Chat, Text: scenario.Steps[0].Text,
+		Chat: msg.ChatID, Text: scenario.Steps[0].Text,
 	}); err != nil {
 		return err
 	}

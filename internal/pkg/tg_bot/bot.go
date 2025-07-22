@@ -70,7 +70,7 @@ func (b *Bot) GetUpdates() tgbotapi.UpdatesChannel {
 func (b *Bot) GetUser(message dto.Message) (bot_dto.User, error) {
 	member, err := b.bot.GetChatMember(tgbotapi.GetChatMemberConfig{
 		ChatConfigWithUser: tgbotapi.ChatConfigWithUser{
-			ChatID: message.Chat,
+			ChatID: message.ChatID,
 			UserID: message.User,
 		},
 	})
