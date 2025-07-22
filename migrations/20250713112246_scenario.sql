@@ -4,30 +4,31 @@
 -- основная табличка
 create table if not exists scenarios
 (
-    id          serial primary key,    -- для работы с фронтом
-    name        text unique not null,  -- Терапия/Метрики и тд
-    description text,                  -- пусть будет
-    is_active   boolean  default true, -- чтоб вырубать
+    id          serial primary key,   -- для работы с фронтом
+    name        text unique not null, -- Терапия/Метрики и тд
+    description text,                 -- пусть будет
+    is_active   boolean default true, -- чтоб вырубать
     delay       interval
 );
 
 -- шаги
 create table if not exists scenario_steps
 (
-    id           serial primary key,
-    scenario_id  integer not null,
-    step_order   integer not null,     -- порядок
-    title        text,                 -- пусть будет скрытый для работы с админкой
-    content      bytea   not null,     -- todo: не уверен чет
-    content_type int     not null,     -- будем чекать видео/текст/картинка/файл енам
-    is_final     boolean default false -- если тру, то пускаем новый сценарий и в patient_scenarios проставляем complete
+    id          serial primary key,
+    scenario_id integer not null,
+    step_order  integer not null,     -- порядок
+    content     text    not null,
+    is_final    boolean default false -- если тру, то пускаем новый сценарий и в patient_scenarios проставляем complete
+--     title        text,                 -- пусть будет скрытый для работы с админкой
+--     content_type int     not null,     -- будем чекать видео/текст/картинка/файл енам
 );
 
 -- детализация шага
 create table if not exists step_buttons
 (
     id              serial primary key,
-    step_id         integer not null, -- scenario_steps(id)
+    scenario        integer not null, -- scenarios(id)
+    step            integer not null, -- scenario_steps(step_order)
     button_text     text    not null,
     next_step_order integer           -- todo: пока думаю, переход к какому шагу (null - завершение)
     -- doctor_notify   boolean default false -- пздц не факт, ебал рот уведы в лс

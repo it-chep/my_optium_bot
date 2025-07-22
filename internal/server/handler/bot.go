@@ -32,9 +32,9 @@ func (h *Handler) bot() http.HandlerFunc {
 		}
 
 		msg := dto.Message{
-			User: event.SentFrom().ID,
-			Text: event.Message.Text,
-			Chat: event.FromChat().ID,
+			User:   event.SentFrom().ID,
+			Text:   event.Message.Text,
+			ChatID: event.FromChat().ID,
 		}
 		if err = h.botModule.Route(r.Context(), msg); err != nil {
 			w.WriteHeader(http.StatusBadGateway)
