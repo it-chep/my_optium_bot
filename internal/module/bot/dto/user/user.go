@@ -1,5 +1,7 @@
 package user
 
+import "time"
+
 type User struct {
 	IsDoctor bool
 	ID       int64
@@ -19,4 +21,15 @@ const (
 	Woman Sex = 1
 )
 
-type Patient struct{}
+type Patient struct {
+	ID          int64
+	TgID        int64
+	FullName    string
+	Sex         Sex
+	BirthDate   time.Time
+	MetricsLink string
+}
+
+func (p Patient) IsEmpty() bool {
+	return len(p.FullName) == 0
+}

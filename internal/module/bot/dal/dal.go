@@ -3,6 +3,7 @@ package dal
 import (
 	"context"
 	"fmt"
+
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -62,7 +63,7 @@ func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step
 	sql := `select * from scenario_steps where scenario_id = $1 order by step_order`
 
 	var steps dao.Steps
-	if err := pgxscan.Select(ctx, d.pool, steps, sql, usr.StepStat.ScenarioID); err != nil {
+	if err := pgxscan.Select(ctx, d.pool, &steps, sql, usr.StepStat.ScenarioID); err != nil {
 		return dto.Step{}, err
 	}
 
@@ -75,16 +76,22 @@ func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step
 	}
 
 	if currentIsFinal {
-		logger.Message(ctx, "У пользователя финальный шаг, не двигаем его")
+		logger.Message(ctx, "У пользователя финальный шаг, не двигаем его, завершаем сценарий")
+		sql = `update doctors_scenarios set completed_at = now() where doctor_id = $1 and scenario_id = $2`
+		_, err := d.pool.Exec(ctx, sql, usr.ID, usr.StepStat.ScenarioID)
+		if err != nil {
+			return dto.Step{}, err
+		}
+
 		return dto.Step{}, nil
 	}
 
 	logger.Message(ctx, fmt.Sprintf("Двигаем пользователя на шаг вперед. Тек Сценарий: %d, шаг: %d", usr.StepStat.ScenarioID, usr.StepStat.StepOrder))
 	// Двигаем пользователя на 1 шаг вперед
-	sql = `update doctors_steps set step = $1 where doctors_id = $2`
+	sql = `update doctors_scenarios set step = $1 where doctor_id = $2`
 	nextStep := usr.StepStat.StepOrder + 1
 
-	_, err := d.pool.Exec(ctx, sql, nextStep, usr.IsDoctor)
+	_, err := d.pool.Exec(ctx, sql, nextStep, usr.ID)
 	if err != nil {
 		return dto.Step{}, err
 	}
@@ -95,12 +102,12 @@ func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step
 		where scenario_id = $1 and step_order = $2
 	`
 
-	var step dto.Step
+	var step dao.Step
 	if err = pgxscan.Get(ctx, d.pool, &step, sql, usr.StepStat.ScenarioID, nextStep); err != nil {
 		return dto.Step{}, err
 	}
 
-	return step, nil
+	return step.ToDomain(), nil
 }
 
 func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err error) {

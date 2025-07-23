@@ -3,15 +3,16 @@ package init_chat
 import (
 	"context"
 	"fmt"
-	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
-	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
-	"time"
 
 	create_doctor_dal "github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/create_doctor/dal"
 	init_dal "github.com/it-chep/my_optium_bot.git/internal/module/bot/action/doctors/init_chat/dal"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/doctors/init_chat/service/create_patient"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/doctors/init_chat/service/step"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/doctors/init_chat/service/update_patient"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -21,96 +22,54 @@ type Action struct {
 	common     *dal.CommonDal
 	initBotDal *init_dal.InitBotDal
 	bot        *tg_bot.Bot
+
+	stepService    *step.Service
+	patientCreator *create_patient.Service
+	patientUpdater *update_patient.Service
 }
 
 func NewAction(pool *pgxpool.Pool, bot *tg_bot.Bot, common *dal.CommonDal) *Action {
 	return &Action{
-		dal:    create_doctor_dal.NewDal(pool),
-		common: common,
-		bot:    bot,
+		dal:        create_doctor_dal.NewDal(pool),
+		common:     common,
+		bot:        bot,
+		initBotDal: init_dal.NewDal(pool),
+
+		stepService:    step.NewService(common, bot),
+		patientCreator: create_patient.NewService(init_dal.NewDal(pool)),
+		patientUpdater: update_patient.NewService(init_dal.NewDal(pool)),
 	}
 }
 
-// Handle todo: тут уже делаем разбивку по степам конкретного сценария
+// Handle разбивка на степы сценария "Старт"
 func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (err error) {
 	// После выполнения шага происходит движение на шаг вперед и отправка сообщения
 	defer func(err error) {
-		if err != nil {
-			return
-		}
-		a.moveToNextStep(ctx, usr, msg)
+		a.stepService.MoveToNextStep(ctx, usr, msg, err)
 	}(err)
 
 	logger.Message(ctx, fmt.Sprintf("Хендлим шаги в сценарии init_chat, user: %d", usr.ID))
 	//  Получаем пациента чтобы потом его обновить.
-	patient, err := a.initBotDal.GetPatient(ctx, usr.ID)
-	//if err != nil {
-	//	return err
-	//}
-	//if patient.IsEmpty() && usr.StepStat.StepOrder != 1 {
-	//	return nil
-	//}
-	//  Если его нет и ошибка notFound и шаг не 1, то ретурн
+	patient, err := a.initBotDal.GetPatient(ctx, msg.ChatID)
+	if err != nil {
+		return err
+	}
+	// todo, такого вроде не должно возникнуть, но если вдруг
+	if patient.IsEmpty() && usr.StepStat.StepOrder != 1 {
+		return nil
+	}
 
 	// Получаем текущий шаг пользователя
 	switch usr.StepStat.StepOrder {
 	case 1:
-		// Устанавливаем фио пациента
-		err = a.initBotDal.CreatePatient(ctx, msg.Text)
-		if err != nil {
-			return err
-		}
+		err = a.patientCreator.CreatePatient(ctx, msg)
 	case 2:
-		// Устанавливаем Пол пациента
-		var sex user.Sex
-		sex = user.Man
-		if msg.Text == "Ж" {
-			sex = user.Woman
-		}
-
-		err = a.initBotDal.UpdatePatientSex(ctx, sex)
-		if err != nil {
-			return err
-		}
+		err = a.patientUpdater.UpdateSex(ctx, patient.ID, msg)
 	case 3:
-		// Устанавливаем дату рождения пациента
-		var birthDate time.Time
-		birthDate, err = time.Parse("02.01.2006", msg.Text)
-		if err != nil {
-			return err
-		}
-
-		err = a.initBotDal.UpdatePatientBirthDate(ctx, birthDate)
-		if err != nil {
-			return err
-		}
+		err = a.patientUpdater.UpdateBirthDate(ctx, patient.ID, msg)
 	case 4:
-		// Устанавливаем ссылку на метрики
-		err = a.initBotDal.UpdatePatientMetricsLink(ctx, msg.Text)
-		if err != nil {
-			return err
-		}
+		err = a.initBotDal.UpdatePatientMetricsLink(ctx, patient.ID, msg.Text)
 	}
 
-	return nil
-}
-
-func (a *Action) moveToNextStep(ctx context.Context, usr user.User, msg dto.Message) {
-	// todo проверка, точно ли мы должны подвинуть в стейте ?
-
-	step, err := a.common.DoctorNextStep(ctx, usr)
-	if err != nil {
-		return
-	}
-	if step.Text == "" {
-		return
-	}
-
-	message := bot_dto.Message{
-		Chat: msg.ChatID, Text: step.Text,
-	}
-	err = a.bot.SendMessage(message)
-	if err != nil {
-		return
-	}
+	return err
 }

@@ -2,8 +2,8 @@
 -- +goose StatementBegin
 create table if not exists patients
 (
-    id           bigserial not null,
-    tg_id        bigint primary key,
+    id           bigserial primary key,
+    tg_id        bigint    null,
     created_at   timestamp not null default now(),
     full_name    text,
     sex          int,
@@ -24,9 +24,10 @@ create table if not exists doctors
 create table if not exists patient_doctor
 (
     doctor_tg  bigint,
-    patient_tg bigint,
+    patient_tg bigint null,
+    patient_id bigint,
     chat_id    bigint,
-    unique (doctor_tg, patient_tg)
+    unique (doctor_tg, patient_id)
 );
 
 

@@ -3,7 +3,7 @@ package create_doctor
 import (
 	"context"
 
-	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/create_doctor/dal"
+	create_doctor_dal "github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/create_doctor/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
