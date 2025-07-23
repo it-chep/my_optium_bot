@@ -16,6 +16,7 @@ infra:
 
 .PHONY: minfra
 minfra-up: infra
+	sleep 2s && \
 	$(LOCAL_BIN)/goose postgres "user=${DB_USER} password=${DB_PASSWORD} host=${DB_HOST} dbname=${DB_NAME} sslmode=disable" -dir=./migrations up
 
 .PHONY: minfra-down

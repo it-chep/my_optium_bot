@@ -51,6 +51,9 @@ func (a *App) Run(ctx context.Context) {
 		// Режим поллинга
 		for update := range a.bot.GetUpdates() {
 			go func() {
+				if update.FromChat() == nil || update.SentFrom() == nil {
+					return
+				}
 				logger.Message(ctx, "Обработка ивента")
 				msg := dto.Message{
 					User:   update.SentFrom().ID,
