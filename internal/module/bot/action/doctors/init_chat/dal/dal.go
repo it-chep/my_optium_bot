@@ -48,11 +48,6 @@ func (d *InitBotDal) CreatePatient(ctx context.Context, fullName string) (int64,
 	var id int64
 	err := d.pool.QueryRow(ctx, sql, fullName).Scan(&id)
 	if err != nil {
-		// Проверяем, была ли это ошибка "no rows" из-за конфликта
-		if errors.Is(err, pgx.ErrNoRows) {
-			// Запись уже существует, нужно получить её ID
-			return d.getPatientIDByName(ctx, fullName)
-		}
 		return 0, fmt.Errorf("ошибка при сохранении доктора %w", err)
 	}
 
@@ -74,18 +69,6 @@ func (d *InitBotDal) CreateM2MPatientDoctor(ctx context.Context, chatID, doctorT
 	}
 
 	return nil
-}
-
-func (d *InitBotDal) getPatientIDByName(ctx context.Context, fullName string) (int64, error) {
-	sql := `select id from patients where full_name = $1`
-
-	var id int64
-	err := d.pool.QueryRow(ctx, sql, fullName).Scan(&id)
-	if err != nil {
-		return 0, fmt.Errorf("ошибка при получении доктора по имени: %w", err)
-	}
-
-	return id, nil
 }
 
 func (d *InitBotDal) UpdatePatientSex(ctx context.Context, patientID int64, sex user.Sex) error {
