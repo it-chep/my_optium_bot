@@ -2,6 +2,8 @@ package dal
 
 import (
 	"context"
+	"fmt"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal/dao"
@@ -53,6 +55,52 @@ func (d *CommonDal) UpdateDoctorStep(ctx context.Context, doctorID int64, step d
 
 	_, err := d.pool.Exec(ctx, sql, args...)
 	return err
+}
+
+func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step, error) {
+	logger.Message(ctx, fmt.Sprintf("Получение шагов для определение финального. Тек Сценарий: %d, шаг: %d", usr.StepStat.ScenarioID, usr.StepStat.StepOrder))
+	sql := `select * from scenario_steps where scenario_id = $1 order by step_order`
+
+	var steps dao.Steps
+	if err := pgxscan.Select(ctx, d.pool, steps, sql, usr.StepStat.ScenarioID); err != nil {
+		return dto.Step{}, err
+	}
+
+	// Проверяем что текущий шаг не финальный, тк если текущий шаг финальный, то надо менять сценарии
+	currentIsFinal := false
+	for _, step := range steps {
+		if int64(step.ID) == usr.StepStat.StepOrder && step.IsFinal.Bool {
+			currentIsFinal = true
+		}
+	}
+
+	if currentIsFinal {
+		logger.Message(ctx, "У пользователя финальный шаг, не двигаем его")
+		return dto.Step{}, nil
+	}
+
+	logger.Message(ctx, fmt.Sprintf("Двигаем пользователя на шаг вперед. Тек Сценарий: %d, шаг: %d", usr.StepStat.ScenarioID, usr.StepStat.StepOrder))
+	// Двигаем пользователя на 1 шаг вперед
+	sql = `update doctors_steps set step = $1 where doctors_id = $2`
+	nextStep := usr.StepStat.StepOrder + 1
+
+	_, err := d.pool.Exec(ctx, sql, nextStep, usr.IsDoctor)
+	if err != nil {
+		return dto.Step{}, err
+	}
+
+	// Получаем сообщение нового шага, чтобы отправить сообщение по нему
+	sql = `
+		select * from scenario_steps 
+		where scenario_id = $1 and step_order = $2
+	`
+
+	var step dto.Step
+	if err = pgxscan.Get(ctx, d.pool, &step, sql, usr.StepStat.ScenarioID, nextStep); err != nil {
+		return dto.Step{}, err
+	}
+
+	return step, nil
 }
 
 func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err error) {
