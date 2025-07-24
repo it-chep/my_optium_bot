@@ -13,7 +13,7 @@ import (
 // Patient represents a row from 'public.patients'.
 type Patient struct {
 	ID          int64          `db:"id" json:"id"`                     // id
-	TgID        int64          `db:"tg_id" json:"tg_id"`               // tg_id
+	TgID        sql.NullInt64  `db:"tg_id" json:"tg_id"`               // tg_id
 	CreatedAt   time.Time      `db:"created_at" json:"created_at"`     // created_at
 	FullName    sql.NullString `db:"full_name" json:"full_name"`       // full_name
 	Sex         sql.NullInt64  `db:"sex" json:"sex"`                   // sex

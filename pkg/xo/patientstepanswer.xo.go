@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// ClientStepAnswer represents a row from 'public.client_step_answers'.
-type ClientStepAnswer struct {
+// PatientStepAnswer represents a row from 'public.patient_step_answers'.
+type PatientStepAnswer struct {
 	ID         int       `db:"id" json:"id"`                   // id
 	PatientID  int       `db:"patient_id" json:"patient_id"`   // patient_id
 	ScenarioID int       `db:"scenario_id" json:"scenario_id"` // scenario_id
@@ -17,9 +17,9 @@ type ClientStepAnswer struct {
 	AnswerDate time.Time `db:"answer_date" json:"answer_date"` // answer_date
 }
 
-// zeroClientStepAnswer zero value of dto
-var zeroClientStepAnswer = ClientStepAnswer{}
+// zeroPatientStepAnswer zero value of dto
+var zeroPatientStepAnswer = PatientStepAnswer{}
 
-func (t ClientStepAnswer) IsEmpty() bool {
-	return reflect.DeepEqual(t, zeroClientStepAnswer)
+func (t PatientStepAnswer) IsEmpty() bool {
+	return reflect.DeepEqual(t, zeroPatientStepAnswer)
 }

@@ -36,6 +36,17 @@ type Step struct {
 	xo.ScenarioStep
 }
 
+func (s *Step) ToDomain() dto.Step {
+	return dto.Step{
+		ID:         int64(s.ID),
+		ScenarioID: int64(s.ScenarioID),
+		Order:      s.StepOrder,
+		Text:       s.Content,
+		IsFinal:    s.IsFinal.Bool,
+		// todo buttons
+	}
+}
+
 type Buttons []*Button
 
 func (b Buttons) ByStep(s *Step) Buttons {

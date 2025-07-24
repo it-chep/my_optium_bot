@@ -14,6 +14,7 @@ type PatientScenario struct {
 	ID             int         `db:"id" json:"id"`                           // id
 	PatientID      int         `db:"patient_id" json:"patient_id"`           // patient_id
 	ScenarioID     int         `db:"scenario_id" json:"scenario_id"`         // scenario_id
+	Step           int         `db:"step" json:"step"`                       // step
 	ScheduledStart time.Time   `db:"scheduled_start" json:"scheduled_start"` // scheduled_start
 	ActualStart    pq.NullTime `db:"actual_start" json:"actual_start"`       // actual_start
 	CompletedAt    pq.NullTime `db:"completed_at" json:"completed_at"`       // completed_at
