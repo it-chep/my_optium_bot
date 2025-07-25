@@ -51,13 +51,26 @@ func (a *App) Run(ctx context.Context) {
 		// Режим поллинга
 		for update := range a.bot.GetUpdates() {
 			go func() {
+				if update.ChatMember != nil {
+					usrID := update.ChatMember.NewChatMember.User.ID
+					chat := update.ChatMember.Chat.ID
+					_ = a.modules.Bot.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
+				}
+
 				if update.FromChat() == nil || update.SentFrom() == nil {
 					return
+				}
+
+				txt := ""
+				if update.Message != nil {
+					txt = update.Message.Text
+				} else if update.CallbackQuery != nil {
+					txt = update.CallbackQuery.Data
 				}
 				logger.Message(ctx, "Обработка ивента")
 				msg := dto.Message{
 					User:   update.SentFrom().ID,
-					Text:   update.Message.Text,
+					Text:   txt,
 					ChatID: update.FromChat().ID,
 				}
 				err := a.modules.Bot.Route(ctx, msg)

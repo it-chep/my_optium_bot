@@ -1,8 +1,9 @@
 package bot_dto
 
-type Message struct {
-	Chat int64
-	Text string
+import "github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 
-	// TODO: кнопки
+type Message struct {
+	Chat    int64
+	Text    string
+	Buttons dto.StepButtons
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -69,6 +70,13 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (er
 		err = a.patientUpdater.UpdateBirthDate(ctx, patient.ID, msg)
 	case 4:
 		err = a.initBotDal.UpdatePatientMetricsLink(ctx, patient.ID, msg.Text)
+		if err != nil {
+			return err
+		}
+		err = a.bot.SendMessage(bot_dto.Message{
+			Chat: msg.ChatID,
+			Text: "Теперь добавьте пациента в группу",
+		})
 	}
 
 	return err

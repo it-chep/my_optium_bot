@@ -36,14 +36,14 @@ type Step struct {
 	xo.ScenarioStep
 }
 
-func (s *Step) ToDomain() dto.Step {
+func (s *Step) ToDomain(buttons Buttons) dto.Step {
 	return dto.Step{
 		ID:         int64(s.ID),
 		ScenarioID: int64(s.ScenarioID),
 		Order:      s.StepOrder,
 		Text:       s.Content,
 		IsFinal:    s.IsFinal.Bool,
-		// todo buttons
+		Buttons:    buttons.ToDomain(),
 	}
 }
 
