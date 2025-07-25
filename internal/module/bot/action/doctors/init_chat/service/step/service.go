@@ -50,7 +50,7 @@ func (s *Service) moveToNextStep(ctx context.Context, usr user.User, msg dto.Mes
 	}
 
 	message := bot_dto.Message{
-		Chat: msg.ChatID, Text: step.Text,
+		Chat: msg.ChatID, Text: step.Text, Buttons: step.Buttons,
 	}
 	err = s.bot.SendMessage(message)
 	if err != nil {

@@ -8,14 +8,12 @@ import (
 )
 
 func valid(event *tgbotapi.Update) bool {
-	if event.Message == nil ||
-		event.FromChat() == nil ||
+	if event.FromChat() == nil ||
 		event.SentFrom() == nil {
 		return false
 	}
 
-	return (event.FromChat().IsGroup() || event.FromChat().IsSuperGroup()) &&
-		event.Message.Text != ""
+	return event.FromChat().IsGroup() || event.FromChat().IsSuperGroup()
 }
 
 func (h *Handler) bot() http.HandlerFunc {
@@ -26,6 +24,14 @@ func (h *Handler) bot() http.HandlerFunc {
 			return
 		}
 
+		if event.ChatMember != nil {
+			usr := event.ChatMember.NewChatMember.User.ID
+			chat := event.ChatMember.Chat.ID
+			if err = h.botModule.Actions.InvitePatient.InvitePatient(r.Context(), usr, chat); err != nil {
+				return
+			}
+		}
+
 		if !valid(event) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -33,8 +39,14 @@ func (h *Handler) bot() http.HandlerFunc {
 
 		msg := dto.Message{
 			User:   event.SentFrom().ID,
-			Text:   event.Message.Text,
 			ChatID: event.FromChat().ID,
+		}
+		if event.Message != nil {
+			msg.Text = event.Message.Text
+		} else if event.CallbackQuery != nil {
+			msg.Text = event.CallbackQuery.Data
+		} else {
+			return
 		}
 		if err = h.botModule.Route(r.Context(), msg); err != nil {
 			w.WriteHeader(http.StatusBadGateway)

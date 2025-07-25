@@ -42,6 +42,24 @@ func (d *CommonDal) GetScenario(ctx context.Context, id int64) (dto.Scenario, er
 	return scenario.ToDomain(steps, buttons), nil
 }
 
+func (d *CommonDal) GetStep(ctx context.Context, scenarioID, stepID int64) (dto.Step, error) {
+	args := []interface{}{scenarioID, stepID}
+
+	sql := `select * from scenario_steps where scenario_id = $1 and step_order = $2`
+	var step dao.Step
+	if err := pgxscan.Get(ctx, d.pool, &step, sql, args...); err != nil {
+		return dto.Step{}, err
+	}
+
+	sql = `select * from step_buttons where scenario = $1 and step = $2 order by id`
+	var buttons dao.Buttons
+	if err := pgxscan.Select(ctx, d.pool, &buttons, sql, args...); err != nil {
+		return dto.Step{}, err
+	}
+
+	return step.ToDomain(buttons), nil
+}
+
 func (d *CommonDal) UpdateDoctorStep(ctx context.Context, doctorID int64, step dto.Step) error {
 	sql := `insert into doctors_scenarios (doctor_id, scenario_id, step) 
 				values ($1, $2, $3)
@@ -96,18 +114,7 @@ func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step
 		return dto.Step{}, err
 	}
 
-	// Получаем сообщение нового шага, чтобы отправить сообщение по нему
-	sql = `
-		select * from scenario_steps 
-		where scenario_id = $1 and step_order = $2
-	`
-
-	var step dao.Step
-	if err = pgxscan.Get(ctx, d.pool, &step, sql, usr.StepStat.ScenarioID, nextStep); err != nil {
-		return dto.Step{}, err
-	}
-
-	return step.ToDomain(), nil
+	return d.GetStep(ctx, usr.StepStat.ScenarioID, nextStep)
 }
 
 func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err error) {
@@ -117,7 +124,7 @@ func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err err
 			select true as is_doctor, d.tg_id as id, ds.scenario_id, ds.step as step_order
 				from doctors d
          			left join doctors_scenarios ds on d.tg_id = ds.doctor_id
-			where d.tg_id = $1
+			where d.tg_id = $1 and ds.completed_at is null
 		`
 		patientSql = `
 			select false as is_doctor, p.tg_id, ps.scenario_id, ps.step as step_order
