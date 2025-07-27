@@ -34,19 +34,24 @@ create table if not exists step_buttons
     -- doctor_notify   boolean default false -- пздц не факт, ебал рот уведы в лс
 );
 
--- связка юзер и сценарий
+-- связка юзер и сценарий (тут сценарии только друг за другом)
+-- если тут нужно чтобы сценарий повторялся и был периодичным, то при завершении этого сценария создаем новую запись в таблице просто
+
+-- чтобы начать новый сценарий будет джоба, которая проверит эту табличку
+-- если нет активных сценариев у челика, то назначаем автоматом первый сценарий !completed order by id/created_at
+-- джоба должна будет уметь обновить степ и отправить первое сообщение сценария
 create table if not exists patient_scenarios
 (
-    id              serial primary key,
-    patient_id      integer   not null,               -- patients(tg_id)
-    scenario_id     integer   not null,               -- scenarios(id)
-    step            integer   not null,               -- scenarios(id)
-    scheduled_start timestamp not null,               -- запланировали
-    actual_start    timestamp,                        -- по факту старт
-    completed_at    timestamp,                        -- когда завершили
---     scenario_on_complete integer not null -- todo: какой сценарий пускать при завершении, мб по другому как то делать хз
-    repeatable      boolean   not null default false, -- повторяемый ли
-    unique (patient_id, scenario_id)
+    id             serial primary key,
+    patient_id     integer   not null,               -- patients(tg_id)
+    scenario_id    integer   not null,               -- scenarios(id)
+    step           integer   not null,               -- scenarios(id)
+    -- когда запланировано. будет отдельная джоба, которая посмотрит это поле, отправит сообщение и сдвинет степ
+    -- отдельная джоба нужна на случаи задержки сообщений (например если чел ответил позже, то след сообщение отправим через 3 часа)
+    scheduled_time timestamp not null,
+    active         boolean   not null default false, -- активен ли сейчас
+    repeatable     boolean   not null default false, -- повторяемый ли, если повторяемый, то при завершении будем создавать новую запись в табличку
+    completed_at   timestamp                        -- когда завершили
 );
 
 create table if not exists patient_step_answers
