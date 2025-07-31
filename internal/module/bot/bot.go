@@ -29,6 +29,7 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 
 		ScenarioActions: map[int64]ScenarioAction{
 			1: actions.InitChat.Handle,
+			2: actions.Metrics.Handle,
 		},
 	}
 }
