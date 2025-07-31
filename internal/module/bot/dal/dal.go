@@ -3,8 +3,11 @@ package dal
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
+	"github.com/lib/pq"
+	"github.com/samber/lo"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal/dao"
@@ -143,4 +146,24 @@ func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err err
 	}
 
 	return user.User{}, err
+}
+
+func (d *CommonDal) AssignScenarios(ctx context.Context, patient int64, scenarios []dto.Scenario) error {
+	var (
+		sql = `insert into patient_scenarios (patient_id, step, scenario_id, scheduled_time) 
+				select 
+				    $1,
+				    0, 
+				    unnest($2::bigint[]) as scenario_id,
+				    unnest($3::timestamp[]) as scheduled_time
+		`
+		args = []interface{}{
+			patient,
+			pq.Array(lo.Map(scenarios, func(s dto.Scenario, _ int) int64 { return s.ID })),
+			pq.Array(lo.Map(scenarios, func(s dto.Scenario, _ int) time.Time { return s.ScheduledTime })),
+		}
+	)
+
+	_, err := d.pool.Exec(ctx, sql, args...)
+	return err
 }

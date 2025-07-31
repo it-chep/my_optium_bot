@@ -1,7 +1,10 @@
 package dto
 
+import "time"
+
 type Scenario struct {
-	ID int64
+	ID            int64
+	ScheduledTime time.Time
 
 	Steps Steps
 }

@@ -19,6 +19,6 @@ func NewAgg(pool *pgxpool.Pool, bot *tg_bot.Bot, common *dal.CommonDal) *Agg {
 	return &Agg{
 		CreateDoctor:  create_doctor.NewAction(pool, bot, common),
 		InitChat:      init_chat.NewAction(pool, bot, common),
-		InvitePatient: invite_patient.NewAction(pool, bot),
+		InvitePatient: invite_patient.NewAction(pool, bot, common),
 	}
 }
