@@ -13,6 +13,7 @@ type Scenario struct {
 func (s *Scenario) ToDomain(steps *Steps, buttons *Buttons) dto.Scenario {
 	return dto.Scenario{
 		ID:    int64(s.ID),
+		Name:  dto.ScenarioName(s.Name),
 		Steps: steps.ToDomain(buttons),
 	}
 }

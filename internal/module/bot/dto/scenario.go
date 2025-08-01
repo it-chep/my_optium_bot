@@ -2,9 +2,17 @@ package dto
 
 import "time"
 
+type ScenarioName string
+
+const (
+	MetricsStart ScenarioName = "metrics-start"
+	MetricsRetry ScenarioName = "metrics-retry"
+)
+
 type Scenario struct {
 	ID            int64
 	ScheduledTime time.Time
+	Name          ScenarioName
 
 	Steps Steps
 }
