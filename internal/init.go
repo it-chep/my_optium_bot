@@ -3,11 +3,13 @@ package internal
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/georgysavva/scany/v2/dbscan"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/worker"
 	"github.com/it-chep/my_optium_bot.git/internal/server"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -51,6 +53,22 @@ func (a *App) initModules(context.Context) *App {
 	a.modules = Modules{
 		Bot: bot.New(a.pool, a.bot),
 	}
+	return a
+}
+
+func (a *App) initJobs(ctx context.Context) *App {
+	activate := worker.NewWorker(ctx,
+		a.modules.Bot.Jobs.Activate.Do,
+		5*time.Second,
+		1,
+	)
+	move := worker.NewWorker(ctx,
+		a.modules.Bot.Jobs.Move.Do,
+		time.Second,
+		1,
+	)
+	a.workers = append(a.workers, activate, move)
+
 	return a
 }
 
