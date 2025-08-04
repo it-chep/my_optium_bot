@@ -7,6 +7,7 @@ import (
 
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/worker"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
@@ -14,6 +15,8 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/server"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+type Workers []worker.Worker
 
 type App struct {
 	config *config.Config
@@ -23,6 +26,7 @@ type App struct {
 	bot    *tg_bot.Bot
 
 	modules Modules
+	workers Workers
 }
 
 type Modules struct {
@@ -79,6 +83,10 @@ func (a *App) Run(ctx context.Context) {
 				}
 			}()
 		}
+	}
+
+	for _, w := range a.workers {
+		w.Start(ctx)
 	}
 	log.Fatal(a.server.ListenAndServe())
 }

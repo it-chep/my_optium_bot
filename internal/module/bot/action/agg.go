@@ -14,7 +14,9 @@ type Agg struct {
 	CreateDoctor  *create_doctor.Action
 	InitChat      *init_chat.Action
 	InvitePatient *invite_patient.Action
-	Metrics       *metrics.Action
+
+	// Сценарии пациента
+	Metrics *metrics.Action
 }
 
 func NewAgg(pool *pgxpool.Pool, bot *tg_bot.Bot, common *dal.CommonDal) *Agg {

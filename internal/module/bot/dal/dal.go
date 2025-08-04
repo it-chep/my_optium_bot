@@ -160,7 +160,7 @@ func (d *CommonDal) AssignScenarios(ctx context.Context, patient int64, scenario
 		args = []interface{}{
 			patient,
 			pq.Array(lo.Map(scenarios, func(s dto.Scenario, _ int) int64 { return s.ID })),
-			pq.Array(lo.Map(scenarios, func(s dto.Scenario, _ int) time.Time { return s.ScheduledTime })),
+			pq.Array(lo.Map(scenarios, func(s dto.Scenario, _ int) time.Time { return s.ScheduledTime.UTC() })),
 		}
 	)
 
