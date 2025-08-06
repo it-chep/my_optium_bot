@@ -16,9 +16,11 @@ create table if not exists scenario_steps
 (
     id          serial primary key,
     scenario_id integer not null,
-    step_order  integer not null,     -- порядок
+    step_order  integer not null,      -- порядок
     content     text    not null,
-    is_final    boolean default false -- если тру, то пускаем новый сценарий и в patient_scenarios проставляем complete
+    is_final    boolean default false, -- если тру, то пускаем новый сценарий и в patient_scenarios проставляем complete
+    next_delay  interval,
+    next_step   int
 --     title        text,                 -- пусть будет скрытый для работы с админкой
 --     content_type int     not null,     -- будем чекать видео/текст/картинка/файл енам
 );
@@ -44,14 +46,17 @@ create table if not exists patient_scenarios
 (
     id             serial primary key,
     patient_id     integer   not null,               -- patients(tg_id)
+    chat_id        bigint    not null,
     scenario_id    integer   not null,               -- scenarios(id)
     step           integer   not null,               -- scenarios(id)
+    answered       boolean   not null default false,
+    sent           boolean   not null default false,
     -- когда запланировано. будет отдельная джоба, которая посмотрит это поле, отправит сообщение и сдвинет степ
     -- отдельная джоба нужна на случаи задержки сообщений (например если чел ответил позже, то след сообщение отправим через 3 часа)
     scheduled_time timestamp not null,
     active         boolean   not null default false, -- активен ли сейчас
     repeatable     boolean   not null default false, -- повторяемый ли, если повторяемый, то при завершении будем создавать новую запись в табличку
-    completed_at   timestamp                        -- когда завершили
+    completed_at   timestamp                         -- когда завершили
 );
 
 create table if not exists patient_step_answers

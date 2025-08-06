@@ -1,6 +1,10 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/samber/lo"
+)
 
 type ScenarioName string
 
@@ -17,6 +21,12 @@ type Scenario struct {
 	Steps Steps
 }
 
+func (s Scenario) StepByOrder(order int) (Step, bool) {
+	return lo.Find(s.Steps, func(s Step) bool {
+		return s.Order == order
+	})
+}
+
 type Steps []Step
 
 type Step struct {
@@ -25,6 +35,8 @@ type Step struct {
 	Order      int
 	Text       string
 	IsFinal    bool
+	NextStep   *int
+	NextDelay  *time.Duration
 
 	Buttons StepButtons
 }
@@ -32,5 +44,6 @@ type Step struct {
 type StepButtons []StepButton
 
 type StepButton struct {
-	Text string
+	Text          string
+	NextStepOrder int
 }

@@ -22,14 +22,19 @@ type Steps []*Step
 
 func (s Steps) ToDomain(buttons *Buttons) dto.Steps {
 	return lo.Map(s, func(s *Step, _ int) dto.Step {
-		return dto.Step{
+		step := dto.Step{
 			ID:         int64(s.ID),
 			ScenarioID: int64(s.ScenarioID),
 			Order:      s.StepOrder,
 			Text:       s.Content,
 			IsFinal:    s.IsFinal.Bool,
+			NextDelay:  s.NextDelay,
 			Buttons:    buttons.ByStep(s).ToDomain(),
 		}
+		if s.NextStep.Valid {
+			step.NextStep = lo.ToPtr(int(s.NextStep.Int64))
+		}
+		return step
 	})
 }
 
@@ -59,7 +64,8 @@ func (b Buttons) ByStep(s *Step) Buttons {
 func (b Buttons) ToDomain() dto.StepButtons {
 	return lo.Map(b, func(but *Button, _ int) dto.StepButton {
 		return dto.StepButton{
-			Text: but.ButtonText,
+			Text:          but.ButtonText,
+			NextStepOrder: int(but.NextStepOrder.Int64),
 		}
 	})
 }

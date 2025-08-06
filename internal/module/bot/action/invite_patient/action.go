@@ -9,7 +9,6 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
-	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -33,14 +32,7 @@ func (a *Action) InvitePatient(ctx context.Context, tgID, chatID int64) error {
 		return err
 	}
 
-	if err := a.common.AssignScenarios(ctx, tgID, a.initScenarios()); err != nil {
-		return err
-	}
-
-	return a.bot.SendMessage(bot_dto.Message{
-		Chat: chatID,
-		Text: "Приветствие от бота, как он будет помогать вам, что будет делать",
-	})
+	return a.common.AssignScenarios(ctx, tgID, chatID, a.initScenarios())
 }
 
 func (a *Action) initScenarios() []dto.Scenario {
@@ -52,12 +44,12 @@ func (a *Action) initScenarios() []dto.Scenario {
 
 	return []dto.Scenario{
 		// TODO: здесь будет инит очереди, по сути исерт начальных сценариев с соотв делеями
-		{ID: 0, ScheduledTime: now.Add(10 * time.Minute)}, // обучение
-		{ID: 0, ScheduledTime: noon.Add(1 * day)},         // терапия
-		{ID: 0, ScheduledTime: noon.Add(2 * day)},         // рекомендации
-		{ID: 0, ScheduledTime: noon.Add(4 * day)},         // метрики
-		{ID: 0, ScheduledTime: noon.Add(7 * day)},         // информация
-		{ID: 0, ScheduledTime: noon.Add(45 * day)},        // 2 этап
-		{ID: 0, ScheduledTime: noon.Add(60 * day)},        // выведение на контроль
+		//{ID: 0, ScheduledTime: now.Add(10 * time.Minute)}, // обучение
+		{ID: 4, ScheduledTime: noon.Add(1 * day)}, // терапия
+		//{ID: 0, ScheduledTime: noon.Add(2 * day)},         // рекомендации
+		//{ID: 0, ScheduledTime: noon.Add(4 * day)},         // метрики
+		//{ID: 0, ScheduledTime: noon.Add(7 * day)},         // информация
+		//{ID: 0, ScheduledTime: noon.Add(45 * day)},        // 2 этап
+		//{ID: 0, ScheduledTime: noon.Add(60 * day)},        // выведение на контроль
 	}
 }

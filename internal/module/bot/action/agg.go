@@ -5,6 +5,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/doctors/init_chat"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/invite_patient"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/metrics"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/therapy"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,6 +18,7 @@ type Agg struct {
 
 	// Сценарии пациента
 	Metrics *metrics.Action
+	Therapy *therapy.Action
 }
 
 func NewAgg(pool *pgxpool.Pool, bot *tg_bot.Bot, common *dal.CommonDal) *Agg {
@@ -25,5 +27,6 @@ func NewAgg(pool *pgxpool.Pool, bot *tg_bot.Bot, common *dal.CommonDal) *Agg {
 		InitChat:      init_chat.NewAction(pool, bot, common),
 		InvitePatient: invite_patient.NewAction(pool, bot, common),
 		Metrics:       metrics.NewAction(),
+		Therapy:       therapy.NewAction(common, bot),
 	}
 }

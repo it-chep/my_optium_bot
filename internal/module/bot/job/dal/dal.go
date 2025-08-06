@@ -56,6 +56,19 @@ func (d *JobDal) MarkScenariosActive(ctx context.Context, scenarios []dto.Patien
 	return err
 }
 
+func (d *JobDal) MarkScenariosSent(ctx context.Context, scenarios []dto.PatientScenario) error {
+	var (
+		sql = `update patient_scenarios
+					set sent = true
+			   where id = any($1)
+  		`
+		ids = lo.Map(scenarios, func(sc dto.PatientScenario, _ int) int64 { return sc.ID })
+	)
+
+	_, err := d.pool.Exec(ctx, sql, pq.Array(ids))
+	return err
+}
+
 func (d *JobDal) GetActiveScheduledScenarios(ctx context.Context) ([]dto.PatientScenario, error) {
 	var (
 		scenarios = &dao.PatientScenarios{}
@@ -65,7 +78,7 @@ func (d *JobDal) GetActiveScheduledScenarios(ctx context.Context) ([]dto.Patient
 				where scheduled_time < $1
   					and completed_at is null
   					and patient_id in (
-  						select patient_id from patient_scenarios where active is true
+  						select patient_id from patient_scenarios where active is true and answered is true and sent is false
   					) 
 		`
 	)

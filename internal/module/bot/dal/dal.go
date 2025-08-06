@@ -120,7 +120,7 @@ func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step
 	return d.GetStep(ctx, usr.StepStat.ScenarioID, nextStep)
 }
 
-func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err error) {
+func (d *CommonDal) GetUser(ctx context.Context, id, chatID int64) (_ user.User, err error) {
 	var (
 		usr       = &dao.User{}
 		doctorSql = `
@@ -132,7 +132,7 @@ func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err err
 		patientSql = `
 			select false as is_doctor, p.tg_id, ps.scenario_id, ps.step as step_order
 				from patients p
-         			left join patient_scenarios ps on p.tg_id = ps.patient_id
+         			left join patient_scenarios ps on p.tg_id = ps.patient_id and ps.chat_id = $2
 			where p.tg_id = $1
 		`
 	)
@@ -141,29 +141,59 @@ func (d *CommonDal) GetUser(ctx context.Context, id int64) (_ user.User, err err
 		return usr.ToDomain(), nil
 	}
 
-	if err = pgxscan.Get(ctx, d.pool, usr, patientSql, id); err == nil {
+	if err = pgxscan.Get(ctx, d.pool, usr, patientSql, id, chatID); err == nil {
 		return usr.ToDomain(), nil
 	}
 
 	return user.User{}, err
 }
 
-func (d *CommonDal) AssignScenarios(ctx context.Context, patient int64, scenarios []dto.Scenario) error {
+func (d *CommonDal) GetPatient(ctx context.Context, tgID int64) (user.Patient, error) {
+	sql := `
+		select p.* 
+		from patients p  
+		where p.tg_id = $1
+		`
+
+	var patient dao.Patient
+	err := pgxscan.Get(ctx, d.pool, &patient, sql, tgID)
+	if err != nil {
+		return user.Patient{}, err
+	}
+
+	return patient.ToDomain(), nil
+}
+
+func (d *CommonDal) AssignScenarios(ctx context.Context, patient, chatID int64, scenarios []dto.Scenario) error {
 	var (
-		sql = `insert into patient_scenarios (patient_id, step, scenario_id, scheduled_time) 
+		sql = `insert into patient_scenarios (patient_id, step, chat_id, scenario_id, scheduled_time) 
 				select 
 				    $1,
-				    0, 
-				    unnest($2::bigint[]) as scenario_id,
-				    unnest($3::timestamp[]) as scheduled_time
+				    1, 
+				    $2,
+				    unnest($3::bigint[]) as scenario_id,
+				    unnest($4::timestamp[]) as scheduled_time
 		`
 		args = []interface{}{
 			patient,
+			chatID,
 			pq.Array(lo.Map(scenarios, func(s dto.Scenario, _ int) int64 { return s.ID })),
 			pq.Array(lo.Map(scenarios, func(s dto.Scenario, _ int) time.Time { return s.ScheduledTime.UTC() })),
 		}
 	)
 
 	_, err := d.pool.Exec(ctx, sql, args...)
+	return err
+}
+
+func (d *CommonDal) MoveStepPatient(ctx context.Context, tgID, chatID int64, step int, delay time.Duration) error {
+	sql := `update patient_scenarios set step = $1, answered = true, scheduled_time = $2, sent = false where patient_id = $3 and chat_id = $4`
+	_, err := d.pool.Exec(ctx, sql, step, time.Now().UTC().Add(delay), tgID, chatID)
+	return err
+}
+
+func (d *CommonDal) CompleteScenario(ctx context.Context, tgID, chatID int64) error {
+	sql := `update patient_scenarios set completed_at=now() where patient_id = $1 and chat_id = $2`
+	_, err := d.pool.Exec(ctx, sql, tgID, chatID)
 	return err
 }
