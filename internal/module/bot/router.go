@@ -16,7 +16,7 @@ func (b *Bot) Route(ctx context.Context, msg dto.Message) error {
 }
 
 func (b *Bot) routeScenario(ctx context.Context, msg dto.Message) error {
-	stat, err := b.commonDal.GetUser(ctx, msg.User)
+	stat, err := b.commonDal.GetUser(ctx, msg.User, msg.ChatID)
 	if err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func (b *Bot) routeScenario(ctx context.Context, msg dto.Message) error {
 		return nil
 	}
 
-	action, ok := b.ScenarioActions[stat.StepStat.ScenarioID]
+	action, ok := b.MessageActions[stat.StepStat.ScenarioID]
 	if !ok {
 		return nil
 	}

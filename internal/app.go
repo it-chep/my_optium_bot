@@ -8,6 +8,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/worker"
+	"github.com/samber/lo"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
@@ -43,6 +44,7 @@ func New(ctx context.Context) *App {
 	app.initDB(ctx).
 		initTgBot(ctx).
 		initModules(ctx).
+		initJobs(ctx).
 		initServer(ctx)
 
 	return app
@@ -51,11 +53,17 @@ func New(ctx context.Context) *App {
 func (a *App) Run(ctx context.Context) {
 	fmt.Println("start server")
 	ctx = logger.ContextWithLogger(ctx, logger.New())
+	for _, w := range a.workers {
+		w.Start(ctx)
+	}
 	if !a.config.UseWebhook() {
 		// Режим поллинга
 		for update := range a.bot.GetUpdates() {
 			go func() {
 				if update.ChatMember != nil {
+					if lo.Contains([]string{"left", "kicked"}, update.ChatMember.NewChatMember.Status) {
+						return
+					}
 					usrID := update.ChatMember.NewChatMember.User.ID
 					chat := update.ChatMember.Chat.ID
 					_ = a.modules.Bot.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
@@ -85,8 +93,5 @@ func (a *App) Run(ctx context.Context) {
 		}
 	}
 
-	for _, w := range a.workers {
-		w.Start(ctx)
-	}
 	log.Fatal(a.server.ListenAndServe())
 }

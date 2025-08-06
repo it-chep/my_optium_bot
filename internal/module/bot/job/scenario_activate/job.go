@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/it-chep/my_optium_bot.git/internal/module/bot"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/job/dal"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/job/job_type"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 )
 
@@ -14,10 +14,10 @@ import (
 type Job struct {
 	dal *dal.JobDal
 
-	actions bot.JobActions
+	actions job_type.JobActions
 }
 
-func NewJob(dal *dal.JobDal, actions bot.JobActions) *Job {
+func NewJob(dal *dal.JobDal, actions job_type.JobActions) *Job {
 	return &Job{
 		dal:     dal,
 		actions: actions,

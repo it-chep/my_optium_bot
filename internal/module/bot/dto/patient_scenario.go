@@ -5,4 +5,5 @@ type PatientScenario struct {
 	ScenarioID int64
 	PatientID  int64
 	Step       int
+	ChatID     int64
 }

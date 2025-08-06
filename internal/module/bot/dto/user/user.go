@@ -30,6 +30,7 @@ type Patient struct {
 	Sex         Sex
 	BirthDate   time.Time
 	MetricsLink string
+	FirstName   string
 }
 
 func (p Patient) IsEmpty() bool {

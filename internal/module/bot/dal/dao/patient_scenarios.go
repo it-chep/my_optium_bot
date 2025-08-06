@@ -24,5 +24,6 @@ func (s *PatientScenario) ToDomain() dto.PatientScenario {
 		ScenarioID: int64(s.ScenarioID),
 		PatientID:  int64(s.PatientID),
 		Step:       s.Step,
+		ChatID:     int64(s.ChatID),
 	}
 }

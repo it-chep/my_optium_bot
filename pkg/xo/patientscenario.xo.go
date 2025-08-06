@@ -13,8 +13,10 @@ import (
 type PatientScenario struct {
 	ID            int         `db:"id" json:"id"`                         // id
 	PatientID     int         `db:"patient_id" json:"patient_id"`         // patient_id
+	ChatID        int64       `db:"chat_id" json:"chat_id"`               // chat_id
 	ScenarioID    int         `db:"scenario_id" json:"scenario_id"`       // scenario_id
 	Step          int         `db:"step" json:"step"`                     // step
+	Answered      bool        `db:"answered" json:"answered"`             // answered
 	ScheduledTime time.Time   `db:"scheduled_time" json:"scheduled_time"` // scheduled_time
 	Active        bool        `db:"active" json:"active"`                 // active
 	Repeatable    bool        `db:"repeatable" json:"repeatable"`         // repeatable
