@@ -148,6 +148,23 @@ func (d *CommonDal) GetUser(ctx context.Context, id, chatID int64) (_ user.User,
 	return user.User{}, err
 }
 
+func (d *CommonDal) GetDoctorAddMedia(ctx context.Context, tgID int64) (user.User, error) {
+	sql := `
+		select d.tg_id as id, ds.scenario_id, ds.step as step_order
+				from doctors d
+         			left join doctors_scenarios ds on d.tg_id = ds.doctor_id
+			where d.tg_id = $1 and ds.scenario_id = 11;
+		`
+
+	var userDao dao.User
+	err := pgxscan.Get(ctx, d.pool, &userDao, sql, tgID)
+	if err != nil {
+		return user.User{}, err
+	}
+
+	return userDao.ToDomain(), nil
+}
+
 func (d *CommonDal) GetPatient(ctx context.Context, tgID int64) (user.Patient, error) {
 	sql := `
 		select p.* 
