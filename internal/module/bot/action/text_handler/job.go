@@ -1,9 +1,10 @@
-package therapy
+package text_handler
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
@@ -48,7 +49,7 @@ type route struct {
 	ps       dto.PatientScenario
 }
 
-func (a *Action) route(_ context.Context, r route) error {
+func (a *Action) route(ctx context.Context, r route) error {
 	sendMSG := func() error {
 		return a.bot.SendMessage(bot_dto.Message{
 			Chat:    r.ps.ChatID,
@@ -57,5 +58,24 @@ func (a *Action) route(_ context.Context, r route) error {
 		})
 	}
 
-	return sendMSG()
+	if err := sendMSG(); err != nil {
+		return err
+	}
+
+	if r.step.NextStep != nil {
+		return a.common.MoveStepPatient(ctx, dal.MoveStep{
+			TgID:     r.patient.TgID,
+			ChatID:   r.ps.ChatID,
+			Scenario: r.scenario.ID,
+			Step:     r.step.Order,
+			NextStep: lo.FromPtr(r.step.NextStep),
+			Delay:    lo.FromPtr(r.step.NextDelay),
+		})
+	}
+
+	if r.step.IsFinal {
+		return a.common.CompleteScenario(ctx, r.patient.TgID, r.ps.ChatID, r.scenario.ID)
+	}
+
+	return a.common.MarkScenariosSent(ctx, r.ps)
 }

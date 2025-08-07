@@ -132,7 +132,7 @@ func (d *CommonDal) GetUser(ctx context.Context, id, chatID int64) (_ user.User,
 		patientSql = `
 			select false as is_doctor, p.tg_id, ps.scenario_id, ps.step as step_order
 				from patients p
-         			left join patient_scenarios ps on p.tg_id = ps.patient_id and ps.chat_id = $2
+         			left join patient_scenarios ps on p.tg_id = ps.patient_id and ps.chat_id = $2 and active=true
 			where p.tg_id = $1
 		`
 	)
@@ -186,14 +186,42 @@ func (d *CommonDal) AssignScenarios(ctx context.Context, patient, chatID int64, 
 	return err
 }
 
-func (d *CommonDal) MoveStepPatient(ctx context.Context, tgID, chatID int64, step int, delay time.Duration) error {
-	sql := `update patient_scenarios set step = $1, answered = true, scheduled_time = $2, sent = false where patient_id = $3 and chat_id = $4`
-	_, err := d.pool.Exec(ctx, sql, step, time.Now().UTC().Add(delay), tgID, chatID)
+type MoveStep struct {
+	TgID, ChatID, Scenario int64
+	Step, NextStep         int
+	Delay                  time.Duration
+}
+
+func (d *CommonDal) MoveStepPatient(ctx context.Context, moveStep MoveStep) error {
+	sql := `update patient_scenarios set step = $1, answered = true, scheduled_time = $2, sent = false 
+                where patient_id = $3 and chat_id = $4 and scenario_id = $5 and step = $6`
+	args := []interface{}{
+		moveStep.NextStep,                    // $1
+		time.Now().UTC().Add(moveStep.Delay), // $2
+		moveStep.TgID,                        // $3
+		moveStep.ChatID,                      // $4
+		moveStep.Scenario,                    // $5
+		moveStep.Step,                        // $6
+	}
+	_, err := d.pool.Exec(ctx, sql, args...)
 	return err
 }
 
-func (d *CommonDal) CompleteScenario(ctx context.Context, tgID, chatID int64) error {
-	sql := `update patient_scenarios set completed_at=now() where patient_id = $1 and chat_id = $2`
-	_, err := d.pool.Exec(ctx, sql, tgID, chatID)
+func (d *CommonDal) CompleteScenario(ctx context.Context, tgID, chatID int64, scenarioID int64) error {
+	sql := `update patient_scenarios set completed_at=now() where patient_id = $1 and chat_id = $2 and scenario_id = $3`
+	_, err := d.pool.Exec(ctx, sql, tgID, chatID, scenarioID)
+	return err
+}
+
+func (d *CommonDal) MarkScenariosSent(ctx context.Context, scenarios ...dto.PatientScenario) error {
+	var (
+		sql = `update patient_scenarios
+					set sent = true
+			   where id = any($1)
+  		`
+		ids = lo.Map(scenarios, func(sc dto.PatientScenario, _ int) int64 { return sc.ID })
+	)
+
+	_, err := d.pool.Exec(ctx, sql, pq.Array(ids))
 	return err
 }

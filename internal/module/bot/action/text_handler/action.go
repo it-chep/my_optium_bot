@@ -1,4 +1,4 @@
-package therapy
+package text_handler
 
 import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"

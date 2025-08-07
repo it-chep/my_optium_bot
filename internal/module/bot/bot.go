@@ -32,7 +32,9 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 	actions := action.NewAgg(pool, bot, commonDal)
 	jobActions := job_type.JobActions{
 		// такие сценарии как метрики (не нужно сообщение для триггера, периодичный сценарий)
-		4: actions.Therapy.Do,
+		2: actions.TextHandler.Do,
+		4: actions.TextHandler.Do,
+		6: actions.TextHandler.Do,
 	}
 
 	return &Bot{
@@ -41,8 +43,9 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 
 		MessageActions: MessageActions{
 			1: actions.InitChat.Handle,
-			2: actions.Metrics.Handle,
-			4: actions.Therapy.Handle,
+			2: actions.TextHandler.Handle,
+			4: actions.TextHandler.Handle,
+			6: actions.TextHandler.Handle,
 		},
 		JobActions: jobActions,
 		Jobs:       job.NewAggregator(pool, jobActions),

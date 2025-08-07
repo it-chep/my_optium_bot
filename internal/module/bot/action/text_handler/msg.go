@@ -1,11 +1,13 @@
-package therapy
+package text_handler
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 	"github.com/samber/lo"
 )
@@ -31,13 +33,21 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) err
 		return nil
 	}
 	nextStep, _ := scenario.StepByOrder(btn.NextStepOrder)
-	if err = a.bot.SendMessage(bot_dto.Message{Chat: msg.ChatID, Text: nextStep.Text}); err != nil {
+	if err = a.bot.SendMessage(bot_dto.Message{Chat: msg.ChatID, Text: template.Execute(nextStep.Text, patient)}); err != nil {
 		return err
 	}
 
 	if nextStep.IsFinal {
-		return a.common.CompleteScenario(ctx, patient.TgID, msg.ChatID)
+		return a.common.CompleteScenario(ctx, patient.TgID, msg.ChatID, usr.StepStat.ScenarioID)
 	}
 
-	return a.common.MoveStepPatient(ctx, patient.TgID, msg.ChatID, lo.FromPtr(nextStep.NextStep), lo.FromPtr(nextStep.NextDelay))
+	return a.common.MoveStepPatient(ctx,
+		dal.MoveStep{
+			TgID:     patient.TgID,
+			ChatID:   msg.ChatID,
+			Scenario: usr.StepStat.ScenarioID,
+			Step:     int(usr.StepStat.StepOrder),
+			NextStep: lo.FromPtr(nextStep.NextStep),
+			Delay:    lo.FromPtr(nextStep.NextDelay),
+		})
 }
