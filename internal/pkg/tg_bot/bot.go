@@ -1,12 +1,11 @@
 package tg_bot
 
 import (
-	"net/http"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 	"github.com/samber/lo"
+	"net/http"
 )
 
 type Config interface {
@@ -111,4 +110,44 @@ func (b *Bot) SendMessages(messages []bot_dto.Message) error {
 	}
 
 	return nil
+}
+
+// SendMessageWithContentType отправляет сообщение с media
+func (b *Bot) SendMessageWithContentType(msg bot_dto.Message) error {
+	var message tgbotapi.Chattable
+
+	if msg.ContentType == dto.Video {
+		videoMsg := tgbotapi.NewVideo(msg.Chat, tgbotapi.FileID(msg.MediaID))
+		videoMsg.Caption = msg.Text
+
+		message = videoMsg
+	}
+	if msg.ContentType == dto.Photo {
+		photoMsg := tgbotapi.NewPhoto(msg.Chat, tgbotapi.FileID(msg.MediaID))
+		photoMsg.Caption = msg.Text
+
+		message = photoMsg
+	}
+	if msg.ContentType == dto.Audio {
+		audioMsg := tgbotapi.NewAudio(msg.Chat, tgbotapi.FileID(msg.MediaID))
+		audioMsg.Caption = msg.Text
+
+		message = audioMsg
+	}
+	if msg.ContentType == dto.Document {
+		documentMsg := tgbotapi.NewDocument(msg.Chat, tgbotapi.FileID(msg.MediaID))
+		documentMsg.Caption = msg.Text
+
+		message = documentMsg
+	}
+	if msg.ContentType == dto.VideoNote {
+		videoNoteMsg := tgbotapi.NewVideoNote(msg.Chat, 0, tgbotapi.FileID(msg.MediaID))
+
+		message = videoNoteMsg
+	}
+
+	// todo сделать кнопки ?
+
+	_, err := b.bot.Send(message)
+	return err
 }
