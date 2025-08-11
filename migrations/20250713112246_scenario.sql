@@ -80,6 +80,22 @@ create table if not exists doctors_scenarios
     unique (doctor_id, scenario_id)
 );
 
+create table if not exists content_types
+(
+    id   serial primary key,
+    name varchar(255)
+);
+
+create table if not exists contents
+(
+    id              serial primary key,
+    scenario        integer not null, -- scenarios(id)
+    step            integer not null, -- scenario_steps(step_order)
+    media_tg_id     varchar(300),     -- ID медиа файла в телеграмм
+    content_type_id int               -- Тип файла
+);
+
+
 -- +goose StatementEnd
 
 -- +goose Down
@@ -90,4 +106,5 @@ drop table if exists step_buttons;
 drop table if exists patient_scenarios;
 drop table if exists client_step_answers;
 drop table if exists doctors_scenarios;
+drop table if exists content_types;
 -- +goose StatementEnd
