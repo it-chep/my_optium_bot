@@ -102,5 +102,5 @@ func (a *Action) route(ctx context.Context, r route) error {
 	}
 
 	// Ставим флаг, что сценарий отправлен
-	return a.common.MarkScenariosSent(ctx, r.msg) // todo
+	return a.common.MarkScenariosSent(ctx, r.scenario.ID)
 }
