@@ -53,6 +53,26 @@ func (h *Handler) setupRoutes(cfg Config) {
 
 	h.router.Route("/admin", func(r chi.Router) {
 		r.Get("/", h.admin())
+		//
+		//	// Auth routes
+		//	r.Post("/auth", h.Auth.Handle)
+		//
+		//	// User lists routes
+		//	r.Route("/users-lists", func(r chi.Router) {
+		//		r.Post("/", h.CreateUserList.Handle)       // POST /admin/users-lists
+		//		r.Delete("/{id}", h.DeleteUserList.Handle) // DELETE /admin/users-lists/{id}
+		//		r.Get("/", h.GetUsersLists.Handle)         // GET /admin/users-lists
+		//
+		//		// User-list membership routes
+		//		r.Post("/{listId}/users", h.AddUserToList.Handle)                 // POST /admin/users-lists/{listId}/users
+		//		r.Delete("/{listId}/users/{userId}", h.DeleteUserFromList.Handle) // DELETE /admin/users-lists/{listId}/users/{userId}
+		//	})
+		//
+		//	// Newsletter routes
+		//	r.Post("/newsletters", h.CreateNewsLetter.Handle) // POST /admin/newsletters
+		//
+		//	// Users routes
+		//	r.Get("/users", h.GetUsers.Handle) // GET /admin/users
 	})
 }
 
