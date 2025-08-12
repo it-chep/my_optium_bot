@@ -230,15 +230,14 @@ func (d *CommonDal) CompleteScenario(ctx context.Context, tgID, chatID int64, sc
 	return err
 }
 
-func (d *CommonDal) MarkScenariosSent(ctx context.Context, scenarios ...dto.PatientScenario) error {
+func (d *CommonDal) MarkScenariosSent(ctx context.Context, scenariosIDs ...int64) error {
 	var (
 		sql = `update patient_scenarios
 					set sent = true
 			   where id = any($1)
   		`
-		ids = lo.Map(scenarios, func(sc dto.PatientScenario, _ int) int64 { return sc.ID })
 	)
 
-	_, err := d.pool.Exec(ctx, sql, pq.Array(ids))
+	_, err := d.pool.Exec(ctx, sql, pq.Array(scenariosIDs))
 	return err
 }

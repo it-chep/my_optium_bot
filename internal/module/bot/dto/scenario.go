@@ -47,20 +47,3 @@ type StepButton struct {
 	Text          string
 	NextStepOrder int
 }
-
-type ContentType int8
-
-const (
-	// Unknown Текст или ничего
-	Unknown ContentType = iota
-	// Photo фотография
-	Photo
-	// Video Видео
-	Video
-	// VideoNote Кружок
-	VideoNote
-	// Audio Голосовое сообщение
-	Audio
-	// Document документ
-	Document
-)
