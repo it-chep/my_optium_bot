@@ -89,10 +89,12 @@ create table if not exists content_types
 create table if not exists contents
 (
     id              serial primary key,
-    scenario        integer not null, -- scenarios(id)
-    step            integer not null, -- scenario_steps(step_order)
-    media_tg_id     varchar(300),     -- ID медиа файла в телеграмм
-    content_type_id int               -- Тип файла
+    scenario_id     integer      not null, -- scenarios(id)
+    step_id         integer      not null, -- scenario_steps(step_order)
+    media_tg_id     varchar(300) not null, -- ID медиа файла в телеграмм
+    content_type_id integer      not null, -- Тип файла
+
+    unique (scenario_id, step_id)
 );
 
 

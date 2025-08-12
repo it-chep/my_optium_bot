@@ -129,7 +129,7 @@ values ('Фото'),     -- 1
        ('Голосовое сообщение') -- 5
 ;
 
-insert into contents (scenario, step, media_tg_id, content_type_id)
+insert into contents (scenario_id, step_id, media_tg_id, content_type_id)
 values (5, 2, '', 2),
        (5, 3, '', 2),
        (5, 4, '', 2),

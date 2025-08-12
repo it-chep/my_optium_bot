@@ -46,6 +46,7 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 			2: actions.TextHandler.Handle,
 			4: actions.TextHandler.Handle,
 			6: actions.TextHandler.Handle,
+			5: actions.TextHandler.Handle,
 		},
 		JobActions: jobActions,
 		Jobs:       job.NewAggregator(pool, jobActions),

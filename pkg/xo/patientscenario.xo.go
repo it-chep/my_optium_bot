@@ -17,6 +17,7 @@ type PatientScenario struct {
 	ScenarioID    int         `db:"scenario_id" json:"scenario_id"`       // scenario_id
 	Step          int         `db:"step" json:"step"`                     // step
 	Answered      bool        `db:"answered" json:"answered"`             // answered
+	Sent          bool        `db:"sent" json:"sent"`                     // sent
 	ScheduledTime time.Time   `db:"scheduled_time" json:"scheduled_time"` // scheduled_time
 	Active        bool        `db:"active" json:"active"`                 // active
 	Repeatable    bool        `db:"repeatable" json:"repeatable"`         // repeatable

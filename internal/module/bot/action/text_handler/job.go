@@ -12,6 +12,7 @@ import (
 	"github.com/samber/lo"
 )
 
+// Do Сценарий "Терапия"
 func (a *Action) Do(ctx context.Context, ps dto.PatientScenario) error {
 	patient, err := a.common.GetPatient(ctx, ps.PatientID)
 	if err != nil {
