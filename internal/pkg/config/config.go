@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/it-chep/my_optium_bot.git/pkg/postgres"
 
 	"github.com/pkg/errors"

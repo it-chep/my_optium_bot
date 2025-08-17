@@ -2,6 +2,7 @@ package delete_user_from_list
 
 import (
 	"context"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/delete_user_from_list/dal"
 	"github.com/jackc/pgx/v5/pgxpool"
 )

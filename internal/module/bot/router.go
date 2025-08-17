@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 )
 

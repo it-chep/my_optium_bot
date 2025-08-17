@@ -3,7 +3,7 @@ package education
 import (
 	"context"
 	"fmt"
-	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/samber/lo"
 )
