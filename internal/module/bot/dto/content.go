@@ -3,15 +3,19 @@ package dto
 type ContentType int8
 
 const (
+	// Unknown Текст или ничего
+	Unknown ContentType = iota
 	// Photo фотография
-	Photo ContentType = iota + 1
+	Photo
 	// Video Видео
 	Video
-	// Document документ
-	Document
 	// VideoNote Кружок
 	VideoNote
-	// Audio Голосовое сообщение
+	// Voice Голосовое сообщение
+	Voice
+	// Document документ
+	Document
+	// Audio mp3
 	Audio
 )
 
