@@ -59,8 +59,10 @@ const (
 	Video
 	// VideoNote Кружок
 	VideoNote
-	// Audio Голосовое сообщение
-	Audio
+	// Voice Голосовое сообщение
+	Voice
 	// Document документ
 	Document
+	// Audio mp3
+	Audio
 )

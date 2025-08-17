@@ -17,5 +17,7 @@ func NewAction(pool *pgxpool.Pool) *Action {
 }
 
 func (a *Action) Do(ctx context.Context, listID int64) error {
+	// todo сделать так чтобы пользователи из m2m тоже удалялись
+
 	return a.dal.DeleteUserList(ctx, listID)
 }
