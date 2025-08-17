@@ -2,6 +2,7 @@ package dal
 
 import (
 	"context"
+
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dal/dao"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dto"

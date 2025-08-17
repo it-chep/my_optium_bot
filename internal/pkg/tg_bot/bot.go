@@ -144,6 +144,11 @@ func (b *Bot) SendMessageWithContentType(msg bot_dto.Message) error {
 
 		message = videoNoteMsg
 	}
+	if msg.ContentType == dto.Voice {
+		voiceMsg := tgbotapi.NewVoice(msg.Chat, tgbotapi.FileID(msg.MediaID))
+
+		message = voiceMsg
+	}
 
 	// todo сделать кнопки ?
 

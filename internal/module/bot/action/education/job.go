@@ -3,32 +3,39 @@ package education
 import (
 	"context"
 	"fmt"
-
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
-	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
+	"strings"
+
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/samber/lo"
 )
 
-func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) error {
-	patient, err := a.common.GetPatient(ctx, msg.User)
+type toTemplateStruct struct {
+	user.Patient
+	DoctorUsername string
+}
+
+// Do Сценарий "ОБУЧЕНИЕ"
+func (a *Action) Do(ctx context.Context, ps dto.PatientScenario) error {
+	patient, err := a.common.GetPatient(ctx, ps.PatientID)
 	if err != nil {
 		return err
 	}
 
-	scenario, err := a.common.GetScenario(ctx, usr.StepStat.ScenarioID)
+	scenario, err := a.common.GetScenario(ctx, ps.ScenarioID)
 	if err != nil {
 		return err
 	}
 
 	step, ok := lo.Find(scenario.Steps, func(s dto.Step) bool {
-		return usr.StepStat.StepOrder == int64(s.Order)
+		return ps.Step == s.Order
 	})
 	// todo: скорее всего овер фф, вероятно не понадобиться
-	if !ok && usr.StepStat.StepOrder == 0 {
+	if !ok && ps.Step == 0 {
 		step, ok = scenario.StepByOrder(1)
 	}
 	if !ok {
@@ -39,19 +46,20 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) err
 		patient:  patient,
 		scenario: scenario,
 		step:     step,
-		msg:      msg,
+		ps:       ps,
+		msg: dto.Message{
+			User:   patient.TgID,
+			ChatID: ps.ChatID,
+		},
 	})
-}
-
-type route struct {
-	patient  user.Patient
-	scenario dto.Scenario
-	step     dto.Step
-	msg      dto.Message
 }
 
 func (a *Action) route(ctx context.Context, r route) error {
 	sendMSG := func() error {
+		tmpl := toTemplateStruct{
+			Patient: r.patient,
+		}
+
 		// todo вообще можно отправлять видос с подписью, но это уже другая история
 		// Получаем видос из базы
 		content, err := a.educationDal.GetStepContent(ctx, r.scenario.ID, int64(r.step.Order))
@@ -72,10 +80,14 @@ func (a *Action) route(ctx context.Context, r route) error {
 			}
 		}
 
+		if strings.Contains(r.step.Text, "DoctorUsername") {
+			tmpl.DoctorUsername = a.educationDal.GetDoctorUsername(ctx, r.msg.ChatID)
+		}
+
 		// Отправляем сообщение пользователю
 		return a.bot.SendMessage(bot_dto.Message{
 			Chat:    r.msg.ChatID,
-			Text:    template.Execute(r.step.Text, r.patient),
+			Text:    template.Execute(r.step.Text, tmpl),
 			Buttons: r.step.Buttons,
 		})
 	}
@@ -102,7 +114,5 @@ func (a *Action) route(ctx context.Context, r route) error {
 		return a.common.CompleteScenario(ctx, r.patient.TgID, r.msg.ChatID, r.scenario.ID)
 	}
 
-	// Ставим флаг, что сценарий отправлен
-	//return a.common.MarkScenariosSent(ctx, r.scenario.ID)
-	return nil
+	return a.common.MarkScenariosSent(ctx, r.ps)
 }
