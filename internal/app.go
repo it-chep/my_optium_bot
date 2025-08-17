@@ -81,27 +81,27 @@ func (a *App) Run(ctx context.Context) {
 				} else if update.CallbackQuery != nil {
 					txt = update.CallbackQuery.Data
 				}
-				// фото
-				if update.Message.Photo != nil {
-					// массив фото разбивает фотографию на 4 качества, берем самое плохое )
-					mediaID = update.Message.Photo[0].FileID
-				}
-				// видео
-				if update.Message.Video != nil {
-					mediaID = update.Message.Video.FileID
-				}
-				// документ
-				if update.Message.Document != nil {
-					mediaID = update.Message.Document.FileID
-				}
-				// кружок
-				if update.Message.VideoNote != nil {
-					mediaID = update.Message.Document.FileID
-				}
-				// голосовое сообщение
-				if update.Message.Voice != nil {
-					mediaID = update.Message.Voice.FileID
-				}
+				//// фото
+				//if update.Message.Photo != nil {
+				//	// массив фото разбивает фотографию на 4 качества, берем самое плохое )
+				//	mediaID = update.Message.Photo[0].FileID
+				//}
+				//// видео
+				//if update.Message.Video != nil {
+				//	mediaID = update.Message.Video.FileID
+				//}
+				//// документ
+				//if update.Message.Document != nil {
+				//	mediaID = update.Message.Document.FileID
+				//}
+				//// кружок
+				//if update.Message.VideoNote != nil {
+				//	mediaID = update.Message.Document.FileID
+				//}
+				//// голосовое сообщение
+				//if update.Message.Voice != nil {
+				//	mediaID = update.Message.Voice.FileID
+				//}
 
 				msg := dto.Message{
 					User:    update.SentFrom().ID,

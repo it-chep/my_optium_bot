@@ -50,6 +50,6 @@ func (a *Action) initScenarios() []dto.Scenario {
 		{ID: 2, ScheduledTime: noon.Add(4 * day)}, // метрики
 		//{ID: 0, ScheduledTime: noon.Add(7 * day)},         // информация
 		//{ID: 0, ScheduledTime: noon.Add(45 * day)},        // 2 этап
-		//{ID: 0, ScheduledTime: noon.Add(60 * day)},        // выведение на контроль
+		{ID: 10, ScheduledTime: noon.Add(60 * day)}, // выведение на контроль
 	}
 }

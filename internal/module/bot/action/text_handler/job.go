@@ -12,7 +12,7 @@ import (
 	"github.com/samber/lo"
 )
 
-// Do Сценарий "Терапия"
+// Do джоба запускает через Do отложенные сообщения
 func (a *Action) Do(ctx context.Context, ps dto.PatientScenario) error {
 	patient, err := a.common.GetPatient(ctx, ps.PatientID)
 	if err != nil {
@@ -78,5 +78,5 @@ func (a *Action) route(ctx context.Context, r route) error {
 		return a.common.CompleteScenario(ctx, r.patient.TgID, r.ps.ChatID, r.scenario.ID)
 	}
 
-	return a.common.MarkScenariosSent(ctx, r.ps.ScenarioID)
+	return a.common.MarkScenariosSent(ctx, r.ps)
 }
