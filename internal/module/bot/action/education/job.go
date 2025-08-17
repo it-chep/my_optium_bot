@@ -3,6 +3,7 @@ package education
 import (
 	"context"
 	"fmt"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
@@ -102,5 +103,6 @@ func (a *Action) route(ctx context.Context, r route) error {
 	}
 
 	// Ставим флаг, что сценарий отправлен
-	return a.common.MarkScenariosSent(ctx, r.scenario.ID)
+	//return a.common.MarkScenariosSent(ctx, r.scenario.ID)
+	return nil
 }
