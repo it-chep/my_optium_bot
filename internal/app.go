@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/samber/lo"
 	"log"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
@@ -60,13 +59,16 @@ func (a *App) Run(ctx context.Context) {
 		// Режим поллинга
 		for update := range a.bot.GetUpdates() {
 			go func() {
-				if update.ChatMember != nil {
-					if lo.Contains([]string{"left", "kicked"}, update.ChatMember.NewChatMember.Status) {
+				if update.Message != nil {
+					if update.Message.NewChatMembers != nil {
+						//if lo.Contains([]string{"left", "kicked"}, update.ChatMember.NewChatMember.Status) {
+						//	return
+						//}
+						usrID := update.Message.NewChatMembers[0].ID
+						chat := update.Message.Chat.ID
+						_ = a.modules.Bot.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
 						return
 					}
-					usrID := update.ChatMember.NewChatMember.User.ID
-					chat := update.ChatMember.Chat.ID
-					_ = a.modules.Bot.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
 				}
 
 				if update.FromChat() == nil || update.SentFrom() == nil {
