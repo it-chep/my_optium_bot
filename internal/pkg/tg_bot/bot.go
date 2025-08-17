@@ -1,11 +1,12 @@
 package tg_bot
 
 import (
+	"net/http"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 	"github.com/samber/lo"
-	"net/http"
 )
 
 type Config interface {
@@ -91,11 +92,9 @@ func (b *Bot) SendMessage(msg bot_dto.Message) error {
 
 	if len(msg.Buttons) != 0 {
 		message.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-			tgbotapi.NewInlineKeyboardRow(
-				lo.Map(msg.Buttons, func(b dto.StepButton, _ int) tgbotapi.InlineKeyboardButton {
-					return tgbotapi.NewInlineKeyboardButtonData(b.Text, b.Text)
-				})...,
-			),
+			lo.Map(msg.Buttons, func(b dto.StepButton, _ int) []tgbotapi.InlineKeyboardButton {
+				return tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData(b.Text, b.Text))
+			})...,
 		)
 	}
 	_, err := b.bot.Send(message)

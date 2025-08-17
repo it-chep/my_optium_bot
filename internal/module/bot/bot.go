@@ -33,10 +33,11 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 	// мапа экшенов, которые запускаются и отправляют сообщения, не ждут ответа
 	jobActions := job_type.JobActions{
 		// такие сценарии как метрики (не нужно сообщение для триггера, периодичный сценарий)
-		2: actions.TextHandler.Do,
-		4: actions.TextHandler.Do,
-		6: actions.TextHandler.Do,
-		5: actions.Education.Do,
+		2:  actions.TextHandler.Do,
+		4:  actions.TextHandler.Do,
+		6:  actions.TextHandler.Do,
+		5:  actions.Education.Do,
+		10: actions.TextHandler.Do,
 	}
 
 	return &Bot{
@@ -44,11 +45,12 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 		commonDal: commonDal,
 		// мапа экшенов, которые ждут какой-то ответ от пользователя и обрабатывают его
 		MessageActions: MessageActions{
-			1: actions.InitChat.Handle,
-			2: actions.TextHandler.Handle,
-			4: actions.TextHandler.Handle,
-			6: actions.TextHandler.Handle,
-			5: actions.Education.Handle,
+			1:  actions.InitChat.Handle,
+			2:  actions.TextHandler.Handle,
+			4:  actions.TextHandler.Handle,
+			6:  actions.TextHandler.Handle,
+			10: actions.TextHandler.Handle,
+			5:  actions.Education.Handle,
 		},
 		JobActions: jobActions,
 		Jobs:       job.NewAggregator(pool, jobActions),
