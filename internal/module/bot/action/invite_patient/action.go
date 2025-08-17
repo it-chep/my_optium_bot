@@ -44,7 +44,8 @@ func (a *Action) initScenarios() []dto.Scenario {
 
 	return []dto.Scenario{
 		// TODO: здесь будет инит очереди, по сути исерт начальных сценариев с соотв делеями
-		//{ID: 0, ScheduledTime: now.Add(10 * time.Minute)}, // обучение
+		{ID: 5, ScheduledTime: now.Add(1 * time.Second)}, // обучение
+		//{ID: 5, ScheduledTime: now.Add(10 * time.Minute)}, // обучение
 		{ID: 4, ScheduledTime: noon.Add(1 * day)}, // терапия
 		{ID: 6, ScheduledTime: noon.Add(2 * day)}, // рекомендации
 		{ID: 2, ScheduledTime: noon.Add(4 * day)}, // метрики

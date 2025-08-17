@@ -25,10 +25,13 @@ func (d *Dal) GetStepContent(ctx context.Context, scenarioID, stepID int64) (_ d
 		select * from contents where scenario_id = $1 and step_id = $2;
 	`
 
-	args := []any{scenarioID, stepID}
+	args := []any{
+		scenarioID,
+		stepID,
+	}
 
 	var content dao.Content
-	err = pgxscan.Get(ctx, d.pool, &content, sql, args)
+	err = pgxscan.Get(ctx, d.pool, &content, sql, args...)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return dto.Content{}, nil
