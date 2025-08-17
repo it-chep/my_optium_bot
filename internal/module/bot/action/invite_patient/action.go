@@ -39,18 +39,18 @@ func (a *Action) initScenarios() []dto.Scenario {
 	now := time.Now().UTC()
 
 	// все сценарии будут начинаться в полдень по москве (чтобы не дудосить ночью пациентов)
-	noon := time.Date(now.Year(), now.Month(), now.Day(), 15, 0, 0, 0, time.UTC)
-	day := time.Hour * 24
+	//noon := time.Date(now.Year(), now.Month(), now.Day(), 15, 0, 0, 0, time.UTC)
+	//day := time.Hour * 24
 
 	return []dto.Scenario{
 		// TODO: здесь будет инит очереди, по сути исерт начальных сценариев с соотв делеями
 		{ID: 5, ScheduledTime: now.Add(1 * time.Second)}, // обучение
 		//{ID: 5, ScheduledTime: now.Add(10 * time.Minute)}, // обучение
-		{ID: 4, ScheduledTime: noon.Add(1 * day)}, // терапия
-		{ID: 6, ScheduledTime: noon.Add(2 * day)}, // рекомендации
-		{ID: 2, ScheduledTime: noon.Add(4 * day)}, // метрики
-		//{ID: 0, ScheduledTime: noon.Add(7 * day)},         // информация
-		//{ID: 0, ScheduledTime: noon.Add(45 * day)},        // 2 этап
-		{ID: 10, ScheduledTime: noon.Add(60 * day)}, // выведение на контроль
+		//{ID: 4, ScheduledTime: noon.Add(1 * day)}, // терапия
+		//{ID: 6, ScheduledTime: noon.Add(2 * day)}, // рекомендации
+		//{ID: 2, ScheduledTime: noon.Add(4 * day)}, // метрики
+		////{ID: 0, ScheduledTime: noon.Add(7 * day)},         // информация
+		////{ID: 0, ScheduledTime: noon.Add(45 * day)},        // 2 этап
+		//{ID: 10, ScheduledTime: noon.Add(60 * day)}, // выведение на контроль
 	}
 }
