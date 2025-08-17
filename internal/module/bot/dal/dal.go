@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/admin"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/lib/pq"
 	"github.com/samber/lo"
@@ -241,4 +242,29 @@ func (d *CommonDal) MarkScenariosSent(ctx context.Context, scenarios ...dto.Pati
 
 	_, err := d.pool.Exec(ctx, sql, pq.Array(ids))
 	return err
+}
+
+func (d *CommonDal) GetAdminMessages(ctx context.Context, scenario, step int64) (admin.MessageAdmin, error) {
+	var (
+		chatIDs  []int64
+		messages []string
+
+		sqlChats = `select chat_id from admin_chat`
+		sqlMess  = `select message 
+					from admin_messages 
+				   where scenario_id = $1 and next_step = $2`
+	)
+
+	if err := pgxscan.Select(ctx, d.pool, &chatIDs, sqlChats); err != nil {
+		return admin.MessageAdmin{}, err
+	}
+
+	if err := pgxscan.Select(ctx, d.pool, &messages, sqlMess, scenario, step); err != nil {
+		return admin.MessageAdmin{}, err
+	}
+
+	return admin.MessageAdmin{
+		ChatIDs:  chatIDs,
+		Messages: messages,
+	}, nil
 }

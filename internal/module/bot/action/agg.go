@@ -2,6 +2,7 @@ package action
 
 import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/add_media"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/create_admin_chat"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/create_doctor"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/exit"
 	exitDal "github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/exit/dal"
@@ -18,9 +19,11 @@ type Agg struct {
 	CreateDoctor  *create_doctor.Action
 	InitChat      *init_chat.Action
 	InvitePatient *invite_patient.Action
-	// admin
-	AddMedia *add_media.Action
-	Exit     *exit.Action
+
+	// Сценарии админа
+	AddMedia        *add_media.Action
+	Exit            *exit.Action
+	CreateAdminChat *create_admin_chat.Action
 
 	// Сценарии пациента
 	TextHandler *text_handler.Action
@@ -34,7 +37,10 @@ func NewAgg(pool *pgxpool.Pool, bot *tg_bot.Bot, common *dal.CommonDal) *Agg {
 		InvitePatient: invite_patient.NewAction(pool, bot, common),
 		TextHandler:   text_handler.NewAction(common, bot),
 		Education:     education.NewAction(pool, bot, common),
-		AddMedia:      add_media.New(bot, common),
-		Exit:          exit.NewAction(bot, exitDal.NewDal(pool)),
+
+		// Сценарии админа
+		AddMedia:        add_media.New(bot, common),
+		Exit:            exit.NewAction(bot, exitDal.NewDal(pool)),
+		CreateAdminChat: create_admin_chat.NewAction(pool, bot),
 	}
 }

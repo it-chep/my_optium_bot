@@ -12,7 +12,7 @@ import (
 	"github.com/samber/lo"
 )
 
-func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) error {
+func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (err error) {
 	patient, err := a.common.GetPatient(ctx, msg.User)
 	if err != nil {
 		return err
@@ -37,6 +37,12 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) err
 		return err
 	}
 
+	defer func() {
+		if err == nil {
+			err = a.postAction(ctx, usr.StepStat.ScenarioID, int64(nextStep.Order), patient)
+		}
+	}()
+
 	if nextStep.IsFinal {
 		return a.common.CompleteScenario(ctx, patient.TgID, msg.ChatID, usr.StepStat.ScenarioID)
 	}
@@ -50,4 +56,25 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) err
 			NextStep: lo.FromPtr(nextStep.NextStep),
 			Delay:    lo.FromPtr(nextStep.NextDelay),
 		})
+}
+
+func (a *Action) postAction(ctx context.Context, scenario, step int64, patient user.Patient) error {
+	messages, err := a.common.GetAdminMessages(ctx, scenario, step)
+	if err != nil {
+		return err
+	}
+
+	if len(messages.Messages) == 0 {
+		return nil
+	}
+
+	for _, chatID := range messages.ChatIDs {
+		for _, message := range messages.Messages {
+			err = a.bot.SendMessage(bot_dto.Message{Chat: chatID, Text: template.Execute(message, patient)})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

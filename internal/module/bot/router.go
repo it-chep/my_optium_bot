@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 )
 
@@ -14,6 +15,8 @@ func (b *Bot) Route(ctx context.Context, msg dto.Message) error {
 		return b.Actions.Exit.Do(ctx, msg)
 	case "/add_media":
 		return b.Actions.AddMedia.Do(ctx, msg)
+	case "/admin_chat":
+		return b.Actions.CreateAdminChat.UpsertAdminChat(ctx, msg)
 	default:
 		return b.routeScenario(ctx, msg)
 	}
