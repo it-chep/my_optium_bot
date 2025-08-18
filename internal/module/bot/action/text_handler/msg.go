@@ -8,6 +8,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 	"github.com/samber/lo"
 )
@@ -59,21 +60,27 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (er
 }
 
 func (a *Action) postAction(ctx context.Context, scenario, step int64, patient user.Patient) error {
-	messages, err := a.common.GetAdminMessages(ctx, scenario, step)
+	adminMessages, err := a.common.GetAdminMessages(ctx, scenario, step)
 	if err != nil {
 		return err
 	}
-
-	if len(messages.Messages) == 0 {
-		return nil
-	}
-
-	for _, chatID := range messages.ChatIDs {
-		for _, message := range messages.Messages {
-			err = a.bot.SendMessage(bot_dto.Message{Chat: chatID, Text: template.Execute(message, patient)})
+	for _, chatID := range adminMessages.ChatIDs {
+		for _, message := range adminMessages.Messages {
+			err = a.bot.SendMessage(bot_dto.Message{Chat: chatID, Text: template.Execute(message, patient)}, tg_bot.WithDisabledPreview())
 			if err != nil {
 				return err
 			}
+		}
+	}
+
+	doctorMessages, err := a.common.GetDoctorMessages(ctx, patient.TgID, scenario, step)
+	if err != nil {
+		return err
+	}
+	for _, message := range doctorMessages.Messages {
+		err = a.bot.SendMessage(bot_dto.Message{Chat: doctorMessages.DoctorID, Text: template.Execute(message, patient)}, tg_bot.WithDisabledPreview())
+		if err != nil {
+			return err
 		}
 	}
 	return nil

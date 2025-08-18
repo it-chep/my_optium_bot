@@ -268,3 +268,26 @@ func (d *CommonDal) GetAdminMessages(ctx context.Context, scenario, step int64) 
 		Messages: messages,
 	}, nil
 }
+
+func (d *CommonDal) GetDoctorMessages(ctx context.Context, patientTg, scenario, step int64) (admin.MessageDoctor, error) {
+	var (
+		doctorMessage admin.MessageDoctor
+
+		sqlChats = `select doctor_tg 
+						from patient_doctor 
+					where patient_tg = $1`
+		sqlMess = `select message 
+						from doctor_messages 
+				   	where scenario_id = $1 and next_step = $2`
+	)
+
+	if err := pgxscan.Get(ctx, d.pool, &doctorMessage.DoctorID, sqlChats, patientTg); err != nil {
+		return doctorMessage, err
+	}
+
+	if err := pgxscan.Select(ctx, d.pool, &doctorMessage.Messages, sqlMess, scenario, step); err != nil {
+		return doctorMessage, err
+	}
+
+	return doctorMessage, nil
+}
