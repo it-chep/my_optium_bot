@@ -1,8 +1,8 @@
-package create_information_post
+package get_information_posts
 
 import (
 	"context"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/create_information_post/dal"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/get_information_posts/dal"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -17,5 +17,5 @@ func New(pool *pgxpool.Pool) *Action {
 }
 
 func (a *Action) Do(ctx context.Context) (err error) {
-	return a.dal.CreateInformationPost(ctx)
+	return a.dal.GetInformationPosts(ctx)
 }
