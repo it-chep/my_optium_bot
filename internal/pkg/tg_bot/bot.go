@@ -87,15 +87,18 @@ func (b *Bot) GetUser(message dto.Message) (bot_dto.User, error) {
 	}, nil
 }
 
-func (b *Bot) SendMessage(msg bot_dto.Message) error {
+func (b *Bot) SendMessage(msg bot_dto.Message, options ...MsgOption) error {
 	message := tgbotapi.NewMessage(msg.Chat, msg.Text)
-
 	if len(msg.Buttons) != 0 {
 		message.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 			lo.Map(msg.Buttons, func(b dto.StepButton, _ int) []tgbotapi.InlineKeyboardButton {
 				return tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData(b.Text, b.Text))
 			})...,
 		)
+	}
+
+	for _, opt := range options {
+		message = opt(message)
 	}
 	_, err := b.bot.Send(message)
 	return err
