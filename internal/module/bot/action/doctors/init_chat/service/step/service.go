@@ -2,6 +2,7 @@ package step
 
 import (
 	"context"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
@@ -14,7 +15,7 @@ type Dal interface {
 }
 
 type Bot interface {
-	SendMessage(msg bot_dto.Message) error
+	SendMessage(msg bot_dto.Message, options ...tg_bot.MsgOption) error
 }
 
 type Service struct {

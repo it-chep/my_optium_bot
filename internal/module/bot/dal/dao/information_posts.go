@@ -12,6 +12,7 @@ type PostThemeDao struct {
 
 type InformationPostsDao struct {
 	xo.InformationPost
+	HasAdditionalThemes bool `db:"has_additional_themes" json:"has_additional_themes"`
 }
 
 func (ip InformationPostsDao) ToDomain() information.Post {

@@ -9,9 +9,10 @@ import (
 
 // PostsTheme represents a row from 'public.posts_themes'.
 type PostsTheme struct {
-	ID         int64        `db:"id" json:"id"`                   // id
-	Name       string       `db:"name" json:"name"`               // name
-	IsRequired sql.NullBool `db:"is_required" json:"is_required"` // is_required
+	ID         int64         `db:"id" json:"id"`                   // id
+	Name       string        `db:"name" json:"name"`               // name
+	IsRequired sql.NullBool  `db:"is_required" json:"is_required"` // is_required
+	ThemeOrder sql.NullInt64 `db:"theme_order" json:"theme_order"` // theme_order
 }
 
 // zeroPostsTheme zero value of dto

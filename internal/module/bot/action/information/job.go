@@ -2,84 +2,138 @@ package information
 
 import (
 	"context"
+	"fmt"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
-	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/information"
+	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
+	"github.com/samber/lo"
+	"strings"
 )
 
-// логика экшена (2 поста в неделю. 1 - Обязательный, 2 - Мотивация. Если есть какие-то дополнительные, то они должны отправиться между)
+type toTemplateStruct struct {
+	user.Patient
+	InformationPost string
+}
 
 // Do Сценарий "Информации"
 func (a *Action) Do(ctx context.Context, ps dto.PatientScenario) error {
-	// логика экшена
-	return nil
-}
-
-// отправка обязательной темы
-// !!!!!(условие) отправка доп темы
-// отправка мотивации
-// !!!!!(условие) отправка подготовки к новому этапу
-
-// надо получить последний отправленный пост
-// посмотреть его тему
-// на основе темы надо понять, какая тема должна идти следующая
-// получить следующий пост по теме пост для пользователя
-
-// GetNextPost логика получения след поста
-func (a *Action) getNextPost(ctx context.Context, ps dto.PatientScenario) error {
-	var sentPostID int64
-	defer func() {
-		// в дефере помечаем какой пост мы отправили
-		err := a.informationDal.MarkPostSent(ctx, ps.PatientID, sentPostID)
-		if err != nil {
-			return
-		}
-	}()
-
-	lastSentPost, err := a.informationDal.GetLastSentPost(ctx, ps.PatientID)
+	patient, err := a.common.GetPatient(ctx, ps.PatientID)
 	if err != nil {
 		return err
 	}
 
-	switch lastSentPost.PostsThemeID {
-	case information.RequiredTheme:
-		// тема последнего поста - обязательный контент
-		sentPostID = a.routeLastRequiredTheme(ctx, ps)
-	case information.MotivationTheme:
-		// тема последнего поста - мотивация
-		sentPostID = a.routeLastMotivationTheme(ctx, ps)
-	case information.PreparingToSecondTheme:
-		// тема последнего поста - подготовка ко второму этапу
-		sentPostID = a.routeLastPreparingToSecondTheme(ctx, ps)
-	default:
-		// тема последнего поста была дополнительной, ее назначил врач
-		sentPostID = a.routeLastAnotherTheme(ctx, ps)
+	scenario, err := a.common.GetScenario(ctx, ps.ScenarioID)
+	if err != nil {
+		return err
 	}
 
-	return nil
+	step, ok := lo.Find(scenario.Steps, func(s dto.Step) bool {
+		return ps.Step == s.Order
+	})
+	// todo: скорее всего овер фф, вероятно не понадобиться
+	if !ok && ps.Step == 0 {
+		step, ok = scenario.StepByOrder(1)
+	}
+	if !ok {
+		return fmt.Errorf("step not found")
+	}
+
+	return a.route(ctx, route{
+		patient:  patient,
+		scenario: scenario,
+		step:     step,
+		ps:       ps,
+		msg: dto.Message{
+			User:   patient.TgID,
+			ChatID: ps.ChatID,
+		},
+	})
 }
 
-// routeLastRequiredTheme выбор поста если крайняя тема была - "обязательный контент"
-func (a *Action) routeLastRequiredTheme(ctx context.Context, ps dto.PatientScenario) error {
-	// запрос дополнительных тем
-	// если такие посты ЕСТЬ, то отправляем этот пост
-	// если таких постов НЕТ, то отправляем мотивацию
+func (a *Action) route(ctx context.Context, r route) error {
+	// если надо отправить пост, то делаем отправку поста
+	if strings.Contains(r.step.Text, "InformationPost") {
+		if err := a.sendInformationPost(ctx, r); err != nil {
+			return err
+		}
+	} else {
+		// Если нет, то отправляем простое сообщение
+		if err := a.sendMsg(ctx, r); err != nil {
+			return err
+		}
+	}
+
+	// Двигаем шаг пользователя
+	if r.step.NextStep != nil {
+		return a.common.MoveStepPatient(ctx, dal.MoveStep{
+			TgID:     r.patient.TgID,
+			ChatID:   r.msg.ChatID,
+			Scenario: r.scenario.ID,
+			Step:     r.step.Order,
+			NextStep: lo.FromPtr(r.step.NextStep),
+			Delay:    lo.FromPtr(r.step.NextDelay),
+		})
+	}
+
+	// Завершаем сценарий
+	if r.step.IsFinal {
+		return a.common.CompleteScenario(ctx, r.patient.TgID, r.msg.ChatID, r.scenario.ID)
+	}
+
+	return a.common.MarkScenariosSent(ctx, r.ps)
 }
 
-// routeLastMotivationTheme выбор поста если крайняя тема была - "мотивация"
-func (a *Action) routeLastMotivationTheme(ctx context.Context, ps dto.PatientScenario) error {
-	// если прошло 2 месяца с момента запуска
-	// ТО отправляем "подготовка ко второму этапу"
-	// ИНАЧЕ пропускаем
-	// завершаем сценарий
-	// отправляем "обязательный контент"
+// sendMsg отправка сообщения по сценарию
+func (a *Action) sendMsg(ctx context.Context, r route) error {
+	return a.bot.SendMessage(bot_dto.Message{
+		Chat:    r.ps.ChatID,
+		Text:    template.Execute(r.step.Text, r.patient),
+		Buttons: r.step.Buttons,
+	})
 }
 
-// routeLastPreparingToSecondTheme выбор поста если крайняя тема была - "подготовка ко второму этапу"
-func (a *Action) routeLastPreparingToSecondTheme(ctx context.Context, ps dto.PatientScenario) error {
-	// отправляем "обязательный контент"
-}
+func (a *Action) sendInformationPost(ctx context.Context, r route) error {
+	var sentPostID int64
+	defer func() {
+		err := a.service.MarkPostSent(ctx, r.patient.TgID, sentPostID)
+		if err != nil {
+			logger.Error(ctx, "Ошибка при отметке поста отправленным", err)
+			return
+		}
+	}()
 
-// routeLastAnotherTheme выбор поста если крайняя тема была какой-то дополнительной
-func (a *Action) routeLastAnotherTheme(ctx context.Context, ps dto.PatientScenario) error {
-	// отправляем мотивацию
+	post, err := a.service.GetNextPost(ctx, r.ps)
+	if err != nil {
+		return err
+	}
+	// постов нет для отправки
+	if post.ID == 0 {
+		logger.Message(ctx, fmt.Sprintf("для пользователя tg_id %d, нет постов для отправки", r.patient.TgID))
+		return nil
+	}
+
+	sentPostID = post.ID
+	tmpl := toTemplateStruct{
+		InformationPost: post.Text,
+	}
+
+	// Только если у контента есть ID из телеги мы отправляем это media
+	if post.MediaTgID != "" {
+		return a.bot.SendMessageWithContentType(bot_dto.Message{
+			Chat:        r.msg.ChatID,
+			MediaID:     post.MediaTgID,
+			ContentType: post.Type,
+			Text:        template.Execute(r.step.Text, tmpl),
+		})
+	}
+
+	// Отправляем сообщение без медиа
+	return a.bot.SendMessage(bot_dto.Message{
+		Chat:    r.msg.ChatID,
+		Text:    template.Execute(r.step.Text, tmpl),
+		Buttons: r.step.Buttons,
+	})
 }

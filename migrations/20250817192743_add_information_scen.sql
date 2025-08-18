@@ -4,21 +4,22 @@
 -- Темы постов
 create table if not exists posts_themes
 (
-    id          bigserial,             -- id темы в системе
-    name        varchar(255) not null, -- Название темы (мотивация, обязательная тема)
-    is_required bool default false     -- флаг обязательная ли тема
+    id          bigserial,          -- id темы в системе
+    name        text not null,      -- Название темы (мотивация, обязательная тема)
+    is_required bool default false, -- флаг обязательная ли тема
+    theme_order int                 -- порядковый номер темы
 );
 
 -- Посты сценария информации
 create table if not exists information_posts
 (
-    id              bigserial,             -- id поста в системе
-    name            varchar(255) not null, -- название поста для отображения в админке
-    posts_theme_id  bigint       not null, -- id темы, к которой относится пост
-    order_in_theme  int          not null, -- порядковый номер поста в теме
-    media_id        varchar(300),          -- медиа файл
-    content_type_id int,                   -- тип медиафайла
-    post_text       text         not null  -- текст поста
+    id              bigserial,       -- id поста в системе
+    name            text   not null, -- название поста для отображения в админке
+    posts_theme_id  bigint not null, -- id темы, к которой относится пост
+    order_in_theme  int    not null, -- порядковый номер поста в теме
+    media_id        text,            -- медиа файл
+    content_type_id int,             -- тип медиафайла
+    post_text       text   not null  -- текст поста
 );
 
 -- Посты, которые получил пользователь
