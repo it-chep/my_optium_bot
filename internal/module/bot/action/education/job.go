@@ -3,12 +3,13 @@ package education
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
-	"strings"
 
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/samber/lo"

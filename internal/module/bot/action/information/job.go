@@ -3,6 +3,8 @@ package information
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
@@ -10,7 +12,6 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 	"github.com/samber/lo"
-	"strings"
 )
 
 type toTemplateStruct struct {
@@ -87,7 +88,7 @@ func (a *Action) route(ctx context.Context, r route) error {
 }
 
 // sendMsg отправка сообщения по сценарию
-func (a *Action) sendMsg(ctx context.Context, r route) error {
+func (a *Action) sendMsg(_ context.Context, r route) error {
 	return a.bot.SendMessage(bot_dto.Message{
 		Chat:    r.ps.ChatID,
 		Text:    template.Execute(r.step.Text, r.patient),

@@ -2,6 +2,7 @@ package posts
 
 import (
 	"context"
+
 	informationDal "github.com/it-chep/my_optium_bot.git/internal/module/bot/action/information/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/information"
