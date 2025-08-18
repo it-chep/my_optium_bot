@@ -3,10 +3,15 @@ package template
 import (
 	"bytes"
 	"text/template"
+	"time"
 )
 
+func Format(t time.Time) string {
+	return t.Format(time.DateOnly)
+}
+
 var funcMap = map[string]any{
-	// преобразование плейсхолдеров
+	"date_format": Format,
 }
 
 // Execute исполняет шаблон и в случае ошибки отдает пустую строку
