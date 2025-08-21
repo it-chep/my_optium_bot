@@ -8,6 +8,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 )
 
@@ -15,16 +16,12 @@ type Dal interface {
 	DoctorNextStep(ctx context.Context, usr user.User) (dto.Step, error)
 }
 
-type Bot interface {
-	SendMessage(msg bot_dto.Message, options ...tg_bot.MsgOption) error
-}
-
 type Service struct {
 	stepDal Dal
-	bot     Bot
+	bot     *tg_bot.Bot
 }
 
-func NewService(stepDal Dal, bot Bot) *Service {
+func NewService(stepDal Dal, bot *tg_bot.Bot) *Service {
 	return &Service{
 		stepDal: stepDal,
 		bot:     bot,
