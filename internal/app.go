@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin"
 	"log"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
@@ -29,7 +30,8 @@ type App struct {
 }
 
 type Modules struct {
-	Bot *bot.Bot
+	Bot   *bot.Bot
+	Admin *admin.Module
 }
 
 func New(ctx context.Context) *App {
@@ -49,7 +51,7 @@ func New(ctx context.Context) *App {
 }
 
 func (a *App) Run(ctx context.Context) {
-	fmt.Println("start server")
+	fmt.Println("start server http://localhost:8080")
 	ctx = logger.ContextWithLogger(ctx, logger.New())
 	for _, w := range a.workers {
 		w.Start(ctx)
