@@ -41,6 +41,10 @@ func (a *App) initDB(ctx context.Context) *App {
 }
 
 func (a *App) initTgBot(context.Context) *App {
+	if !a.config.BotIsActive() {
+		return a
+	}
+
 	tgBot, err := tg_bot.NewTgBot(a.config)
 	if err != nil {
 		log.Fatal(err)

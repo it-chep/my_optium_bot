@@ -54,7 +54,7 @@ func (a *App) Run(ctx context.Context) {
 	for _, w := range a.workers {
 		w.Start(ctx)
 	}
-	if !a.config.UseWebhook() {
+	if !a.config.UseWebhook() && a.config.BotIsActive() {
 		fmt.Println("Режим поллинга")
 		// Режим поллинга
 		for update := range a.bot.GetUpdates() {
