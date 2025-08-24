@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/samber/lo"
 	"log"
 
 	"github.com/it-chep/my_optium_bot.git/internal/config"
@@ -14,6 +13,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/worker"
 	"github.com/it-chep/my_optium_bot.git/internal/server"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/samber/lo"
 )
 
 type Workers []worker.Worker
@@ -58,8 +58,8 @@ func (a *App) Run(ctx context.Context) {
 	if !a.config.UseWebhook() {
 		fmt.Println("Режим поллинга")
 		// Режим поллинга
-		for update := range a.bot.GetUpdates() {
-			go func() {
+		go func() {
+			for update := range a.bot.GetUpdates() {
 				if update.ChatMember != nil {
 					if lo.Contains([]string{"left", "kicked"}, update.ChatMember.NewChatMember.Status) {
 						return
@@ -118,8 +118,8 @@ func (a *App) Run(ctx context.Context) {
 				if err != nil {
 					logger.Error(ctx, "Ошибка при обработке ивента", err)
 				}
-			}()
-		}
+			}
+		}()
 	}
 
 	log.Fatal(a.server.ListenAndServe())

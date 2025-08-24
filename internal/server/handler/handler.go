@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/auth"
 	"github.com/it-chep/my_optium_bot.git/internal/server/middleware"
 
 	"github.com/go-chi/chi/v5"
@@ -53,20 +54,23 @@ func (h *Handler) setupRoutes(cfg Config) {
 
 	h.router.Route("/admin", func(r chi.Router) {
 		r.Get("/", h.admin())
-		//
-		//	// Auth routes
-		//	r.Post("/auth", h.Auth.Handle)
+
+		// Auth routes
+		r.Post("/login", auth.LoginHandler)
+		r.Get("/check-token", auth.CheckValidHandler)
+		r.Post("/test", middleware.JWTMiddleware(h.admin())) // example
+
 		//
 		//	// User lists routes
-		//	r.Route("/users-lists", func(r chi.Router) {
-		//		r.Post("/", h.CreateUserList.Handle)       // POST /admin/users-lists
-		//		r.Delete("/{id}", h.DeleteUserList.Handle) // DELETE /admin/users-lists/{id}
-		//		r.Get("/", h.GetUsersLists.Handle)         // GET /admin/users-lists
+		//r.Route("/users-lists", func(r chi.Router) {
+		//r.Post("/", h.CreateUserList.Handle)       // POST /admin/users-lists
+		//r.Delete("/{id}", h.DeleteUserList.Handle) // DELETE /admin/users-lists/{id}
+		//r.Get("/", h.GetUsersLists.Handle)         // GET /admin/users-lists
 		//
-		//		// User-list membership routes
-		//		r.Post("/{listId}/users", h.AddUserToList.Handle)                 // POST /admin/users-lists/{listId}/users
-		//		r.Delete("/{listId}/users/{userId}", h.DeleteUserFromList.Handle) // DELETE /admin/users-lists/{listId}/users/{userId}
-		//	})
+		//// User-list membership routes
+		//r.Post("/{listId}/users", h.AddUserToList.Handle)                 // POST /admin/users-lists/{listId}/users
+		//r.Delete("/{listId}/users/{userId}", h.DeleteUserFromList.Handle) // DELETE /admin/users-lists/{listId}/users/{userId}
+		//})
 		//
 		//	// Newsletter routes
 		//	r.Post("/newsletters", h.CreateNewsLetter.Handle) // POST /admin/newsletters
