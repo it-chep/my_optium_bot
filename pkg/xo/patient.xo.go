@@ -12,13 +12,14 @@ import (
 
 // Patient represents a row from 'public.patients'.
 type Patient struct {
-	ID          int64          `db:"id" json:"id"`                     // id
-	TgID        sql.NullInt64  `db:"tg_id" json:"tg_id"`               // tg_id
-	CreatedAt   time.Time      `db:"created_at" json:"created_at"`     // created_at
-	FullName    sql.NullString `db:"full_name" json:"full_name"`       // full_name
-	Sex         sql.NullInt64  `db:"sex" json:"sex"`                   // sex
-	BirthDate   pq.NullTime    `db:"birth_date" json:"birth_date"`     // birth_date
-	MetricsLink sql.NullString `db:"metrics_link" json:"metrics_link"` // metrics_link
+	ID              int64          `db:"id" json:"id"`                             // id
+	TgID            sql.NullInt64  `db:"tg_id" json:"tg_id"`                       // tg_id
+	CreatedAt       time.Time      `db:"created_at" json:"created_at"`             // created_at
+	FullName        sql.NullString `db:"full_name" json:"full_name"`               // full_name
+	Sex             sql.NullInt64  `db:"sex" json:"sex"`                           // sex
+	BirthDate       pq.NullTime    `db:"birth_date" json:"birth_date"`             // birth_date
+	MetricsLink     sql.NullString `db:"metrics_link" json:"metrics_link"`         // metrics_link
+	LastCommunicate time.Time      `db:"last_communicate" json:"last_communicate"` // last_communicate
 }
 
 // zeroPatient zero value of dto

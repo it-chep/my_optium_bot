@@ -1,8 +1,9 @@
-package text_handler
+package lost
 
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
@@ -29,6 +30,14 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (er
 		return fmt.Errorf("step not found")
 	}
 
+	if step.DelayFromPatient {
+		return a.patientDelayedStep(ctx, patient, scenario, step, msg)
+	}
+
+	return a.regularStep(ctx, patient, scenario, step, msg)
+}
+
+func (a *Action) regularStep(ctx context.Context, patient user.Patient, scenario dto.Scenario, step dto.Step, msg dto.Message) (err error) {
 	btn, found := lo.Find(step.Buttons, func(b dto.StepButton) bool { return b.Text == msg.Text })
 	if !found {
 		return nil
@@ -39,28 +48,74 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (er
 	}()
 
 	nextStep, _ := scenario.StepByOrder(btn.NextStepOrder)
-	if err = a.bot.SendMessage(bot_dto.Message{Chat: msg.ChatID, Text: template.Execute(nextStep.Text, patient)}); err != nil {
+	if err = a.bot.SendMessage(bot_dto.Message{Chat: msg.ChatID, Text: template.Execute(nextStep.Text, patient), Buttons: nextStep.Buttons}); err != nil {
 		return err
 	}
 
 	defer func() {
 		if err == nil {
-			err = a.postAction(ctx, usr.StepStat.ScenarioID, int64(nextStep.Order), patient)
+			err = a.postAction(ctx, scenario.ID, int64(nextStep.Order), patient)
 		}
 	}()
 
 	if nextStep.IsFinal {
-		return a.common.CompleteScenario(ctx, patient.TgID, msg.ChatID, usr.StepStat.ScenarioID)
+		_ = a.common.CompleteScenario(ctx, patient.TgID, msg.ChatID, scenario.ID)
+		next := time.Now().Add(7 * 24 * time.Hour)
+		return a.common.AssignScenarios(ctx, patient.TgID, msg.ChatID, []dto.Scenario{{ID: 9, ScheduledTime: next}})
+	}
+
+	if nextStep.NextStep == nil {
+		return a.common.MoveStepPatient(ctx,
+			dal.MoveStep{
+				TgID:     patient.TgID,
+				ChatID:   msg.ChatID,
+				Scenario: scenario.ID,
+				Step:     step.Order,
+				NextStep: btn.NextStepOrder,
+				Delay:    lo.FromPtr(nextStep.NextDelay),
+				Sent:     true,
+			})
 	}
 
 	return a.common.MoveStepPatient(ctx,
 		dal.MoveStep{
 			TgID:     patient.TgID,
 			ChatID:   msg.ChatID,
-			Scenario: usr.StepStat.ScenarioID,
-			Step:     int(usr.StepStat.StepOrder),
+			Scenario: scenario.ID,
+			Step:     step.Order,
 			NextStep: lo.FromPtr(nextStep.NextStep),
 			Delay:    lo.FromPtr(nextStep.NextDelay),
+		})
+}
+
+func (a *Action) patientDelayedStep(ctx context.Context, patient user.Patient, scenario dto.Scenario, step dto.Step, msg dto.Message) (err error) {
+	defer func() {
+		_ = a.common.UpdateLastCommunication(ctx, patient.ID)
+	}()
+
+	if err = a.bot.SendMessage(bot_dto.Message{Chat: msg.ChatID, Text: template.Execute(step.Text, patient)}); err != nil {
+		return err
+	}
+
+	defer func() {
+		if err == nil {
+			err = a.postAction(ctx, scenario.ID, int64(step.Order), patient)
+		}
+	}()
+
+	delay, err := time.Parse("02.01.2006", msg.Text)
+	if err != nil {
+		return err
+	}
+
+	return a.common.MoveStepPatient(ctx,
+		dal.MoveStep{
+			TgID:     patient.TgID,
+			ChatID:   msg.ChatID,
+			Scenario: scenario.ID,
+			Step:     step.Order,
+			NextStep: lo.FromPtr(step.NextStep),
+			Delay:    delay.Sub(time.Now().UTC()),
 		})
 }
 
