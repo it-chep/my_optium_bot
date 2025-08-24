@@ -24,13 +24,14 @@ const (
 )
 
 type Patient struct {
-	ID          int64
-	TgID        int64
-	FullName    string
-	Sex         Sex
-	BirthDate   time.Time
-	MetricsLink string
-	FirstName   string
+	ID              int64
+	TgID            int64
+	FullName        string
+	Sex             Sex
+	BirthDate       time.Time
+	MetricsLink     string
+	FirstName       string
+	LastCommunicate time.Time
 }
 
 func (p Patient) IsEmpty() bool {

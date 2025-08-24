@@ -55,11 +55,14 @@ func (a *App) Run(ctx context.Context) {
 	for _, w := range a.workers {
 		w.Start(ctx)
 	}
+	go func() {
+		log.Fatal(a.server.ListenAndServe())
+	}()
 	if !a.config.UseWebhook() {
 		fmt.Println("Режим поллинга")
 		// Режим поллинга
-		go func() {
-			for update := range a.bot.GetUpdates() {
+		for update := range a.bot.GetUpdates() {
+			go func() {
 				if update.ChatMember != nil {
 					if lo.Contains([]string{"left", "kicked"}, update.ChatMember.NewChatMember.Status) {
 						return
@@ -118,9 +121,7 @@ func (a *App) Run(ctx context.Context) {
 				if err != nil {
 					logger.Error(ctx, "Ошибка при обработке ивента", err)
 				}
-			}
-		}()
+			}()
+		}
 	}
-
-	log.Fatal(a.server.ListenAndServe())
 }

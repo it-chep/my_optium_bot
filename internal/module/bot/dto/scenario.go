@@ -30,13 +30,14 @@ func (s Scenario) StepByOrder(order int) (Step, bool) {
 type Steps []Step
 
 type Step struct {
-	ID         int64
-	ScenarioID int64
-	Order      int
-	Text       string
-	IsFinal    bool
-	NextStep   *int
-	NextDelay  *time.Duration
+	ID               int64
+	ScenarioID       int64
+	Order            int
+	Text             string
+	IsFinal          bool
+	NextStep         *int
+	NextDelay        *time.Duration
+	DelayFromPatient bool
 
 	Buttons StepButtons
 }

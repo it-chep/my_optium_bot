@@ -20,7 +20,8 @@ create table if not exists scenario_steps
     content     text    not null,
     is_final    boolean default false, -- если тру, то пускаем новый сценарий и в patient_scenarios проставляем complete
     next_delay  interval,
-    next_step   int
+    next_step   int,
+    delay_from_patient bool
 --     title        text,                 -- пусть будет скрытый для работы с админкой
 --     content_type int     not null,     -- будем чекать видео/текст/картинка/файл енам
 );

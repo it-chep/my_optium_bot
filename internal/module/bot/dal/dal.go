@@ -208,10 +208,13 @@ type MoveStep struct {
 	TgID, ChatID, Scenario int64
 	Step, NextStep         int
 	Delay                  time.Duration
+
+	// костыль
+	Sent bool
 }
 
 func (d *CommonDal) MoveStepPatient(ctx context.Context, moveStep MoveStep) error {
-	sql := `update patient_scenarios set step = $1, answered = true, scheduled_time = $2, sent = false 
+	sql := `update patient_scenarios set step = $1, answered = true, scheduled_time = $2, sent = $7 
                 where patient_id = $3 and chat_id = $4 and scenario_id = $5 and step = $6`
 	args := []interface{}{
 		moveStep.NextStep,                    // $1
@@ -220,6 +223,7 @@ func (d *CommonDal) MoveStepPatient(ctx context.Context, moveStep MoveStep) erro
 		moveStep.ChatID,                      // $4
 		moveStep.Scenario,                    // $5
 		moveStep.Step,                        // $6
+		moveStep.Sent,                        // $7
 	}
 	_, err := d.pool.Exec(ctx, sql, args...)
 	return err
@@ -290,4 +294,34 @@ func (d *CommonDal) GetDoctorMessages(ctx context.Context, patientTg, scenario, 
 	}
 
 	return doctorMessage, nil
+}
+
+func (d *CommonDal) UpdateLastCommunication(ctx context.Context, patientID int64) error {
+	var (
+		sql = `update patients
+					set last_communicate = $2
+			   where id = $1
+  		`
+	)
+
+	_, err := d.pool.Exec(ctx, sql, patientID, time.Now().UTC())
+	return err
+}
+
+func (d *CommonDal) MoveScenario(ctx context.Context, patientScenarioID int64, schedTime time.Time) error {
+	var (
+		sql = `update patient_scenarios
+					set scheduled_time = $2
+			   where id = $1
+  		`
+	)
+
+	_, err := d.pool.Exec(ctx, sql, patientScenarioID, schedTime.UTC())
+	return err
+}
+
+func (d *CommonDal) ScenarioNotAnswered(ctx context.Context, patientTGID, scenarioID int64) error {
+	sql := `update patient_scenarios set answered = false where patient_id = $1 and scenario_id = $2`
+	_, err := d.pool.Exec(ctx, sql, patientTGID, scenarioID)
+	return err
 }
