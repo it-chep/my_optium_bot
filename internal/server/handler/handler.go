@@ -6,6 +6,7 @@ import (
 	adminHandler "github.com/it-chep/my_optium_bot.git/internal/server/handler/admin"
 	"net/http"
 
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/auth"
 	"github.com/it-chep/my_optium_bot.git/internal/server/middleware"
 
 	"github.com/go-chi/chi/v5"
@@ -60,6 +61,11 @@ func (h *Handler) setupRoutes(cfg Config) {
 
 	h.router.Route("/admin", func(r chi.Router) {
 		r.Get("/", h.admin())
+
+		// Auth routes
+		r.Post("/login", auth.LoginHandler)
+		r.Get("/check-token", auth.CheckValidHandler)
+		r.Post("/test", middleware.JWTMiddleware(h.admin())) // example
 
 		// Авторизация
 		r.Post("/auth", h.adminAgg.Users.Auth.Handle())

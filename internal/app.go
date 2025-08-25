@@ -14,6 +14,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/worker"
 	"github.com/it-chep/my_optium_bot.git/internal/server"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/samber/lo"
 )
 
 type Workers []worker.Worker
@@ -59,18 +60,15 @@ func (a *App) Run(ctx context.Context) {
 	if !a.config.UseWebhook() && a.config.BotIsActive() {
 		fmt.Println("Режим поллинга")
 		// Режим поллинга
-		for update := range a.bot.GetUpdates() {
-			go func() {
-				if update.Message != nil {
-					if update.Message.NewChatMembers != nil {
-						//if lo.Contains([]string{"left", "kicked"}, update.ChatMember.NewChatMember.Status) {
-						//	return
-						//}
-						usrID := update.Message.NewChatMembers[0].ID
-						chat := update.Message.Chat.ID
-						_ = a.modules.Bot.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
+		go func() {
+			for update := range a.bot.GetUpdates() {
+				if update.ChatMember != nil {
+					if lo.Contains([]string{"left", "kicked"}, update.ChatMember.NewChatMember.Status) {
 						return
 					}
+					usrID := update.ChatMember.NewChatMember.User.ID
+					chat := update.ChatMember.Chat.ID
+					_ = a.modules.Bot.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
 				}
 
 				if update.FromChat() == nil || update.SentFrom() == nil {
@@ -122,8 +120,8 @@ func (a *App) Run(ctx context.Context) {
 				if err != nil {
 					logger.Error(ctx, "Ошибка при обработке ивента", err)
 				}
-			}()
-		}
+			}
+		}()
 	}
 
 	log.Fatal(a.server.ListenAndServe())
