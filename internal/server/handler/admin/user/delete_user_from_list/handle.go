@@ -1,0 +1,16 @@
+package delete_user_from_list
+
+import "net/http"
+
+type Handler struct {
+}
+
+func NewHandler() *Handler {
+	return &Handler{}
+}
+
+func (h *Handler) Handle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("Test"))
+	}
+}

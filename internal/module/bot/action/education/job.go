@@ -3,12 +3,13 @@ package education
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/template"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
-	"strings"
 
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/samber/lo"
@@ -60,7 +61,6 @@ func (a *Action) route(ctx context.Context, r route) error {
 			Patient: r.patient,
 		}
 
-		// todo вообще можно отправлять видос с подписью, но это уже другая история
 		// Получаем видос из базы
 		content, err := a.educationDal.GetStepContent(ctx, r.scenario.ID, int64(r.step.Order))
 		if err != nil {
@@ -68,23 +68,21 @@ func (a *Action) route(ctx context.Context, r route) error {
 			return err
 		}
 
-		// Только если у контента есть ID из телеги мы отправляем это media
-		if content.MediaTgID != "" {
-			err = a.bot.SendMessageWithContentType(bot_dto.Message{
-				Chat:        r.msg.ChatID,
-				MediaID:     content.MediaTgID,
-				ContentType: content.Type,
-			})
-			if err != nil {
-				logger.Error(ctx, "Ошибка при отправке сообщения с медиа, ОБУЧЕНИЕ", err)
-			}
-		}
-
 		if strings.Contains(r.step.Text, "DoctorUsername") {
 			tmpl.DoctorUsername = a.educationDal.GetDoctorUsername(ctx, r.msg.ChatID)
 		}
 
-		// Отправляем сообщение пользователю
+		// Только если у контента есть ID из телеги мы отправляем это media
+		if content.MediaTgID != "" {
+			return a.bot.SendMessageWithContentType(bot_dto.Message{
+				Chat:        r.msg.ChatID,
+				MediaID:     content.MediaTgID,
+				ContentType: content.Type,
+				Text:        template.Execute(r.step.Text, tmpl),
+			})
+		}
+
+		// Отправляем сообщение без медиа
 		return a.bot.SendMessage(bot_dto.Message{
 			Chat:    r.msg.ChatID,
 			Text:    template.Execute(r.step.Text, tmpl),

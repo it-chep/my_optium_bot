@@ -22,7 +22,6 @@ func (usr *User) ToDomain() dto.User {
 
 	return dto.User{
 		ID:          usr.ID,
-		ChatID:      0, // todo ???????
 		TgID:        usr.TgID.Int64,
 		FullName:    usr.FullName.String,
 		Sex:         usr.Sex.Int64,

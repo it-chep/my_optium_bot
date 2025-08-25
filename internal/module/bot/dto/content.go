@@ -18,10 +18,3 @@ const (
 	// Audio mp3
 	Audio
 )
-
-type Content struct {
-	ScenarioID int64
-	StepID     int64
-	MediaTgID  string
-	Type       ContentType
-}

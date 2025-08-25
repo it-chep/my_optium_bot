@@ -3,10 +3,11 @@ package step
 import (
 	"context"
 
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
+
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/user"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
-	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot/bot_dto"
 )
 
