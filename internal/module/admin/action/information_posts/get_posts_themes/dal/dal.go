@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dal/dao"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dto"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
@@ -19,19 +20,19 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 	}
 }
 
-func (r *Repository) GetPostsThemes(ctx context.Context) (err error) {
+func (r *Repository) GetPostsThemes(ctx context.Context) (_ []dto.PostTheme, err error) {
 	sql := `
 		select * from posts_themes
 	`
 
-	var themes []dao.User // todo сделать темы
+	var themes dao.ThemeList
 	err = pgxscan.Select(ctx, r.pool, &themes, sql)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil
+			return nil, nil
 		}
-		return err
+		return nil, err
 	}
 
-	return nil
+	return themes.ToDomain(), nil
 }

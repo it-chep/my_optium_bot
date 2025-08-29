@@ -3,6 +3,7 @@ package get_posts_themes
 import (
 	"context"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_posts_themes/dal"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dto"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -16,6 +17,6 @@ func New(pool *pgxpool.Pool) *Action {
 	}
 }
 
-func (a *Action) Do(ctx context.Context) (err error) {
+func (a *Action) Do(ctx context.Context) (themes []dto.PostTheme, err error) {
 	return a.dal.GetPostsThemes(ctx)
 }

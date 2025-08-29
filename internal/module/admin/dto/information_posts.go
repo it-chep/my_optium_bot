@@ -11,3 +11,18 @@ type InformationPost struct {
 
 	ThemeIsRequired bool
 }
+
+type InformationPostListView struct {
+	ID   int64
+	Name string
+
+	PostThemeName   string
+	OrderInTheme    int64
+	ThemeIsRequired bool
+}
+
+type PostTheme struct {
+	ID              int64
+	Name            string
+	ThemeIsRequired bool
+}

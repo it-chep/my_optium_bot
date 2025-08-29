@@ -1,1 +1,0 @@
-package get_information_posts
