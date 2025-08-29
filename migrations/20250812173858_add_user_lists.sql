@@ -13,7 +13,9 @@ create table if not exists users_lists
 (
     id      bigserial primary key,
     user_id bigint,
-    list_id bigint
+    list_id bigint,
+
+    unique (user_id, list_id)
 );
 
 -- +goose StatementEnd

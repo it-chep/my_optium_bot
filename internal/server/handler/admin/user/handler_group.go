@@ -31,10 +31,10 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 		GetUsers:    get_users.NewHandler(adminModule),
 		GetUserByID: get_user_by_id.NewHandler(adminModule),
 
-		AddUserToList:    add_user_to_list.NewHandler(),
-		AddPostToPatient: add_post_to_patient.NewHandler(),
+		AddUserToList:    add_user_to_list.NewHandler(adminModule),
+		AddPostToPatient: add_post_to_patient.NewHandler(adminModule),
 
-		DeletePostFromPatient: delete_post_from_patient.NewHandler(),
-		DeleteUserFromList:    delete_user_from_list.NewHandler(),
+		DeletePostFromPatient: delete_post_from_patient.NewHandler(adminModule),
+		DeleteUserFromList:    delete_user_from_list.NewHandler(adminModule),
 	}
 }
