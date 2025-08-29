@@ -2,6 +2,7 @@ package dal
 
 import (
 	"context"
+	"github.com/pkg/errors"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -21,6 +22,9 @@ func (d *Dal) DeleteUserFromList(ctx context.Context, userID, listID int64) erro
 	delete from users_lists where user_id = $1 and list_id = $2
 	`
 
-	_, err := d.pool.Exec(ctx, sql, userID, listID)
+	result, err := d.pool.Exec(ctx, sql, userID, listID)
+	if result.RowsAffected() == 0 {
+		return errors.New("Ошибка удаления пользователя из списка")
+	}
 	return err
 }

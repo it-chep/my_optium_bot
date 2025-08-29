@@ -3,6 +3,7 @@ package dal
 import (
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/pkg/errors"
 )
 
 type Repository struct {
@@ -20,6 +21,9 @@ func (r *Repository) DeletePostFromPatient(ctx context.Context, patientID, postI
 		delete from patient_posts where patient_id = $1 and post_id = $2
 	`
 
-	_, err := r.pool.Exec(ctx, sql, patientID, postID)
+	result, err := r.pool.Exec(ctx, sql, patientID, postID)
+	if result.RowsAffected() == 0 {
+		return errors.New("Ошибка удаления поста у пользователя")
+	}
 	return err
 }
