@@ -8,6 +8,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/delete_user_list"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_newsletters"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_users_lists"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_draft_letter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_letter_to_users"
@@ -34,6 +35,7 @@ type Aggregator struct {
 	CreateUserList    *create_user_list.Action
 	DeleteUserList    *delete_user_list.Action
 	GetUsersLists     *get_users_lists.Action
+	GetNewsletters    *get_newsletters.Action
 	SentDraftLetter   *send_draft_letter.Action
 	SendLetterToUsers *send_letter_to_users.Action
 
@@ -68,6 +70,7 @@ func NewAggregator(pool *pgxpool.Pool) *Aggregator {
 		CreateUserList:    create_user_list.NewAction(pool),
 		DeleteUserList:    delete_user_list.NewAction(pool),
 		GetUsersLists:     get_users_lists.NewAction(pool),
+		GetNewsletters:    get_newsletters.NewAction(pool),
 		CreateNewsLetter:  create_newsletter.NewAction(),
 		SentDraftLetter:   send_draft_letter.NewAction(pool),
 		SendLetterToUsers: send_letter_to_users.NewAction(pool),

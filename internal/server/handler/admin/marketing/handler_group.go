@@ -5,6 +5,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/create_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/create_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/delete_user_list"
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/get_newsletters"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/get_users_lists"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/send_draft_letter"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/send_letter_to_users"
@@ -16,6 +17,7 @@ type HandlerGroup struct {
 	SendLetterToUsers *send_letter_to_users.Handler
 
 	GetUsersLists  *get_users_lists.Handler
+	GetNewsLetters *get_newsletters.Handler
 	CreateUserList *create_user_list.Handler
 	DeleteUserList *delete_user_list.Handler
 }
@@ -27,6 +29,7 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 		SendLetterToUsers: send_letter_to_users.NewHandler(),
 
 		GetUsersLists:  get_users_lists.NewHandler(adminModule),
+		GetNewsLetters: get_newsletters.NewHandler(adminModule),
 		CreateUserList: create_user_list.NewHandler(),
 		DeleteUserList: delete_user_list.NewHandler(),
 	}
