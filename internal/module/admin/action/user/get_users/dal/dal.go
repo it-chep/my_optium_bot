@@ -23,7 +23,7 @@ func (d *Dal) GetUsers(ctx context.Context) ([]dto.User, error) {
 	sql := `
 		select p.*
 		from patients p
-		    `
+	`
 
 	var usersWithLists dao.Users
 	err := pgxscan.Select(ctx, d.pool, &usersWithLists, sql)

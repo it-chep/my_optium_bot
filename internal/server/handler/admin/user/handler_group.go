@@ -28,8 +28,8 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 	return &HandlerGroup{
 		Auth: auth.NewHandler(),
 
-		GetUsers:    get_users.NewHandler(),
-		GetUserByID: get_user_by_id.NewHandler(),
+		GetUsers:    get_users.NewHandler(adminModule),
+		GetUserByID: get_user_by_id.NewHandler(adminModule),
 
 		AddUserToList:    add_user_to_list.NewHandler(),
 		AddPostToPatient: add_post_to_patient.NewHandler(),
