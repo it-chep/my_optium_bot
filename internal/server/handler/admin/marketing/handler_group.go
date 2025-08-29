@@ -26,7 +26,7 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 		SendDraftLetter:   send_draft_letter.NewHandler(),
 		SendLetterToUsers: send_letter_to_users.NewHandler(),
 
-		GetUsersLists:  get_users_lists.NewHandler(),
+		GetUsersLists:  get_users_lists.NewHandler(adminModule),
 		CreateUserList: create_user_list.NewHandler(),
 		DeleteUserList: delete_user_list.NewHandler(),
 	}
