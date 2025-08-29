@@ -23,3 +23,17 @@ type Scenario struct {
 	IsActive bool
 	Delay    time.Duration
 }
+
+type PatientScenario struct {
+	ID            int64
+	PatientID     int64
+	ChatID        int64
+	ScenarioID    int64
+	Step          int64
+	Answered      bool
+	Sent          bool
+	ScheduledTime time.Time
+	Active        bool
+	Repeatable    bool
+	CompletedAt   time.Time
+}

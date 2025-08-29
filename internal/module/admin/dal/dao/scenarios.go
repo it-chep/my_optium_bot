@@ -29,3 +29,32 @@ func (lsd ListScenarioDao) ToDomain() []dto.Scenario {
 
 	return domain
 }
+
+type PatientScenario struct {
+	xo.PatientScenario
+}
+
+type PatientScenarios []PatientScenario
+
+func (ps PatientScenario) ToDomain() dto.PatientScenario {
+	return dto.PatientScenario{
+		ID:            int64(ps.ID),
+		PatientID:     int64(ps.PatientID),
+		ChatID:        ps.ChatID,
+		ScenarioID:    int64(ps.ScenarioID),
+		Step:          int64(ps.Step),
+		Answered:      ps.Answered,
+		Sent:          ps.Sent,
+		ScheduledTime: ps.ScheduledTime,
+		Active:        ps.Active,
+		Repeatable:    ps.Repeatable,
+	}
+}
+
+func (psl PatientScenarios) ToDomain() []dto.PatientScenario {
+	domain := make([]dto.PatientScenario, 0, len(psl))
+	for _, ps := range psl {
+		domain = append(domain, ps.ToDomain())
+	}
+	return domain
+}
