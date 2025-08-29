@@ -4,9 +4,11 @@ POST http://localhost:8080/admin/users/1/lists/5
 ### добавление поста пользователю
 POST http://localhost:8080/admin/users/1/post/4
 
-
 ### удаление пользователя из списока
 DELETE http://localhost:8080/admin/users/1/lists/5
 
 ### удаления поста у пользователя
 DELETE http://localhost:8080/admin/users/1/post/10
+
+### удаление списка пользователей
+DELETE http://localhost:8080/admin/users-lists/1

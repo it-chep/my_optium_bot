@@ -24,13 +24,13 @@ type HandlerGroup struct {
 
 func NewGroup(adminModule *admin.Module) *HandlerGroup {
 	return &HandlerGroup{
-		CreateNewsletter:  create_newsletter.NewHandler(),
-		SendDraftLetter:   send_draft_letter.NewHandler(),
-		SendLetterToUsers: send_letter_to_users.NewHandler(),
+		CreateNewsletter:  create_newsletter.NewHandler(adminModule),
+		SendDraftLetter:   send_draft_letter.NewHandler(adminModule),
+		SendLetterToUsers: send_letter_to_users.NewHandler(adminModule),
 
 		GetUsersLists:  get_users_lists.NewHandler(adminModule),
 		GetNewsLetters: get_newsletters.NewHandler(adminModule),
-		CreateUserList: create_user_list.NewHandler(),
-		DeleteUserList: delete_user_list.NewHandler(),
+		CreateUserList: create_user_list.NewHandler(adminModule),
+		DeleteUserList: delete_user_list.NewHandler(adminModule),
 	}
 }

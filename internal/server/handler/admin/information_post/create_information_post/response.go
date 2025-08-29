@@ -1,1 +1,0 @@
-package create_information_post

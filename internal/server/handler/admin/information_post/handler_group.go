@@ -19,9 +19,9 @@ type HandlerGroup struct {
 func NewGroup(adminModule *admin.Module) *HandlerGroup {
 	return &HandlerGroup{
 		GetPostsThemes:  get_posts_themes.NewHandler(adminModule),
-		CreatePostTheme: create_post_theme.NewHandler(),
+		CreatePostTheme: create_post_theme.NewHandler(adminModule),
 
 		GetInformationPosts:   get_information_posts.NewHandler(adminModule),
-		CreateInformationPost: create_information_post.NewHandler(),
+		CreateInformationPost: create_information_post.NewHandler(adminModule),
 	}
 }
