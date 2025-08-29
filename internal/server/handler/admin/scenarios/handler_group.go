@@ -29,10 +29,10 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 		CreateAdminMessage: create_admin_message.NewHandler(),
 		DeleteAdminMessage: delete_admin_message.NewHandler(),
 
-		GetScenarios:      get_scenarios.NewHandler(),
+		GetScenarios:      get_scenarios.NewHandler(adminModule),
 		EditScenarioDelay: edit_scenario_delay.NewHandler(),
 
-		GetSteps:     get_steps.NewHandler(),
+		GetSteps:     get_steps.NewHandler(adminModule),
 		EditStepText: edit_step_text.NewHandler(),
 	}
 }
