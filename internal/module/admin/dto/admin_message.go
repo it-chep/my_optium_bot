@@ -9,6 +9,16 @@ const (
 	Doctor
 )
 
+func (a AdminType) String() string {
+	switch a {
+	case Admin:
+		return "Админам"
+	case Doctor:
+		return "Доктору"
+	}
+	return ""
+}
+
 type AdminMessage struct {
 	ID           int64
 	NextStep     int64

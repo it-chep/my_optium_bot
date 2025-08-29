@@ -15,6 +15,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/delete_admin_message"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/edit_scenario_delay"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/edit_step_text"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/get_admin_messages"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/get_scenarios"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/get_steps"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/add_post_to_patient"
@@ -58,6 +59,7 @@ type Aggregator struct {
 	EditStepText       *edit_step_text.Action
 	GetScenarios       *get_scenarios.Action
 	GetSteps           *get_steps.Action
+	GetAdminMessages   *get_admin_messages.Action
 }
 
 func NewAggregator(pool *pgxpool.Pool) *Aggregator {
@@ -92,5 +94,6 @@ func NewAggregator(pool *pgxpool.Pool) *Aggregator {
 		EditStepText:       edit_step_text.NewAction(pool),
 		GetScenarios:       get_scenarios.NewAction(pool),
 		GetSteps:           get_steps.NewAction(pool),
+		GetAdminMessages:   get_admin_messages.NewAction(pool),
 	}
 }

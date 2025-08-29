@@ -25,7 +25,7 @@ type HandlerGroup struct {
 
 func NewGroup(adminModule *admin.Module) *HandlerGroup {
 	return &HandlerGroup{
-		GetAdminMessages:   get_admin_messages.NewHandler(),
+		GetAdminMessages:   get_admin_messages.NewHandler(adminModule),
 		CreateAdminMessage: create_admin_message.NewHandler(),
 		DeleteAdminMessage: delete_admin_message.NewHandler(),
 
