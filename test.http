@@ -10,9 +10,6 @@ DELETE http://localhost:8080/admin/users/1/lists/5
 ### удаления поста у пользователя
 DELETE http://localhost:8080/admin/users/1/post/10
 
-### удаление списка пользователей
-DELETE http://localhost:8080/admin/users-lists/1
-
 ### Создание списка пользователей
 POST http://localhost:8080/admin/users-lists
 Content-Type: application/json
@@ -21,7 +18,10 @@ Content-Type: application/json
   "name": "Список крутых"
 }
 
-### Создание списка пользователей
+### удаление списка пользователей
+DELETE http://localhost:8080/admin/users-lists/1
+
+### Создание админского сообщения
 POST http://localhost:8080/admin/messages
 Content-Type: application/json
 
@@ -30,6 +30,14 @@ Content-Type: application/json
   "type": 1,
   "scenario_id": 1,
   "step_id": 1
+}
+
+### удаление админского сообщения
+DELETE http://localhost:8080/admin/messages/1
+Content-Type: application/json
+
+{
+  "type": 1
 }
 
 ### Обновление сообщения в шаге

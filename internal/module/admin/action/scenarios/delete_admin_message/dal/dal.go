@@ -3,6 +3,7 @@ package dal
 import (
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/pkg/errors"
 )
 
 type Dal struct {
@@ -20,7 +21,10 @@ func (d *Dal) DeleteAdminMessage(ctx context.Context, adminMessageID int64) erro
 		delete from admin_messages where id = $1;
 	`
 
-	_, err := d.pool.Exec(ctx, sql, adminMessageID)
+	result, err := d.pool.Exec(ctx, sql, adminMessageID)
+	if result.RowsAffected() == 0 {
+		return errors.New("Ошибка при удалении админского сообщения")
+	}
 	return err
 }
 
@@ -29,6 +33,9 @@ func (d *Dal) DeleteDoctorMessage(ctx context.Context, doctorMessageID int64) er
 		delete from doctor_messages where id = $1;
 	`
 
-	_, err := d.pool.Exec(ctx, sql, doctorMessageID)
+	result, err := d.pool.Exec(ctx, sql, doctorMessageID)
+	if result.RowsAffected() == 0 {
+		return errors.New("Ошибка при удалении докторского сообщения")
+	}
 	return err
 }

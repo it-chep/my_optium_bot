@@ -23,7 +23,7 @@ func (a *Action) Do(ctx context.Context, messageID int64, messageType dto.AdminT
 	}
 
 	if messageType == dto.Doctor {
-		return a.dal.DeleteAdminMessage(ctx, messageID)
+		return a.dal.DeleteDoctorMessage(ctx, messageID)
 	}
 	// невалидный запрос значит
 	return nil

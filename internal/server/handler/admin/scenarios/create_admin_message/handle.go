@@ -33,11 +33,16 @@ func (h *Handler) Handle() http.HandlerFunc {
 			return
 		}
 
-		h.adminModule.Actions.CreateAdminMessage.Do(ctx, actionDto.CreateMessageRequest{
+		err := h.adminModule.Actions.CreateAdminMessage.Do(ctx, actionDto.CreateMessageRequest{
 			Message:    req.Message,
 			Type:       dto.AdminType(req.Type),
 			ScenarioID: req.ScenarioID,
 			StepID:     req.StepID,
 		})
+
+		if err != nil {
+			http.Error(w, "failed to create admin message: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
