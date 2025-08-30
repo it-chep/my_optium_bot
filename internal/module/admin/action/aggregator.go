@@ -27,6 +27,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/delete_user_from_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/get_user_by_id"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/get_users"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -66,7 +67,7 @@ type Aggregator struct {
 	GetAdminMessages   *get_admin_messages.Action
 }
 
-func NewAggregator(pool *pgxpool.Pool) *Aggregator {
+func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 	return &Aggregator{
 		// рассылки, списки пользователей
 		CreateUserList:     create_user_list.NewAction(pool),
@@ -75,8 +76,8 @@ func NewAggregator(pool *pgxpool.Pool) *Aggregator {
 		GetNewsletters:     get_newsletters.NewAction(pool),
 		GetRecepientsCount: get_recepients_count.NewAction(pool),
 		CreateNewsLetter:   create_newsletter.NewAction(pool),
-		SentDraftLetter:    send_draft_letter.NewAction(pool),
-		SendLetterToUsers:  send_letter_to_users.NewAction(pool),
+		SentDraftLetter:    send_draft_letter.NewAction(pool, bot),
+		SendLetterToUsers:  send_letter_to_users.NewAction(pool, bot),
 
 		// пользователи
 		GetUsers:              get_users.NewAction(pool),

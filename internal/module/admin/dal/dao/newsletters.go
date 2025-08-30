@@ -24,11 +24,12 @@ func (n Newsletter) ToDomain() dto.Newsletter {
 		UsersIds: lo.Map(n.UsersIds, func(item sql.NullInt64, index int) int64 {
 			return item.Int64
 		}),
-		MediaID:   n.MediaID.String,
-		CreatedAt: n.CreatedAt,
-		SentAt:    lo.ToPtr(n.SentAt.Time),
-		Name:      n.Name.String,
-		StatusID:  dto.NewslettersStatus(n.StatusID.Int64),
+		MediaID:     n.MediaID.String,
+		CreatedAt:   n.CreatedAt,
+		SentAt:      lo.ToPtr(n.SentAt.Time),
+		Name:        n.Name.String,
+		StatusID:    dto.NewslettersStatus(n.StatusID.Int64),
+		ContentType: dto.ContentType(n.ContentTypeID.Int64),
 	}
 }
 

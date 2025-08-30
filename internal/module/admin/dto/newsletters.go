@@ -39,4 +39,5 @@ type Newsletter struct {
 	SentAt          *time.Time
 	Name            string
 	StatusID        NewslettersStatus
+	ContentType     ContentType
 }

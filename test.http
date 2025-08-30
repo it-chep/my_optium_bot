@@ -99,3 +99,9 @@ Content-Type: application/json
     2
   ]
 }
+
+### Отправить тестовое письмо рассылки
+POST http://localhost:8080/admin/newsletters/1/send_test_letter
+
+### Отправить рассылку
+POST http://localhost:8080/admin/newsletters/1/send_letter
