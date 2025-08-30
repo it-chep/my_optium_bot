@@ -1,6 +1,6 @@
 package create_post_theme
 
 type Request struct {
-	ThemeName  string `json:"theme_name"`
+	Name       string `json:"name"`
 	IsRequired bool   `json:"is_required"`
 }

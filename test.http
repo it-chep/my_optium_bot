@@ -47,3 +47,12 @@ Content-Type: application/json
 {
   "message": "Новое сообщение у степа по ID степа"
 }
+
+### Создание темы постов
+POST http://localhost:8080/admin/posts_themes
+Content-Type: application/json
+
+{
+  "name": "Тема херня",
+  "is_required": false
+}

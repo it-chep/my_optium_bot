@@ -4,10 +4,10 @@
 -- Темы постов
 create table if not exists posts_themes
 (
-    id          bigserial,          -- id темы в системе
-    name        text not null,      -- Название темы (мотивация, обязательная тема)
-    is_required bool default false, -- флаг обязательная ли тема
-    theme_order int                 -- порядковый номер темы
+    id          bigserial,            -- id темы в системе
+    name        text not null unique, -- Название темы (мотивация, обязательная тема)
+    is_required bool default false,   -- флаг обязательная ли тема
+    theme_order int                   -- порядковый номер темы
 );
 
 -- Посты сценария информации
