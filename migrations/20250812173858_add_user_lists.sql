@@ -5,7 +5,7 @@
 create table if not exists user_lists
 (
     id   bigserial primary key,
-    name varchar(255) not null -- название списка
+    name varchar(255) not null unique -- название списка
 );
 
 -- M2M таблица пользователь - список пользователей

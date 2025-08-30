@@ -26,13 +26,13 @@ type HandlerGroup struct {
 func NewGroup(adminModule *admin.Module) *HandlerGroup {
 	return &HandlerGroup{
 		GetAdminMessages:   get_admin_messages.NewHandler(adminModule),
-		CreateAdminMessage: create_admin_message.NewHandler(),
-		DeleteAdminMessage: delete_admin_message.NewHandler(),
+		CreateAdminMessage: create_admin_message.NewHandler(adminModule),
+		DeleteAdminMessage: delete_admin_message.NewHandler(adminModule),
 
 		GetScenarios:      get_scenarios.NewHandler(adminModule),
-		EditScenarioDelay: edit_scenario_delay.NewHandler(),
+		EditScenarioDelay: edit_scenario_delay.NewHandler(adminModule),
 
 		GetSteps:     get_steps.NewHandler(adminModule),
-		EditStepText: edit_step_text.NewHandler(),
+		EditStepText: edit_step_text.NewHandler(adminModule),
 	}
 }

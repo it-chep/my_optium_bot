@@ -12,3 +12,22 @@ DELETE http://localhost:8080/admin/users/1/post/10
 
 ### удаление списка пользователей
 DELETE http://localhost:8080/admin/users-lists/1
+
+### Создание списка пользователей
+POST http://localhost:8080/admin/users-lists
+Content-Type: application/json
+
+{
+  "name": "Список крутых"
+}
+
+### Создание списка пользователей
+POST http://localhost:8080/admin/messages
+Content-Type: application/json
+
+{
+  "message": "Привет это системное оповещение у доктора",
+  "type": 1,
+  "scenario_id": 1,
+  "step_id": 1
+}

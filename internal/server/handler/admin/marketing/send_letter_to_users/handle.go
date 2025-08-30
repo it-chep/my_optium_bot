@@ -17,6 +17,15 @@ func NewHandler(adminModule *admin.Module) *Handler {
 
 func (h *Handler) Handle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("Test"))
+		//ctx := r.Context()
+		//
+		//newsletterIDStr := chi.URLParam(r, "newsletters_id")
+		//newsletterID, err := strconv.ParseInt(newsletterIDStr, 10, 64)
+		//if err != nil {
+		//	http.Error(w, "invalid list ID", http.StatusBadRequest)
+		//	return
+		//}
+		//
+		//h.adminModule.Actions.SendLetterToUsers.Do(ctx, newsletterID)
 	}
 }
