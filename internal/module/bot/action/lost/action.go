@@ -5,7 +5,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 )
 
-// Action Сценарий "Терапия"
+// Action Сценарий "потеряшка"
 type Action struct {
 	common *dal.CommonDal
 	bot    *tg_bot.Bot

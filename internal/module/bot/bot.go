@@ -39,6 +39,7 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 		5:  actions.Education.Do,
 		10: actions.TextHandler.Do,
 		9:  actions.Lost.Do,
+		8:  actions.Information.Do,
 	}
 
 	return &Bot{

@@ -22,6 +22,7 @@ type Newsletter struct {
 	SentAt          pq.NullTime     `db:"sent_at" json:"sent_at"`                   // sent_at
 	Name            sql.NullString  `db:"name" json:"name"`                         // name
 	StatusID        sql.NullInt64   `db:"status_id" json:"status_id"`               // status_id
+	ContentTypeID   sql.NullInt64   `db:"content_type_id" json:"content_type_id"`   // content_type_id
 }
 
 // zeroNewsletter zero value of dto

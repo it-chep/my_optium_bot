@@ -2,6 +2,8 @@ package handler
 
 import (
 	"fmt"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin"
+	adminHandler "github.com/it-chep/my_optium_bot.git/internal/server/handler/admin"
 	"net/http"
 
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/auth"
@@ -26,11 +28,11 @@ type Handler struct {
 	// todo: вероятно чето типо интерфейса будет с одним двумя методами (принимаем урл или контент тайп либо строку че тип ответил)
 	botParser TgHookParser
 	botModule *bot.Bot
-	// admin svc
-	router *chi.Mux
+	adminAgg  *adminHandler.HandlerAggregator
+	router    *chi.Mux
 }
 
-func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler {
+func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot, adminModule *admin.Module) *Handler {
 	h := &Handler{
 		botParser: botParser,
 		botModule: botModule,
@@ -38,6 +40,7 @@ func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler
 	}
 
 	h.setupMiddleware()
+	h.setupHandlerAggregator(adminModule)
 	h.setupRoutes(cfg)
 
 	return h
@@ -45,6 +48,10 @@ func NewHandler(cfg Config, botParser TgHookParser, botModule *bot.Bot) *Handler
 
 func (h *Handler) setupMiddleware() {
 	h.router.Use(middleware.LoggerMiddleware)
+}
+
+func (h *Handler) setupHandlerAggregator(adminModule *admin.Module) {
+	h.adminAgg = adminHandler.NewAggregator(adminModule)
 }
 
 func (h *Handler) setupRoutes(cfg Config) {
@@ -60,23 +67,59 @@ func (h *Handler) setupRoutes(cfg Config) {
 		r.Get("/check-token", auth.CheckValidHandler)
 		r.Post("/test", middleware.JWTMiddleware(h.admin())) // example
 
-		//
-		//	// User lists routes
-		//r.Route("/users-lists", func(r chi.Router) {
-		//r.Post("/", h.CreateUserList.Handle)       // POST /admin/users-lists
-		//r.Delete("/{id}", h.DeleteUserList.Handle) // DELETE /admin/users-lists/{id}
-		//r.Get("/", h.GetUsersLists.Handle)         // GET /admin/users-lists
-		//
-		//// User-list membership routes
-		//r.Post("/{listId}/users", h.AddUserToList.Handle)                 // POST /admin/users-lists/{listId}/users
-		//r.Delete("/{listId}/users/{userId}", h.DeleteUserFromList.Handle) // DELETE /admin/users-lists/{listId}/users/{userId}
-		//})
-		//
-		//	// Newsletter routes
-		//	r.Post("/newsletters", h.CreateNewsLetter.Handle) // POST /admin/newsletters
-		//
-		//	// Users routes
-		//	r.Get("/users", h.GetUsers.Handle) // GET /admin/users
+		// Авторизация
+		r.Post("/auth", h.adminAgg.Users.Auth.Handle())
+
+		// Пользователи
+		r.Route("/users", func(r chi.Router) {
+			r.Get("/", h.adminAgg.Users.GetUsers.Handle())             // GET /admin/users
+			r.Get("/{user_id}", h.adminAgg.Users.GetUserByID.Handle()) // GET /admin/users/{id}
+
+			r.Post("/{user_id}/post/{post_id}", h.adminAgg.Users.AddPostToPatient.Handle())        // POST /admin/users/{id}/post/{id}
+			r.Delete("/{user_id}/post/{post_id}", h.adminAgg.Users.DeletePostFromPatient.Handle()) // DELETE /admin/users/{id}/post/{id}
+
+			r.Post("/{user_id}/lists/{list_id}", h.adminAgg.Users.AddUserToList.Handle())        // POST /admin/users/{id}/lists/{id}
+			r.Delete("/{user_id}/lists/{list_id}", h.adminAgg.Users.DeleteUserFromList.Handle()) // DELETE  /admin/users/{id}/lists/{id}
+		})
+
+		// Сценарии
+		r.Route("/messages", func(r chi.Router) {
+			r.Get("/", h.adminAgg.Scenarios.GetAdminMessages.Handle())                  // GET /admin/messages
+			r.Post("/", h.adminAgg.Scenarios.CreateAdminMessage.Handle())               // POST /admin/messages
+			r.Delete("/{message_id}", h.adminAgg.Scenarios.DeleteAdminMessage.Handle()) // DELETE /admin/messages/{id}
+		})
+		r.Route("/steps", func(r chi.Router) {
+			r.Get("/", h.adminAgg.Scenarios.GetSteps.Handle())               // GET /admin/steps
+			r.Post("/{step_id}", h.adminAgg.Scenarios.EditStepText.Handle()) // POST /admin/steps/{id}
+		})
+		r.Route("/scenarios", func(r chi.Router) {
+			r.Get("/", h.adminAgg.Scenarios.GetScenarios.Handle())                    // GET /admin/scenarios
+			r.Post("/{scenario_id}", h.adminAgg.Scenarios.EditScenarioDelay.Handle()) // POST /admin/scenarios/{id}
+		})
+
+		// Информационные посты
+		r.Route("/information_posts", func(r chi.Router) {
+			r.Get("/", h.adminAgg.InformationPost.GetInformationPosts.Handle())    // GET /admin/information_posts
+			r.Post("/", h.adminAgg.InformationPost.CreateInformationPost.Handle()) // POST /admin/information_posts
+		})
+		r.Route("/posts_themes", func(r chi.Router) {
+			r.Get("/", h.adminAgg.InformationPost.GetPostsThemes.Handle())   // GET /admin/posts_themes
+			r.Post("/", h.adminAgg.InformationPost.CreatePostTheme.Handle()) // POST /admin/posts_themes
+		})
+
+		// Маркетинг
+		r.Route("/newsletters", func(r chi.Router) {
+			r.Get("/", h.adminAgg.Marketing.GetNewsLetters.Handle())                                    // GET /admin/newsletters
+			r.Post("/", h.adminAgg.Marketing.CreateNewsletter.Handle())                                 // POST /admin/newsletters
+			r.Post("/{newsletters_id}/send_test_letter", h.adminAgg.Marketing.SendDraftLetter.Handle()) // POST /admin/newsletters/{id}/send_test_letter
+			r.Post("/{newsletters_id}/send_letter", h.adminAgg.Marketing.SendLetterToUsers.Handle())    // POST /admin/newsletters/{id}/send_letter
+		})
+		r.Post("/recepients_count", h.adminAgg.Marketing.GetRecepientsCount.Handle()) // POST /admin/recepients_count
+		r.Route("/users-lists", func(r chi.Router) {
+			r.Get("/", h.adminAgg.Marketing.GetUsersLists.Handle())              // GET /admin/users-lists
+			r.Post("/", h.adminAgg.Marketing.CreateUserList.Handle())            // POST /admin/users-lists
+			r.Delete("/{list_id}", h.adminAgg.Marketing.DeleteUserList.Handle()) // DELETE /admin/users-lists/{id}
+		})
 	})
 }
 

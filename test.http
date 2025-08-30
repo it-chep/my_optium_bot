@@ -1,0 +1,107 @@
+### добавление пользователя в список
+POST http://localhost:8080/admin/users/1/lists/5
+
+### добавление поста пользователю
+POST http://localhost:8080/admin/users/1/post/4
+
+### удаление пользователя из списока
+DELETE http://localhost:8080/admin/users/1/lists/5
+
+### удаления поста у пользователя
+DELETE http://localhost:8080/admin/users/1/post/10
+
+### Создание списка пользователей
+POST http://localhost:8080/admin/users-lists
+Content-Type: application/json
+
+{
+  "name": "Список крутых"
+}
+
+### удаление списка пользователей
+DELETE http://localhost:8080/admin/users-lists/1
+
+### Создание админского сообщения
+POST http://localhost:8080/admin/messages
+Content-Type: application/json
+
+{
+  "message": "Привет это системное оповещение у доктора",
+  "type": 1,
+  "scenario_id": 1,
+  "step_id": 1
+}
+
+### удаление админского сообщения
+DELETE http://localhost:8080/admin/messages/1
+Content-Type: application/json
+
+{
+  "type": 1
+}
+
+### Обновление сообщения в шаге
+POST http://localhost:8080/admin/steps/1
+Content-Type: application/json
+
+{
+  "message": "Новое сообщение у степа по ID степа"
+}
+
+### Создание темы постов
+POST http://localhost:8080/admin/posts_themes
+Content-Type: application/json
+
+{
+  "name": "Тема херня",
+  "is_required": false
+}
+
+### Создание информационного поста
+POST http://localhost:8080/admin/information_posts
+Content-Type: application/json
+
+{
+  "post_name": "Sample Post",
+  "theme_id": 1,
+  "order": 1,
+  "message": "This is a sample post content"
+}
+
+### Изменить переодичность сценария
+POST http://localhost:8080/admin/scenarios/2
+Content-Type: application/json
+
+{
+  "delay": "10s"
+}
+
+### Изменить переодичность сценария
+POST http://localhost:8080/admin/newsletters
+Content-Type: application/json
+
+{
+  "name": "Пример рассылки",
+  "users_lists": [
+    3,
+    2
+  ],
+  "text": "Привет это пример рассылки так что иди нахуй"
+}
+
+### Получить количество пользвателей из списков
+POST http://localhost:8080/admin/recepients_count
+Content-Type: application/json
+
+{
+  "list_ids": [
+    3,
+    2
+  ]
+}
+
+### Отправить тестовое письмо рассылки
+POST http://localhost:8080/admin/newsletters/1/send_test_letter
+
+### Отправить рассылку
+POST http://localhost:8080/admin/newsletters/1/send_letter

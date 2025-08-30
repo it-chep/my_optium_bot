@@ -296,6 +296,19 @@ func (d *CommonDal) GetDoctorMessages(ctx context.Context, patientTg, scenario, 
 	return doctorMessage, nil
 }
 
+func (d *CommonDal) AssignInformationPosts(ctx context.Context, patientTg int64) error {
+	sql := `
+		insert into patient_posts (patient_id, post_id) 
+		select $1, ip.id 
+		from information_posts ip 
+			join posts_themes pt on ip.posts_theme_id = pt.id 
+		where pt.is_required = true	
+	`
+
+	_, err := d.pool.Exec(ctx, sql, patientTg)
+	return err
+}
+
 func (d *CommonDal) UpdateLastCommunication(ctx context.Context, patientID int64) error {
 	var (
 		sql = `update patients

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin"
 	"log"
 	"time"
 
@@ -41,6 +42,10 @@ func (a *App) initDB(ctx context.Context) *App {
 }
 
 func (a *App) initTgBot(context.Context) *App {
+	if !a.config.BotIsActive() {
+		return a
+	}
+
 	tgBot, err := tg_bot.NewTgBot(a.config)
 	if err != nil {
 		log.Fatal(err)
@@ -51,7 +56,8 @@ func (a *App) initTgBot(context.Context) *App {
 
 func (a *App) initModules(context.Context) *App {
 	a.modules = Modules{
-		Bot: bot.New(a.pool, a.bot),
+		Bot:   bot.New(a.pool, a.bot),
+		Admin: admin.New(a.pool, a.bot),
 	}
 	return a
 }
@@ -74,7 +80,7 @@ func (a *App) initJobs(ctx context.Context) *App {
 
 func (a *App) initServer(context.Context) *App {
 	// todo: в NewHandler передаем сервис для админки или бота
-	h := handler.NewHandler(a.config, a.bot, a.modules.Bot)
+	h := handler.NewHandler(a.config, a.bot, a.modules.Bot, a.modules.Admin)
 	srv := server.New(h)
 	a.server = srv
 	return a

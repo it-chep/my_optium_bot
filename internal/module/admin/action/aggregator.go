@@ -1,46 +1,106 @@
 package action
 
 import (
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/add_user_to_list"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/auth"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/create_newsletter"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/create_user_list"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/delete_user_from_list"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/delete_user_list"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/get_users"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/get_users_lists"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_information_post"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_post_theme"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_information_posts"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_posts_themes"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_newsletter"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_user_list"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/delete_user_list"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_newsletters"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_recepients_count"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_users_lists"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_draft_letter"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_letter_to_users"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/create_admin_message"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/delete_admin_message"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/edit_scenario_delay"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/edit_step_text"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/get_admin_messages"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/get_scenarios"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/get_steps"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/add_post_to_patient"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/add_user_to_list"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/auth"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/delete_post_from_patient"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/delete_user_from_list"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/get_user_by_id"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/get_users"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Aggregator struct {
-	// аутентификация
-	Auth *auth.Action
-
-	// списки пользователей
-	AddUserToList      *add_user_to_list.Action
-	DeleteUserFromList *delete_user_from_list.Action
+	// рассылки, списки пользователей
+	CreateNewsLetter   *create_newsletter.Action
 	CreateUserList     *create_user_list.Action
 	DeleteUserList     *delete_user_list.Action
 	GetUsersLists      *get_users_lists.Action
-
-	// рассылки
-	CreateNewsLetter *create_newsletter.Action
-	// SentDraftLetter
-	// SendLetterToUsers
+	GetNewsletters     *get_newsletters.Action
+	GetRecepientsCount *get_recepients_count.Action
+	SentDraftLetter    *send_draft_letter.Action
+	SendLetterToUsers  *send_letter_to_users.Action
 
 	// пользователи
-	GetUsers *get_users.Action
+	Auth                  *auth.Action
+	GetUsers              *get_users.Action
+	GetUserByID           *get_user_by_id.Action
+	AddPostToPatient      *add_post_to_patient.Action
+	DeletePostFromPatient *delete_post_from_patient.Action
+	AddUserToList         *add_user_to_list.Action
+	DeleteUserFromList    *delete_user_from_list.Action
+
+	// сценарий информация
+	GetPostsThemes        *get_posts_themes.Action
+	GetInformationPosts   *get_information_posts.Action
+	CreateInformationPost *create_information_post.Action
+	CreatePostTheme       *create_post_theme.Action
+
+	// сценарии
+	CreateAdminMessage *create_admin_message.Action
+	DeleteAdminMessage *delete_admin_message.Action
+	EditScenarioDelay  *edit_scenario_delay.Action
+	EditStepText       *edit_step_text.Action
+	GetScenarios       *get_scenarios.Action
+	GetSteps           *get_steps.Action
+	GetAdminMessages   *get_admin_messages.Action
 }
 
-func NewAggregator(pool *pgxpool.Pool) *Aggregator {
+func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 	return &Aggregator{
-		Auth:               auth.NewAction(),
-		AddUserToList:      add_user_to_list.NewAction(pool),
-		DeleteUserFromList: delete_user_from_list.NewAction(pool),
+		// рассылки, списки пользователей
 		CreateUserList:     create_user_list.NewAction(pool),
 		DeleteUserList:     delete_user_list.NewAction(pool),
 		GetUsersLists:      get_users_lists.NewAction(pool),
-		CreateNewsLetter:   create_newsletter.NewAction(),
-		GetUsers:           get_users.NewAction(pool),
+		GetNewsletters:     get_newsletters.NewAction(pool),
+		GetRecepientsCount: get_recepients_count.NewAction(pool),
+		CreateNewsLetter:   create_newsletter.NewAction(pool),
+		SentDraftLetter:    send_draft_letter.NewAction(pool, bot),
+		SendLetterToUsers:  send_letter_to_users.NewAction(pool, bot),
+
+		// пользователи
+		GetUsers:              get_users.NewAction(pool),
+		GetUserByID:           get_user_by_id.NewAction(pool),
+		Auth:                  auth.NewAction(),
+		AddPostToPatient:      add_post_to_patient.NewAction(pool),
+		AddUserToList:         add_user_to_list.NewAction(pool),
+		DeleteUserFromList:    delete_user_from_list.NewAction(pool),
+		DeletePostFromPatient: delete_post_from_patient.NewAction(pool),
+
+		// сценарий информация
+		GetPostsThemes:        get_posts_themes.New(pool),
+		GetInformationPosts:   get_information_posts.New(pool),
+		CreateInformationPost: create_information_post.New(pool),
+		CreatePostTheme:       create_post_theme.NewAction(pool),
+
+		// сценарии
+		CreateAdminMessage: create_admin_message.NewAction(pool),
+		DeleteAdminMessage: delete_admin_message.NewAction(pool),
+		EditScenarioDelay:  edit_scenario_delay.NewAction(pool),
+		EditStepText:       edit_step_text.NewAction(pool),
+		GetScenarios:       get_scenarios.NewAction(pool),
+		GetSteps:           get_steps.NewAction(pool),
+		GetAdminMessages:   get_admin_messages.NewAction(pool),
 	}
 }

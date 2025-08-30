@@ -32,7 +32,12 @@ func (a *Action) InvitePatient(ctx context.Context, tgID, chatID int64) error {
 		return err
 	}
 
-	return a.common.AssignScenarios(ctx, tgID, chatID, a.initScenarios())
+	err := a.common.AssignScenarios(ctx, tgID, chatID, a.initScenarios())
+	if err != nil {
+		return err
+	}
+
+	return a.common.AssignInformationPosts(ctx, tgID)
 }
 
 func (a *Action) initScenarios() []dto.Scenario {
@@ -48,7 +53,7 @@ func (a *Action) initScenarios() []dto.Scenario {
 		{ID: 4, ScheduledTime: noon.Add(1 * day)},         // терапия
 		{ID: 6, ScheduledTime: noon.Add(2 * day)},         // рекомендации
 		{ID: 2, ScheduledTime: noon.Add(4 * day)},         // метрики
-		//{ID: 0, ScheduledTime: noon.Add(7 * day)},         // информация
+		{ID: 8, ScheduledTime: now.Add(7 * time.Second)},  // информация
 		//{ID: 0, ScheduledTime: noon.Add(45 * day)},        // 2 этап
 		{ID: 9, ScheduledTime: noon.Add(21 * day)},  // потеряшка
 		{ID: 10, ScheduledTime: noon.Add(60 * day)}, // выведение на контроль
