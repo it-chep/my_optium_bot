@@ -38,6 +38,7 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 		6:  actions.TextHandler.Do,
 		5:  actions.Education.Do,
 		10: actions.TextHandler.Do,
+		9:  actions.Lost.Do,
 		8:  actions.Information.Do,
 	}
 
@@ -51,6 +52,7 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 			4:  actions.TextHandler.Handle,
 			6:  actions.TextHandler.Handle,
 			10: actions.TextHandler.Handle,
+			9:  actions.Lost.Handle,
 			5:  actions.Education.Handle,
 		},
 		JobActions: jobActions,

@@ -10,13 +10,14 @@ import (
 
 // ScenarioStep represents a row from 'public.scenario_steps'.
 type ScenarioStep struct {
-	ID         int            `db:"id" json:"id"`                   // id
-	ScenarioID int            `db:"scenario_id" json:"scenario_id"` // scenario_id
-	StepOrder  int            `db:"step_order" json:"step_order"`   // step_order
-	Content    string         `db:"content" json:"content"`         // content
-	IsFinal    sql.NullBool   `db:"is_final" json:"is_final"`       // is_final
-	NextDelay  *time.Duration `db:"next_delay" json:"next_delay"`   // next_delay
-	NextStep   sql.NullInt64  `db:"next_step" json:"next_step"`     // next_step
+	ID               int            `db:"id" json:"id"`                                 // id
+	ScenarioID       int            `db:"scenario_id" json:"scenario_id"`               // scenario_id
+	StepOrder        int            `db:"step_order" json:"step_order"`                 // step_order
+	Content          string         `db:"content" json:"content"`                       // content
+	IsFinal          sql.NullBool   `db:"is_final" json:"is_final"`                     // is_final
+	NextDelay        *time.Duration `db:"next_delay" json:"next_delay"`                 // next_delay
+	NextStep         sql.NullInt64  `db:"next_step" json:"next_step"`                   // next_step
+	DelayFromPatient sql.NullBool   `db:"delay_from_patient" json:"delay_from_patient"` // delay_from_patient
 }
 
 // zeroScenarioStep zero value of dto

@@ -8,7 +8,8 @@ create table if not exists patients
     full_name    text,
     sex          int,
     birth_date   date,
-    metrics_link text
+    metrics_link text,
+    last_communicate timestamp not null default now()
 );
 
 create table if not exists doctors

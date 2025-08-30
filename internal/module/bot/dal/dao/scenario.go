@@ -23,13 +23,14 @@ type Steps []*Step
 func (s Steps) ToDomain(buttons *Buttons) dto.Steps {
 	return lo.Map(s, func(s *Step, _ int) dto.Step {
 		step := dto.Step{
-			ID:         int64(s.ID),
-			ScenarioID: int64(s.ScenarioID),
-			Order:      s.StepOrder,
-			Text:       s.Content,
-			IsFinal:    s.IsFinal.Bool,
-			NextDelay:  s.NextDelay,
-			Buttons:    buttons.ByStep(s).ToDomain(),
+			ID:               int64(s.ID),
+			ScenarioID:       int64(s.ScenarioID),
+			Order:            s.StepOrder,
+			Text:             s.Content,
+			IsFinal:          s.IsFinal.Bool,
+			NextDelay:        s.NextDelay,
+			DelayFromPatient: s.DelayFromPatient.Bool,
+			Buttons:          buttons.ByStep(s).ToDomain(),
 		}
 		if s.NextStep.Valid {
 			step.NextStep = lo.ToPtr(int(s.NextStep.Int64))
@@ -44,12 +45,13 @@ type Step struct {
 
 func (s *Step) ToDomain(buttons Buttons) dto.Step {
 	return dto.Step{
-		ID:         int64(s.ID),
-		ScenarioID: int64(s.ScenarioID),
-		Order:      s.StepOrder,
-		Text:       s.Content,
-		IsFinal:    s.IsFinal.Bool,
-		Buttons:    buttons.ToDomain(),
+		ID:               int64(s.ID),
+		ScenarioID:       int64(s.ScenarioID),
+		Order:            s.StepOrder,
+		Text:             s.Content,
+		IsFinal:          s.IsFinal.Bool,
+		Buttons:          buttons.ToDomain(),
+		DelayFromPatient: s.DelayFromPatient.Bool,
 	}
 }
 
