@@ -56,3 +56,14 @@ Content-Type: application/json
   "name": "Тема херня",
   "is_required": false
 }
+
+### Создание информационного поста
+POST http://localhost:8080/admin/information_posts
+Content-Type: application/json
+
+{
+  "post_name": "Sample Post",
+  "theme_id": 1,
+  "order": 1,
+  "message": "This is a sample post content"
+}
