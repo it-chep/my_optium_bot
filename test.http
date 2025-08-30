@@ -67,3 +67,11 @@ Content-Type: application/json
   "order": 1,
   "message": "This is a sample post content"
 }
+
+### Изменить переодичность сценария
+POST http://localhost:8080/admin/scenarios/2
+Content-Type: application/json
+
+{
+  "delay": "10s"
+}
