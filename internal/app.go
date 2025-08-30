@@ -57,9 +57,15 @@ func (a *App) Run(ctx context.Context) {
 	for _, w := range a.workers {
 		w.Start(ctx)
 	}
-	go func() {
+
+	if !a.config.BotIsActive() {
 		log.Fatal(a.server.ListenAndServe())
-	}()
+	} else {
+		go func() {
+			log.Fatal(a.server.ListenAndServe())
+		}()
+	}
+
 	if !a.config.UseWebhook() && a.config.BotIsActive() {
 		fmt.Println("Режим поллинга")
 		// Режим поллинга

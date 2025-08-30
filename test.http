@@ -105,3 +105,30 @@ POST http://localhost:8080/admin/newsletters/1/send_test_letter
 
 ### Отправить рассылку
 POST http://localhost:8080/admin/newsletters/1/send_letter
+
+### Получить список пользователей
+GET http://localhost:8080/admin/users
+
+### Получить пользователея по ID
+GET http://localhost:8080/admin/users/1
+
+### Получить список информационных постов
+GET http://localhost:8080/admin/information_posts
+
+### Получить список тем постов
+GET http://localhost:8080/admin/posts_themes
+
+### Получить список списков рассылок
+GET http://localhost:8080/admin/users-lists
+
+### Получить список админских уведомлений
+GET http://localhost:8080/admin/messages
+
+### Получить список шагов
+GET http://localhost:8080/admin/steps
+
+### Получить список сценариев
+GET http://localhost:8080/admin/scenarios
+
+### Получить список рассылок
+GET http://localhost:8080/admin/newsletters
