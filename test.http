@@ -31,3 +31,11 @@ Content-Type: application/json
   "scenario_id": 1,
   "step_id": 1
 }
+
+### Обновление сообщения в шаге
+POST http://localhost:8080/admin/steps/1
+Content-Type: application/json
+
+{
+  "message": "Новое сообщение у степа по ID степа"
+}
