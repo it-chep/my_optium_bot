@@ -8,7 +8,7 @@ import "reflect"
 type AdminMessage struct {
 	ID         int    `db:"id" json:"id"`                   // id
 	ScenarioID int64  `db:"scenario_id" json:"scenario_id"` // scenario_id
-	Step       int    `db:"step" json:"step"`               // step
+	NextStep   int    `db:"next_step" json:"next_step"`     // next_step
 	Message    string `db:"message" json:"message"`         // message
 }
 

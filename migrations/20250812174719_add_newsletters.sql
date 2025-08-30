@@ -1,13 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
 
--- Статус рассылки
-create table if not exists newsletters_status
-(
-    id   bigserial primary key,
-    name varchar(255) not null -- название статуса
-);
-
 -- Рассылки
 create table if not exists newsletters
 (
@@ -17,6 +10,7 @@ create table if not exists newsletters
     users_lists      int[],                            -- списки пользователей
     users_ids        bigint[],                         -- id пользователей, которым ушла рассылка
     media_id         varchar(255),                     -- медиа ID
+    content_type_id  integer,
     created_at       timestamp not null default now(), -- дата создания
     sent_at          timestamp,                        -- дата отправки
     name             varchar(255),                     -- Название рассылки
@@ -24,11 +18,6 @@ create table if not exists newsletters
     -- отложенная отправка ?????
 );
 
-insert into newsletters_status(name)
-values ('Черновик'),     -- 1
-       ('Отправляется'), -- 2
-       ('Отправлено') -- 3
-;
 -- +goose StatementEnd
 
 -- +goose Down

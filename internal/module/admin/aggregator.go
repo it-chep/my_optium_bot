@@ -12,7 +12,7 @@ type Module struct {
 }
 
 func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Module {
-	actions := action.NewAggregator(pool)
+	actions := action.NewAggregator(pool, bot)
 
 	return &Module{
 		Actions: actions,
