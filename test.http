@@ -75,3 +75,27 @@ Content-Type: application/json
 {
   "delay": "10s"
 }
+
+### Изменить переодичность сценария
+POST http://localhost:8080/admin/newsletters
+Content-Type: application/json
+
+{
+  "name": "Пример рассылки",
+  "users_lists": [
+    3,
+    2
+  ],
+  "text": "Привет это пример рассылки так что иди нахуй"
+}
+
+### Получить количество пользвателей из списков
+POST http://localhost:8080/admin/recepients_count
+Content-Type: application/json
+
+{
+  "list_ids": [
+    3,
+    2
+  ]
+}

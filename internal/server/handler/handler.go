@@ -114,6 +114,7 @@ func (h *Handler) setupRoutes(cfg Config) {
 			r.Post("/{newsletters_id}/send_test_letter", h.adminAgg.Marketing.SendDraftLetter.Handle()) // POST /admin/newsletters/{id}/send_test_letter
 			r.Post("/{newsletters_id}/send_letter", h.adminAgg.Marketing.SendLetterToUsers.Handle())    // POST /admin/newsletters/{id}/send_letter
 		})
+		r.Post("/recepients_count", h.adminAgg.Marketing.GetRecepientsCount.Handle()) // POST /admin/recepients_count
 		r.Route("/users-lists", func(r chi.Router) {
 			r.Get("/", h.adminAgg.Marketing.GetUsersLists.Handle())              // GET /admin/users-lists
 			r.Post("/", h.adminAgg.Marketing.CreateUserList.Handle())            // POST /admin/users-lists

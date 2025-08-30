@@ -9,6 +9,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/delete_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_newsletters"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_recepients_count"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_users_lists"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_draft_letter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_letter_to_users"
@@ -31,13 +32,14 @@ import (
 
 type Aggregator struct {
 	// рассылки, списки пользователей
-	CreateNewsLetter  *create_newsletter.Action
-	CreateUserList    *create_user_list.Action
-	DeleteUserList    *delete_user_list.Action
-	GetUsersLists     *get_users_lists.Action
-	GetNewsletters    *get_newsletters.Action
-	SentDraftLetter   *send_draft_letter.Action
-	SendLetterToUsers *send_letter_to_users.Action
+	CreateNewsLetter   *create_newsletter.Action
+	CreateUserList     *create_user_list.Action
+	DeleteUserList     *delete_user_list.Action
+	GetUsersLists      *get_users_lists.Action
+	GetNewsletters     *get_newsletters.Action
+	GetRecepientsCount *get_recepients_count.Action
+	SentDraftLetter    *send_draft_letter.Action
+	SendLetterToUsers  *send_letter_to_users.Action
 
 	// пользователи
 	Auth                  *auth.Action
@@ -67,13 +69,14 @@ type Aggregator struct {
 func NewAggregator(pool *pgxpool.Pool) *Aggregator {
 	return &Aggregator{
 		// рассылки, списки пользователей
-		CreateUserList:    create_user_list.NewAction(pool),
-		DeleteUserList:    delete_user_list.NewAction(pool),
-		GetUsersLists:     get_users_lists.NewAction(pool),
-		GetNewsletters:    get_newsletters.NewAction(pool),
-		CreateNewsLetter:  create_newsletter.NewAction(),
-		SentDraftLetter:   send_draft_letter.NewAction(pool),
-		SendLetterToUsers: send_letter_to_users.NewAction(pool),
+		CreateUserList:     create_user_list.NewAction(pool),
+		DeleteUserList:     delete_user_list.NewAction(pool),
+		GetUsersLists:      get_users_lists.NewAction(pool),
+		GetNewsletters:     get_newsletters.NewAction(pool),
+		GetRecepientsCount: get_recepients_count.NewAction(pool),
+		CreateNewsLetter:   create_newsletter.NewAction(pool),
+		SentDraftLetter:    send_draft_letter.NewAction(pool),
+		SendLetterToUsers:  send_letter_to_users.NewAction(pool),
 
 		// пользователи
 		GetUsers:              get_users.NewAction(pool),
