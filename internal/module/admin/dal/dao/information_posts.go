@@ -8,7 +8,8 @@ import (
 
 type InformationPost struct {
 	xo.InformationPost
-	ThemeIsRequired sql.NullBool `db:"theme_is_required"`
+	ThemeIsRequired sql.NullBool   `db:"theme_is_required"`
+	PostThemeName   sql.NullString `db:"posts_theme_name"`
 }
 
 type InformationPostList []InformationPost
@@ -23,6 +24,7 @@ func (ip InformationPost) ToDomain() dto.InformationPost {
 		ContentTypeID:   ip.ContentTypeID.Int64,
 		PostText:        ip.PostText,
 		ThemeIsRequired: ip.ThemeIsRequired.Bool,
+		ThemeName:       ip.PostThemeName.String,
 	}
 }
 

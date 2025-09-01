@@ -76,7 +76,7 @@ Content-Type: application/json
   "delay": "10s"
 }
 
-### Изменить переодичность сценария
+### Создание рассылки
 POST http://localhost:8080/admin/newsletters
 Content-Type: application/json
 
@@ -132,3 +132,21 @@ GET http://localhost:8080/admin/scenarios
 
 ### Получить список рассылок
 GET http://localhost:8080/admin/newsletters
+
+### Получить типы медиа файлов для рассылки
+GET http://localhost:8080/admin/content_types
+
+### Получить рассылку по ID
+GET http://localhost:8080/admin/newsletters/1
+
+### Получить информационный пост по ID
+GET http://localhost:8080/admin/information_posts/1
+
+### ОБНОВИТЬ информационный пост по ID
+POST http://localhost:8080/admin/information_posts/1
+
+### ОБНОВИТЬ список рассылки по ID
+POST http://localhost:8080/admin/users-lists/1
+
+### ОБНОВИТЬ сценарий пользователя
+POST http://localhost:8080/admin/users/1/scenario

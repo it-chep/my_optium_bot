@@ -29,6 +29,7 @@ type InformationPost struct {
 	PostText      string
 
 	ThemeIsRequired bool
+	ThemeName       string
 }
 
 type InformationPostListView struct {

@@ -10,7 +10,4 @@ import (
 	"strings"
 	"time"
 	"github.com/google/uuid"
-
-	"gitlab.ozon.ru/whc/ozjob/employee-profile/profile-job/internal/pkg/postgres"
-	"gitlab.ozon.ru/platform/tracer-go/logger"
 )

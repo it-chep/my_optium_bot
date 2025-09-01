@@ -100,6 +100,7 @@ func (h *Handler) setupRoutes(cfg Config) {
 		// Информационные посты
 		r.Route("/information_posts", func(r chi.Router) {
 			r.Get("/", h.adminAgg.InformationPost.GetInformationPosts.Handle())    // GET /admin/information_posts
+			r.Get("/{post_id}", h.adminAgg.InformationPost.GetPostByID.Handle())   // GET /admin/information_posts/{id}
 			r.Post("/", h.adminAgg.InformationPost.CreateInformationPost.Handle()) // POST /admin/information_posts
 		})
 		r.Route("/posts_themes", func(r chi.Router) {
@@ -111,10 +112,12 @@ func (h *Handler) setupRoutes(cfg Config) {
 		r.Route("/newsletters", func(r chi.Router) {
 			r.Get("/", h.adminAgg.Marketing.GetNewsLetters.Handle())                                    // GET /admin/newsletters
 			r.Post("/", h.adminAgg.Marketing.CreateNewsletter.Handle())                                 // POST /admin/newsletters
+			r.Get("/{newsletters_id}", h.adminAgg.Marketing.GetNewsletterByID.Handle())                 // GET /admin/newsletters/{id}
 			r.Post("/{newsletters_id}/send_test_letter", h.adminAgg.Marketing.SendDraftLetter.Handle()) // POST /admin/newsletters/{id}/send_test_letter
 			r.Post("/{newsletters_id}/send_letter", h.adminAgg.Marketing.SendLetterToUsers.Handle())    // POST /admin/newsletters/{id}/send_letter
 		})
 		r.Post("/recepients_count", h.adminAgg.Marketing.GetRecepientsCount.Handle()) // POST /admin/recepients_count
+		r.Get("/content_types", h.adminAgg.Marketing.GetContentTypes.Handle())        // GET /admin/content_types
 		r.Route("/users-lists", func(r chi.Router) {
 			r.Get("/", h.adminAgg.Marketing.GetUsersLists.Handle())              // GET /admin/users-lists
 			r.Post("/", h.adminAgg.Marketing.CreateUserList.Handle())            // POST /admin/users-lists

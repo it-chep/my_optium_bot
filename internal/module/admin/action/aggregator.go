@@ -4,10 +4,13 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_information_post"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_post_theme"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_information_posts"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_post_by_id"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_posts_themes"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/delete_user_list"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_content_types"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_newsletter_by_id"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_newsletters"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_recepients_count"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_users_lists"
@@ -37,10 +40,12 @@ type Aggregator struct {
 	CreateUserList     *create_user_list.Action
 	DeleteUserList     *delete_user_list.Action
 	GetUsersLists      *get_users_lists.Action
+	GetNewsletterByID  *get_newsletter_by_id.Action
 	GetNewsletters     *get_newsletters.Action
 	GetRecepientsCount *get_recepients_count.Action
 	SentDraftLetter    *send_draft_letter.Action
 	SendLetterToUsers  *send_letter_to_users.Action
+	GetContentTypes    *get_content_types.Action
 
 	// пользователи
 	Auth                  *auth.Action
@@ -56,6 +61,7 @@ type Aggregator struct {
 	GetInformationPosts   *get_information_posts.Action
 	CreateInformationPost *create_information_post.Action
 	CreatePostTheme       *create_post_theme.Action
+	GetPostByID           *get_post_by_id.Action
 
 	// сценарии
 	CreateAdminMessage *create_admin_message.Action
@@ -74,10 +80,12 @@ func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 		DeleteUserList:     delete_user_list.NewAction(pool),
 		GetUsersLists:      get_users_lists.NewAction(pool),
 		GetNewsletters:     get_newsletters.NewAction(pool),
+		GetNewsletterByID:  get_newsletter_by_id.NewAction(pool),
 		GetRecepientsCount: get_recepients_count.NewAction(pool),
 		CreateNewsLetter:   create_newsletter.NewAction(pool),
 		SentDraftLetter:    send_draft_letter.NewAction(pool, bot),
 		SendLetterToUsers:  send_letter_to_users.NewAction(pool, bot),
+		GetContentTypes:    get_content_types.New(pool),
 
 		// пользователи
 		GetUsers:              get_users.NewAction(pool),
@@ -93,6 +101,7 @@ func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 		GetInformationPosts:   get_information_posts.New(pool),
 		CreateInformationPost: create_information_post.New(pool),
 		CreatePostTheme:       create_post_theme.NewAction(pool),
+		GetPostByID:           get_post_by_id.New(pool),
 
 		// сценарии
 		CreateAdminMessage: create_admin_message.NewAction(pool),
