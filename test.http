@@ -167,3 +167,6 @@ Content-Type: application/json
 
 ### Получить шаги сценария
 GET http://localhost:8080/admin/scenarios/1/steps
+
+### Удалить пост
+DELETE http://localhost:8080/admin/information_posts/1

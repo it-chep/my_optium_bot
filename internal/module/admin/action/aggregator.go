@@ -3,6 +3,7 @@ package action
 import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_information_post"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_post_theme"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/delete_post"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_information_posts"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_post_by_id"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_posts_themes"
@@ -69,6 +70,7 @@ type Aggregator struct {
 	CreateInformationPost *create_information_post.Action
 	CreatePostTheme       *create_post_theme.Action
 	GetPostByID           *get_post_by_id.Action
+	DeletePost            *delete_post.Action
 
 	// сценарии
 	CreateAdminMessage *create_admin_message.Action
@@ -113,6 +115,7 @@ func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 		CreateInformationPost: create_information_post.New(pool),
 		CreatePostTheme:       create_post_theme.NewAction(pool),
 		GetPostByID:           get_post_by_id.New(pool),
+		DeletePost:            delete_post.New(pool),
 
 		// сценарии
 		CreateAdminMessage: create_admin_message.NewAction(pool),

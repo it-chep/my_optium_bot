@@ -102,6 +102,7 @@ func (h *Handler) setupRoutes(cfg Config) {
 		r.Route("/information_posts", func(r chi.Router) {
 			r.Get("/", h.adminAgg.InformationPost.GetInformationPosts.Handle())    // GET /admin/information_posts
 			r.Get("/{post_id}", h.adminAgg.InformationPost.GetPostByID.Handle())   // GET /admin/information_posts/{id}
+			r.Delete("/{post_id}", h.adminAgg.InformationPost.DeletePost.Handle()) // DELETE /admin/information_posts/{id}
 			r.Post("/", h.adminAgg.InformationPost.CreateInformationPost.Handle()) // POST /admin/information_posts
 		})
 		r.Route("/posts_themes", func(r chi.Router) {
