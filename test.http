@@ -152,7 +152,18 @@ POST http://localhost:8080/admin/users-lists/1
 POST http://localhost:8080/admin/users/1/scenario
 
 ### ОБНОВИТЬ рассылку пользователя
-POST /admin/newsletters/{id}
+POST http://localhost:8080/admin/newsletters/{id}
 
 ### Удалить рассылку
-DELETE /admin/newsletters/{id}
+DELETE http://localhost:8080/admin/newsletters/{id}
+
+### Изменить название списка рассылок
+POST http://localhost:8080/admin/users-lists/{id}
+Content-Type: application/json
+
+{
+  "name": "123"
+}
+
+### Получить шаги сценария
+GET http://localhost:8080/admin/scenarios/1/steps

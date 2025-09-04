@@ -93,8 +93,9 @@ func (h *Handler) setupRoutes(cfg Config) {
 			r.Post("/{step_id}", h.adminAgg.Scenarios.EditStepText.Handle()) // POST /admin/steps/{id}
 		})
 		r.Route("/scenarios", func(r chi.Router) {
-			r.Get("/", h.adminAgg.Scenarios.GetScenarios.Handle())                    // GET /admin/scenarios
-			r.Post("/{scenario_id}", h.adminAgg.Scenarios.EditScenarioDelay.Handle()) // POST /admin/scenarios/{id}
+			r.Get("/", h.adminAgg.Scenarios.GetScenarios.Handle())                        // GET /admin/scenarios
+			r.Post("/{scenario_id}", h.adminAgg.Scenarios.EditScenarioDelay.Handle())     // POST /admin/scenarios/{id}
+			r.Get("/{scenario_id}/steps", h.adminAgg.Scenarios.GetScenarioSteps.Handle()) // GET /admin/scenarios/{id}/steps
 		})
 
 		// Информационные посты
@@ -123,6 +124,7 @@ func (h *Handler) setupRoutes(cfg Config) {
 		r.Route("/users-lists", func(r chi.Router) {
 			r.Get("/", h.adminAgg.Marketing.GetUsersLists.Handle())              // GET /admin/users-lists
 			r.Post("/", h.adminAgg.Marketing.CreateUserList.Handle())            // POST /admin/users-lists
+			r.Post("/{list_id}", h.adminAgg.Marketing.UpdateListName.Handle())   // POST /admin/users-lists/{id}
 			r.Delete("/{list_id}", h.adminAgg.Marketing.DeleteUserList.Handle()) // DELETE /admin/users-lists/{id}
 		})
 	})

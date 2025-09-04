@@ -7,6 +7,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/scenarios/edit_scenario_delay"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/scenarios/edit_step_text"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/scenarios/get_admin_messages"
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/scenarios/get_scenario_steps"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/scenarios/get_scenarios"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/scenarios/get_steps"
 )
@@ -18,6 +19,7 @@ type HandlerGroup struct {
 
 	GetScenarios      *get_scenarios.Handler
 	EditScenarioDelay *edit_scenario_delay.Handler
+	GetScenarioSteps  *get_scenario_steps.Handler
 
 	GetSteps     *get_steps.Handler
 	EditStepText *edit_step_text.Handler
@@ -31,6 +33,7 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 
 		GetScenarios:      get_scenarios.NewHandler(adminModule),
 		EditScenarioDelay: edit_scenario_delay.NewHandler(adminModule),
+		GetScenarioSteps:  get_scenario_steps.NewHandler(adminModule),
 
 		GetSteps:     get_steps.NewHandler(adminModule),
 		EditStepText: edit_step_text.NewHandler(adminModule),

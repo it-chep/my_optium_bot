@@ -13,6 +13,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/get_users_lists"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/send_draft_letter"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/send_letter_to_users"
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/update_list_name"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/update_newsletter"
 )
 
@@ -26,10 +27,14 @@ type HandlerGroup struct {
 	GetNewsletterByID  *get_newsletter_by_id.Handler
 	GetRecepientsCount *get_recepients_count.Handler
 	GetContentTypes    *get_content_types.Handler
-	CreateUserList     *create_user_list.Handler
-	DeleteUserList     *delete_user_list.Handler
-	DeleteNewsletter   *delete_newsletter.Handler
-	UpdateNewsletter   *update_newsletter.Handler
+
+	CreateUserList *create_user_list.Handler
+
+	DeleteUserList   *delete_user_list.Handler
+	DeleteNewsletter *delete_newsletter.Handler
+
+	UpdateNewsletter *update_newsletter.Handler
+	UpdateListName   *update_list_name.Handler
 }
 
 func NewGroup(adminModule *admin.Module) *HandlerGroup {
@@ -43,9 +48,13 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 		GetNewsletterByID:  get_newsletter_by_id.NewHandler(adminModule),
 		GetContentTypes:    get_content_types.NewHandler(adminModule),
 		GetRecepientsCount: get_recepients_count.NewHandler(adminModule),
-		CreateUserList:     create_user_list.NewHandler(adminModule),
-		DeleteUserList:     delete_user_list.NewHandler(adminModule),
-		DeleteNewsletter:   delete_newsletter.NewHandler(adminModule),
-		UpdateNewsletter:   update_newsletter.NewHandler(adminModule),
+
+		CreateUserList: create_user_list.NewHandler(adminModule),
+
+		DeleteUserList:   delete_user_list.NewHandler(adminModule),
+		DeleteNewsletter: delete_newsletter.NewHandler(adminModule),
+
+		UpdateNewsletter: update_newsletter.NewHandler(adminModule),
+		UpdateListName:   update_list_name.NewHandler(adminModule),
 	}
 }
