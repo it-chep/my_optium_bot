@@ -152,13 +152,13 @@ POST http://localhost:8080/admin/users-lists/1
 POST http://localhost:8080/admin/users/1/scenario
 
 ### ОБНОВИТЬ рассылку пользователя
-POST http://localhost:8080/admin/newsletters/{id}
+POST http://localhost:8080/admin/newsletters/1
 
 ### Удалить рассылку
-DELETE http://localhost:8080/admin/newsletters/{id}
+DELETE http://localhost:8080/admin/newsletters/1
 
 ### Изменить название списка рассылок
-POST http://localhost:8080/admin/users-lists/{id}
+POST http://localhost:8080/admin/users-lists/1
 Content-Type: application/json
 
 {
@@ -170,3 +170,11 @@ GET http://localhost:8080/admin/scenarios/1/steps
 
 ### Удалить пост
 DELETE http://localhost:8080/admin/information_posts/1
+
+### Обновить время отправки сценария
+POST http://localhost:8080/admin/users/{id}/scheduled_time
+Content-Type: application/json
+
+{
+  "scheduled_time": "2006-01-02 15:04:05"
+}

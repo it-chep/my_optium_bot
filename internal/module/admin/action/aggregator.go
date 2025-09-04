@@ -35,6 +35,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/delete_user_from_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/get_user_by_id"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/get_users"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/user/update_shedule_time"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/tg_bot"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -63,6 +64,7 @@ type Aggregator struct {
 	DeletePostFromPatient *delete_post_from_patient.Action
 	AddUserToList         *add_user_to_list.Action
 	DeleteUserFromList    *delete_user_from_list.Action
+	UpdateSheduleTime     *update_shedule_time.Action
 
 	// сценарий информация
 	GetPostsThemes        *get_posts_themes.Action
@@ -108,6 +110,7 @@ func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 		AddUserToList:         add_user_to_list.NewAction(pool),
 		DeleteUserFromList:    delete_user_from_list.NewAction(pool),
 		DeletePostFromPatient: delete_post_from_patient.NewAction(pool),
+		UpdateSheduleTime:     update_shedule_time.NewAction(pool),
 
 		// сценарий информация
 		GetPostsThemes:        get_posts_themes.New(pool),

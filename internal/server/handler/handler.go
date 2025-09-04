@@ -75,6 +75,8 @@ func (h *Handler) setupRoutes(cfg Config) {
 			r.Get("/", h.adminAgg.Users.GetUsers.Handle())             // GET /admin/users
 			r.Get("/{user_id}", h.adminAgg.Users.GetUserByID.Handle()) // GET /admin/users/{id}
 
+			r.Post("/{user_id}/scheduled_time", h.adminAgg.Users.UpdateSheduleTime.Handle()) // POST /admin/users/{id}/scheduled_time
+
 			r.Post("/{user_id}/post/{post_id}", h.adminAgg.Users.AddPostToPatient.Handle())        // POST /admin/users/{id}/post/{id}
 			r.Delete("/{user_id}/post/{post_id}", h.adminAgg.Users.DeletePostFromPatient.Handle()) // DELETE /admin/users/{id}/post/{id}
 
