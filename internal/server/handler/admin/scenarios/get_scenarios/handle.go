@@ -44,7 +44,7 @@ func (h *Handler) prepareResponse(scenarios []dto.Scenario) Response {
 			return Scenario{
 				ID:    item.ID,
 				Name:  item.Name,
-				Delay: item.Delay,
+				Delay: item.Delay.String(),
 			}
 		}),
 	}
