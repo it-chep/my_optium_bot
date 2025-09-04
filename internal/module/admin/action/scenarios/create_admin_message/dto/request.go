@@ -6,5 +6,5 @@ type CreateMessageRequest struct {
 	Message    string
 	Type       dto.AdminType
 	ScenarioID int64
-	StepID     int64
+	StepOrder  int64
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_posts_themes"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_user_list"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/delete_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/delete_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_content_types"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_newsletter_by_id"
@@ -16,6 +17,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/get_users_lists"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_draft_letter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/send_letter_to_users"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/update_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/create_admin_message"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/delete_admin_message"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/scenarios/edit_scenario_delay"
@@ -46,6 +48,8 @@ type Aggregator struct {
 	SentDraftLetter    *send_draft_letter.Action
 	SendLetterToUsers  *send_letter_to_users.Action
 	GetContentTypes    *get_content_types.Action
+	DeleteNewsteller   *delete_newsletter.Action
+	UpdateNewsletter   *update_newsletter.Action
 
 	// пользователи
 	Auth                  *auth.Action
@@ -86,6 +90,8 @@ func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 		SentDraftLetter:    send_draft_letter.NewAction(pool, bot),
 		SendLetterToUsers:  send_letter_to_users.NewAction(pool, bot),
 		GetContentTypes:    get_content_types.New(pool),
+		DeleteNewsteller:   delete_newsletter.New(pool),
+		UpdateNewsletter:   update_newsletter.New(pool),
 
 		// пользователи
 		GetUsers:              get_users.NewAction(pool),

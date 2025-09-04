@@ -150,3 +150,9 @@ POST http://localhost:8080/admin/users-lists/1
 
 ### ОБНОВИТЬ сценарий пользователя
 POST http://localhost:8080/admin/users/1/scenario
+
+### ОБНОВИТЬ рассылку пользователя
+POST /admin/newsletters/{id}
+
+### Удалить рассылку
+DELETE /admin/newsletters/{id}

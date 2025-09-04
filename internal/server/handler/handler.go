@@ -112,7 +112,9 @@ func (h *Handler) setupRoutes(cfg Config) {
 		r.Route("/newsletters", func(r chi.Router) {
 			r.Get("/", h.adminAgg.Marketing.GetNewsLetters.Handle())                                    // GET /admin/newsletters
 			r.Post("/", h.adminAgg.Marketing.CreateNewsletter.Handle())                                 // POST /admin/newsletters
+			r.Post("/{newsletters_id}", h.adminAgg.Marketing.UpdateNewsletter.Handle())                 // POST /admin/newsletters/{id}
 			r.Get("/{newsletters_id}", h.adminAgg.Marketing.GetNewsletterByID.Handle())                 // GET /admin/newsletters/{id}
+			r.Delete("/{newsletters_id}", h.adminAgg.Marketing.DeleteNewsletter.Handle())               // DELETE /admin/newsletters/{id}
 			r.Post("/{newsletters_id}/send_test_letter", h.adminAgg.Marketing.SendDraftLetter.Handle()) // POST /admin/newsletters/{id}/send_test_letter
 			r.Post("/{newsletters_id}/send_letter", h.adminAgg.Marketing.SendLetterToUsers.Handle())    // POST /admin/newsletters/{id}/send_letter
 		})

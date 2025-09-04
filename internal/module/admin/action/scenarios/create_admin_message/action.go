@@ -20,11 +20,11 @@ func NewAction(pool *pgxpool.Pool) *Action {
 
 func (a *Action) Do(ctx context.Context, request actionDto.CreateMessageRequest) error {
 	if request.Type == dto.Admin {
-		return a.dal.CreateAdminMessage(ctx, request.ScenarioID, request.ScenarioID, request.Message)
+		return a.dal.CreateAdminMessage(ctx, request.ScenarioID, request.StepOrder, request.Message)
 	}
 
 	if request.Type == dto.Doctor {
-		return a.dal.CreateDoctorMessage(ctx, request.ScenarioID, request.ScenarioID, request.Message)
+		return a.dal.CreateDoctorMessage(ctx, request.ScenarioID, request.StepOrder, request.Message)
 	}
 
 	// невалидный вопрос

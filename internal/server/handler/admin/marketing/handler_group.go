@@ -4,6 +4,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/create_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/create_user_list"
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/delete_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/delete_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/get_content_types"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/get_newsletter_by_id"
@@ -12,6 +13,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/get_users_lists"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/send_draft_letter"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/send_letter_to_users"
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/marketing/update_newsletter"
 )
 
 type HandlerGroup struct {
@@ -26,6 +28,8 @@ type HandlerGroup struct {
 	GetContentTypes    *get_content_types.Handler
 	CreateUserList     *create_user_list.Handler
 	DeleteUserList     *delete_user_list.Handler
+	DeleteNewsletter   *delete_newsletter.Handler
+	UpdateNewsletter   *update_newsletter.Handler
 }
 
 func NewGroup(adminModule *admin.Module) *HandlerGroup {
@@ -41,5 +45,7 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 		GetRecepientsCount: get_recepients_count.NewHandler(adminModule),
 		CreateUserList:     create_user_list.NewHandler(adminModule),
 		DeleteUserList:     delete_user_list.NewHandler(adminModule),
+		DeleteNewsletter:   delete_newsletter.NewHandler(adminModule),
+		UpdateNewsletter:   update_newsletter.NewHandler(adminModule),
 	}
 }

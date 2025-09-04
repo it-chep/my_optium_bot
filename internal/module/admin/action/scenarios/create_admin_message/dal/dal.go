@@ -15,22 +15,34 @@ func NewDal(pool *pgxpool.Pool) *Dal {
 	}
 }
 
-func (d *Dal) CreateAdminMessage(ctx context.Context, scenarioID, stepID int64, message string) error {
+func (d *Dal) CreateAdminMessage(ctx context.Context, scenarioID, stepOrder int64, message string) error {
 	sql := `
-		insert into admin_messages (scenario_id, next_step, message) 
-		values ($1, $2, $3)
+		with step as (select id
+					  from scenario_steps
+					  where scenario_id = $1
+						and step_order = $2)
+		insert
+		into admin_messages (scenario_id, next_step, message)
+		select $1, id, $3
+		from step
 	`
 
-	_, err := d.pool.Exec(ctx, sql, scenarioID, stepID, message)
+	_, err := d.pool.Exec(ctx, sql, scenarioID, stepOrder, message)
 	return err
 }
 
-func (d *Dal) CreateDoctorMessage(ctx context.Context, scenarioID, stepID int64, message string) error {
+func (d *Dal) CreateDoctorMessage(ctx context.Context, scenarioID, stepOrder int64, message string) error {
 	sql := `
-		insert into doctor_messages (scenario_id, next_step, message) 
-		values ($1, $2, $3)
+		with step as (select id
+					  from scenario_steps
+					  where scenario_id = $1
+						and step_order = $2)
+		insert
+		into doctor_messages (scenario_id, next_step, message)
+		select $1, id, $3
+		from step
 	`
 
-	_, err := d.pool.Exec(ctx, sql, scenarioID, stepID, message)
+	_, err := d.pool.Exec(ctx, sql, scenarioID, stepOrder, message)
 	return err
 }

@@ -37,7 +37,7 @@ func (h *Handler) Handle() http.HandlerFunc {
 			Message:    req.Message,
 			Type:       dto.AdminType(req.Type),
 			ScenarioID: req.ScenarioID,
-			StepID:     req.StepID,
+			StepOrder:  req.StepOrder,
 		})
 
 		if err != nil {
