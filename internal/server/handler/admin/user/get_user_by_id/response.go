@@ -23,7 +23,7 @@ type Post struct {
 type Scenario struct {
 	ID        int64  `json:"id"`
 	Name      string `json:"name"`
-	NextDelay string `json:"next_delay"`
+	NextDelay string `json:"scheduled_time"`
 }
 
 type Response struct {
