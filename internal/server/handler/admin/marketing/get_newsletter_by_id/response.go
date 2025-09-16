@@ -8,6 +8,11 @@ type NewsLetter struct {
 	StatusName string `json:"status_name"`
 
 	UsersCount int64 `json:"users_count"`
+
+	Text        string  `json:"text"`
+	UsersLists  []int64 `json:"users_lists"`
+	MediaID     string  `json:"media_id"`
+	ContentType int8    `json:"content_type_id"`
 }
 
 type Response struct {

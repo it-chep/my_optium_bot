@@ -41,13 +41,15 @@ func (d *Dal) GetNewsletter(ctx context.Context, letterID int64) (dto.Newsletter
 // GetUsersToSend получаем пользователей из списков рассылки
 func (d *Dal) GetUsersToSend(ctx context.Context, listIDs []int64) ([]dto.User, error) {
 	sql := `
-		select p.* 
+		select p.*,
+		    pd.chat_id as "chat_id"
 		from users_lists uls 
 		    join patients p on uls.user_id = p.id 
+			join patient_doctor pd on p.tg_id = pd.patient_tg
 		where uls.list_id = any ($1::bigint[])
 	`
 
-	var users dao.Users
+	var users dao.PatientsToNewsletter
 	err := pgxscan.Select(ctx, d.pool, &users, sql, listIDs)
 	if err != nil {
 		return nil, err
@@ -75,13 +77,12 @@ func (d *Dal) MarkNewslettersIsSent(ctx context.Context, letterID int64, userIDs
 		update newsletters set status_id = $1, sent_at = now(), users_ids = $2, recipients_count = $3 where id = $4
 	`
 	args := []interface{}{
-		letterID,
+		dto.Sent,
 		userIDs,
 		len(userIDs),
-		dto.Sent,
+		letterID,
 	}
 
 	_, err := d.pool.Exec(ctx, sql, args...)
 	return err
-
 }
