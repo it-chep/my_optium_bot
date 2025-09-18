@@ -16,5 +16,5 @@ type NewsLetter struct {
 }
 
 type Response struct {
-	Newsletters NewsLetter `json:"newsletters"`
+	Newsletters NewsLetter `json:"data"`
 }

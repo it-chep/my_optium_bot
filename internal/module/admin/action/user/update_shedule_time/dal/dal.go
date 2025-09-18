@@ -21,6 +21,6 @@ func (d *Dal) UpdateNextDelay(ctx context.Context, userID int64, nextDelay time.
 		update patient_scenarios set scheduled_time = $1 where patient_id = $2;
 	`
 
-	_, err := d.pool.Exec(ctx, sql, userID, nextDelay)
+	_, err := d.pool.Exec(ctx, sql, nextDelay, userID)
 	return err
 }

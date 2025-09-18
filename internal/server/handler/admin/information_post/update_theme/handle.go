@@ -1,10 +1,9 @@
-package update_post
+package update_theme
 
 import (
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/update_posts/dto"
 	"net/http"
 	"strconv"
 )
@@ -23,13 +22,8 @@ func (h *Handler) Handle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		if r.Method != http.MethodPost {
-			http.Error(w, "", http.StatusMethodNotAllowed)
-			return
-		}
-
-		postIDStr := chi.URLParam(r, "post_id")
-		postID, err := strconv.ParseInt(postIDStr, 10, 64)
+		themeIDStr := chi.URLParam(r, "theme_id")
+		themeID, err := strconv.ParseInt(themeIDStr, 10, 64)
 		if err != nil {
 			http.Error(w, "invalid post ID", http.StatusBadRequest)
 			return
@@ -41,16 +35,9 @@ func (h *Handler) Handle() http.HandlerFunc {
 			return
 		}
 
-		err = h.adminModule.Actions.UpdatePost.Do(ctx, postID, dto.Request{
-			PostName:      req.PostName,
-			ThemeID:       req.ThemeID,
-			Order:         req.Order,
-			MediaID:       req.MediaID,
-			ContentTypeID: req.ContentTypeID,
-			Message:       req.Message,
-		})
+		err = h.adminModule.Actions.UpdateTheme.Do(ctx, themeID, req.Name, req.IsRequired)
 		if err != nil {
-			http.Error(w, "failed to create information post: "+err.Error(), http.StatusInternalServerError)
+			http.Error(w, "failed to get user data: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}

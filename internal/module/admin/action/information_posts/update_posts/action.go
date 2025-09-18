@@ -2,7 +2,8 @@ package update_posts
 
 import (
 	"context"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dto"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/update_posts/dal"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/update_posts/dto"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -16,6 +17,6 @@ func New(pool *pgxpool.Pool) *Action {
 	}
 }
 
-func (a *Action) Do(ctx context.Context) (_ []dto.InformationPostListView, err error) {
-	return a.dal.GetInformationPosts(ctx)
+func (a *Action) Do(ctx context.Context, postID int64, body dto.Request) error {
+	return a.dal.UpdatePost(ctx, postID, body)
 }

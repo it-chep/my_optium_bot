@@ -4,9 +4,12 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_information_post"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/create_post_theme"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/delete_post"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/delete_post_theme"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_information_posts"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_post_by_id"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/get_posts_themes"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/update_post_theme"
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/information_posts/update_posts"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_newsletter"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/create_user_list"
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/action/marketing/delete_newsletter"
@@ -73,6 +76,9 @@ type Aggregator struct {
 	CreatePostTheme       *create_post_theme.Action
 	GetPostByID           *get_post_by_id.Action
 	DeletePost            *delete_post.Action
+	DeletePostTheme       *delete_post_theme.Action
+	UpdateTheme           *update_post_theme.Action
+	UpdatePost            *update_posts.Action
 
 	// сценарии
 	CreateAdminMessage *create_admin_message.Action
@@ -119,6 +125,9 @@ func NewAggregator(pool *pgxpool.Pool, bot *tg_bot.Bot) *Aggregator {
 		CreatePostTheme:       create_post_theme.NewAction(pool),
 		GetPostByID:           get_post_by_id.New(pool),
 		DeletePost:            delete_post.New(pool),
+		DeletePostTheme:       delete_post_theme.New(pool),
+		UpdateTheme:           update_post_theme.New(pool),
+		UpdatePost:            update_posts.New(pool),
 
 		// сценарии
 		CreateAdminMessage: create_admin_message.NewAction(pool),

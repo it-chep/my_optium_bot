@@ -2,7 +2,7 @@ package get_post_by_id
 
 type Post struct {
 	ID            int64  `json:"id"`
-	Name          string `json:"name"`
+	Name          string `json:"post_name"`
 	ThemeName     string `json:"theme_name"`
 	ThemeID       int64  `json:"theme_id"`
 	Order         int    `json:"order"`

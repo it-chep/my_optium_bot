@@ -31,8 +31,8 @@ func (r *Repository) GetPost(ctx context.Context, postID int64) (_ dto.Informati
 		where ip.id = $1
 	`
 
-	var posts dao.InformationPost
-	err = pgxscan.Select(ctx, r.pool, &posts, sql, postID)
+	var post dao.InformationPost
+	err = pgxscan.Get(ctx, r.pool, &post, sql, postID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return dto.InformationPost{}, nil
@@ -40,5 +40,5 @@ func (r *Repository) GetPost(ctx context.Context, postID int64) (_ dto.Informati
 		return dto.InformationPost{}, err
 	}
 
-	return posts.ToDomain(), nil
+	return post.ToDomain(), nil
 }
