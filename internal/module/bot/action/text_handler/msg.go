@@ -61,6 +61,7 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (er
 			Step:     int(usr.StepStat.StepOrder),
 			NextStep: lo.FromPtr(nextStep.NextStep),
 			Delay:    lo.FromPtr(nextStep.NextDelay),
+			Answered: true,
 		})
 }
 

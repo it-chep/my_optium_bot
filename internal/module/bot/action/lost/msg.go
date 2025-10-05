@@ -74,6 +74,7 @@ func (a *Action) regularStep(ctx context.Context, patient user.Patient, scenario
 				NextStep: btn.NextStepOrder,
 				Delay:    lo.FromPtr(nextStep.NextDelay),
 				Sent:     true,
+				Answered: true,
 			})
 	}
 
@@ -85,6 +86,7 @@ func (a *Action) regularStep(ctx context.Context, patient user.Patient, scenario
 			Step:     step.Order,
 			NextStep: lo.FromPtr(nextStep.NextStep),
 			Delay:    lo.FromPtr(nextStep.NextDelay),
+			Answered: true,
 		})
 }
 
@@ -116,6 +118,7 @@ func (a *Action) patientDelayedStep(ctx context.Context, patient user.Patient, s
 			Step:     step.Order,
 			NextStep: lo.FromPtr(step.NextStep),
 			Delay:    delay.Sub(time.Now().UTC()),
+			Answered: true,
 		})
 }
 

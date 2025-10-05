@@ -8,6 +8,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/job/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/job/job_type"
 	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
+	"github.com/samber/lo"
 )
 
 // Job джоба для активации сценариев, проверяет не наступило ли время для триггера
@@ -35,8 +36,19 @@ func (j *Job) Do(ctx context.Context) {
 		return
 	}
 
-	active := make([]dto.PatientScenario, 0, len(scenarios))
+	patient := make(map[int64]dto.PatientScenario, len(scenarios))
 	for _, scenario := range scenarios {
+		if _, ok := patient[scenario.PatientID]; !ok {
+			patient[scenario.PatientID] = scenario
+		}
+	}
+
+	if err = j.dal.MarkScenariosActive(ctx, lo.Values(patient)); err != nil {
+		logger.Error(ctx, "не удалось пометить сценарии активными", err)
+		return
+	}
+
+	for _, scenario := range patient {
 		action, ok := j.actions[scenario.ScenarioID]
 		if !ok {
 			continue
@@ -47,10 +59,5 @@ func (j *Job) Do(ctx context.Context) {
 				scenario.ScenarioID, scenario.PatientID, err.Error()), err)
 			continue
 		}
-		active = append(active, scenario)
-	}
-
-	if err = j.dal.MarkScenariosActive(ctx, active); err != nil {
-		logger.Error(ctx, "не удалось пометить сценарии активными", err)
 	}
 }
