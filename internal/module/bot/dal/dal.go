@@ -210,11 +210,12 @@ type MoveStep struct {
 	Delay                  time.Duration
 
 	// костыль
-	Sent bool
+	Answered bool
+	Sent     bool
 }
 
 func (d *CommonDal) MoveStepPatient(ctx context.Context, moveStep MoveStep) error {
-	sql := `update patient_scenarios set step = $1, answered = true, scheduled_time = $2, sent = $7 
+	sql := `update patient_scenarios set step = $1, answered = $9, scheduled_time = $2, sent = $7, active = $8 
                 where patient_id = $3 and chat_id = $4 and scenario_id = $5 and step = $6`
 	args := []interface{}{
 		moveStep.NextStep,                    // $1
@@ -224,13 +225,15 @@ func (d *CommonDal) MoveStepPatient(ctx context.Context, moveStep MoveStep) erro
 		moveStep.Scenario,                    // $5
 		moveStep.Step,                        // $6
 		moveStep.Sent,                        // $7
+		lo.Ternary(moveStep.Delay > time.Hour, false, true),
+		moveStep.Answered,
 	}
 	_, err := d.pool.Exec(ctx, sql, args...)
 	return err
 }
 
 func (d *CommonDal) CompleteScenario(ctx context.Context, tgID, chatID int64, scenarioID int64) error {
-	sql := `update patient_scenarios set completed_at=now() where patient_id = $1 and chat_id = $2 and scenario_id = $3`
+	sql := `update patient_scenarios set completed_at=now(), active = false where patient_id = $1 and chat_id = $2 and scenario_id = $3`
 	_, err := d.pool.Exec(ctx, sql, tgID, chatID, scenarioID)
 	return err
 }

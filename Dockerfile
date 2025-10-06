@@ -15,7 +15,7 @@ COPY . .
 RUN go mod download
 
 # Экспортируем порты
-EXPOSE 8080 7002
+EXPOSE 8080
 
 # Запускаем приложение
 CMD ["go", "run", "cmd/main.go"]

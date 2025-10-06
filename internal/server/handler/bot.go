@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/samber/lo"
 	"net/http"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -25,11 +26,12 @@ func (h *Handler) bot() http.HandlerFunc {
 		}
 
 		if event.ChatMember != nil {
-			usr := event.ChatMember.NewChatMember.User.ID
-			chat := event.ChatMember.Chat.ID
-			if err = h.botModule.Actions.InvitePatient.InvitePatient(r.Context(), usr, chat); err != nil {
+			if lo.Contains([]string{"left", "kicked"}, event.ChatMember.NewChatMember.Status) {
 				return
 			}
+			usrID := event.ChatMember.NewChatMember.User.ID
+			chat := event.ChatMember.Chat.ID
+			_ = h.botModule.Actions.InvitePatient.InvitePatient(r.Context(), usrID, chat)
 		}
 
 		if !valid(event) {
@@ -37,17 +39,50 @@ func (h *Handler) bot() http.HandlerFunc {
 			return
 		}
 
-		msg := dto.Message{
-			User:   event.SentFrom().ID,
-			ChatID: event.FromChat().ID,
-		}
-		if event.Message != nil {
-			msg.Text = event.Message.Text
-		} else if event.CallbackQuery != nil {
-			msg.Text = event.CallbackQuery.Data
-		} else {
+		if event.FromChat() == nil || event.SentFrom() == nil {
 			return
 		}
+
+		txt := ""
+		mediaID := ""
+		if event.Message != nil {
+			txt = event.Message.Text
+			// фото
+			if event.Message.Photo != nil {
+				// массив фото разбивает фотографию на 4 качества, берем самое плохое )
+				mediaID = event.Message.Photo[0].FileID
+			}
+			// видео
+			if event.Message.Video != nil {
+				mediaID = event.Message.Video.FileID
+			}
+			// документ
+			if event.Message.Document != nil {
+				mediaID = event.Message.Document.FileID
+			}
+			// кружок
+			if event.Message.VideoNote != nil {
+				mediaID = event.Message.VideoNote.FileID
+			}
+			// голосовое сообщение
+			if event.Message.Voice != nil {
+				mediaID = event.Message.Voice.FileID
+			}
+			// аудио сообщение
+			if event.Message.Audio != nil {
+				mediaID = event.Message.Audio.FileID
+			}
+		} else if event.CallbackQuery != nil {
+			txt = event.CallbackQuery.Data
+		}
+
+		msg := dto.Message{
+			User:    event.SentFrom().ID,
+			Text:    txt,
+			ChatID:  event.FromChat().ID,
+			MediaID: mediaID,
+		}
+
 		if err = h.botModule.Route(r.Context(), msg); err != nil {
 			w.WriteHeader(http.StatusBadGateway)
 			return

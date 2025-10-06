@@ -2,9 +2,10 @@ package internal
 
 import (
 	"context"
-	"github.com/it-chep/my_optium_bot.git/internal/module/admin"
 	"log"
 	"time"
+
+	"github.com/it-chep/my_optium_bot.git/internal/module/admin"
 
 	"github.com/georgysavva/scany/v2/dbscan"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -65,15 +66,20 @@ func (a *App) initModules(context.Context) *App {
 func (a *App) initJobs(ctx context.Context) *App {
 	activate := worker.NewWorker(ctx,
 		a.modules.Bot.Jobs.Activate.Do,
-		5*time.Second,
+		3*time.Second,
 		1,
 	)
 	move := worker.NewWorker(ctx,
 		a.modules.Bot.Jobs.Move.Do,
-		time.Second,
+		5*time.Second,
 		1,
 	)
-	a.workers = append(a.workers, activate, move)
+	change := worker.NewWorker(ctx,
+		a.modules.Bot.Jobs.Change.Do,
+		7*time.Second,
+		1,
+	)
+	a.workers = append(a.workers, activate, move, change)
 
 	return a
 }
