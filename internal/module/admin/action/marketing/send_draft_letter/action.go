@@ -31,7 +31,7 @@ func (a *Action) Do(ctx context.Context, letterID int64) error {
 		MediaID:     letter.MediaID,
 		Text:        letter.Text,
 		ContentType: moduleBotDto.ContentType(letter.ContentType),
-		Chat:        0, // предлагаю захардкодить
+		Chat:        -1002986396804,
 	}
 
 	if letter.MediaID != "" {
