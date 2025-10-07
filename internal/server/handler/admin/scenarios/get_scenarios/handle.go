@@ -6,6 +6,8 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dto"
 	"github.com/samber/lo"
 	"net/http"
+	"strings"
+	"unicode/utf8"
 )
 
 type Handler struct {
@@ -39,8 +41,15 @@ func (h *Handler) Handle() http.HandlerFunc {
 }
 
 func (h *Handler) prepareResponse(scenarios []dto.Scenario) Response {
+	scens := lo.Filter(scenarios, func(item dto.Scenario, _ int) bool {
+		if strings.Contains(item.Description, "Не используется") ||
+			utf8.RuneCountInString(item.Description) == 0 {
+			return false
+		}
+		return true
+	})
 	return Response{
-		Scenarios: lo.Map(scenarios, func(item dto.Scenario, _ int) Scenario {
+		Scenarios: lo.Map(scens, func(item dto.Scenario, _ int) Scenario {
 			return Scenario{
 				ID:    item.ID,
 				Name:  item.Name,

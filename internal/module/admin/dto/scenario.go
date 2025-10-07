@@ -18,10 +18,11 @@ var ScenarioNameMap = map[int64]string{
 }
 
 type Scenario struct {
-	ID       int64
-	Name     string
-	IsActive bool
-	Delay    time.Duration
+	ID          int64
+	Name        string
+	Description string
+	IsActive    bool
+	Delay       time.Duration
 }
 
 type PatientScenario struct {

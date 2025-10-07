@@ -12,10 +12,11 @@ type ScenarioDao struct {
 
 func (s *ScenarioDao) ToDomain() dto.Scenario {
 	return dto.Scenario{
-		ID:       int64(s.ID),
-		Name:     dto.ScenarioNameMap[int64(s.ID)],
-		IsActive: s.IsActive.Bool,
-		Delay:    lo.FromPtr(s.Delay),
+		ID:          int64(s.ID),
+		Name:        dto.ScenarioNameMap[int64(s.ID)],
+		IsActive:    s.IsActive.Bool,
+		Delay:       lo.FromPtr(s.Delay),
+		Description: s.Description.String,
 	}
 }
 
