@@ -46,6 +46,7 @@ func (h *Handler) prepareResponse(messages []dto.AdminMessage) Response {
 				Type:         int8(item.Type),
 				TypeName:     item.Type.String(),
 				Text:         item.Message,
+				StepOrder:    item.NextStep,
 			}
 		}),
 	}

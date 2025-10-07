@@ -6,6 +6,7 @@ type Message struct {
 	Type         int8   `json:"type"`
 	TypeName     string `json:"type_name"`
 	Text         string `json:"text"`
+	StepOrder    int64  `json:"step_order"`
 }
 
 type Response struct {
