@@ -8,7 +8,7 @@ type User struct {
 
 // LoginRequest запрос на авторизацию
 type LoginRequest struct {
-	Username string `json:"username"`
+	Username string `json:"email"`
 	Password string `json:"password"`
 }
 

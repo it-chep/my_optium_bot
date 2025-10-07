@@ -73,5 +73,13 @@ func Valid(authToken string) bool {
 // CheckCredentials проверяет пароль
 func CheckCredentials(username, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(adminPass))
-	return username == adminUsername && err == nil
+	if err != nil {
+		return false
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(username), []byte(adminUsername))
+	if err != nil {
+		return false
+	}
+	return true
 }
