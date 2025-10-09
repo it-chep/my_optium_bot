@@ -7,7 +7,6 @@ import (
 )
 
 func (b *Bot) Route(ctx context.Context, msg dto.Message) error {
-
 	switch msg.Text {
 	case "/init_bot":
 		return b.Actions.CreateDoctor.CreateDoctor(ctx, msg)
