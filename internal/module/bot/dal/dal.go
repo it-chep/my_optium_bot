@@ -3,6 +3,8 @@ package dal
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgx/v5"
+	"github.com/pkg/errors"
 	"time"
 
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/admin"
@@ -138,7 +140,14 @@ func (d *CommonDal) GetUser(ctx context.Context, id, chatID int64) (_ user.User,
 		`
 	)
 
-	if err = pgxscan.Get(ctx, d.pool, usr, doctorSql, id); err == nil {
+	if err = pgxscan.Get(ctx, d.pool, usr, doctorSql, id); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return user.User{
+				ID: -1,
+			}, nil
+		}
+	}
+	if err == nil {
 		return usr.ToDomain(), nil
 	}
 

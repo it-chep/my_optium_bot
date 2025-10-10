@@ -46,7 +46,7 @@ create table if not exists step_buttons
 create table if not exists patient_scenarios
 (
     id             serial primary key,
-    patient_id     integer   not null,               -- patients(tg_id)
+    patient_id     bigint   not null,               -- patients(tg_id)
     chat_id        bigint    not null,
     scenario_id    integer   not null,               -- scenarios(id)
     step           integer   not null,               -- scenarios(id)
@@ -63,7 +63,7 @@ create table if not exists patient_scenarios
 create table if not exists patient_step_answers
 (
     id          serial primary key,
-    patient_id  integer   not null,-- patients(id)
+    patient_id  bigint   not null,-- patients(id)
     scenario_id integer   not null, -- scenarios(id)
     step_id     integer   not null, -- scenario_steps(id)
     answer_text text      not null,
@@ -74,7 +74,7 @@ create table if not exists patient_step_answers
 create table if not exists doctors_scenarios
 (
     id           serial primary key,
-    doctor_id    integer not null, -- doctors(tg_id)
+    doctor_id    bigint not null, -- doctors(tg_id)
     scenario_id  integer not null, -- scenarios(id)
     step         integer not null, -- scenarios(id)
     completed_at timestamp,        -- когда завершили

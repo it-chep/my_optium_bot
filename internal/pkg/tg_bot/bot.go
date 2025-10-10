@@ -1,7 +1,9 @@
 package tg_bot
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
@@ -29,14 +31,32 @@ func NewTgBot(cfg Config) (*Bot, error) {
 
 	// Режим вебхуков
 	if cfg.UseWebhook() {
+		fmt.Println("Старт вебхуков")
 		hook, _ := tgbotapi.NewWebhook(cfg.WebhookURL() + cfg.Token() + "/")
 		_, err = bot.Request(hook)
 		if err != nil {
+			fmt.Println("ошибка", err)
 			return nil, err
 		}
 
-		_, err = bot.GetWebhookInfo()
+		hook.AllowedUpdates = []string{
+			"message", "edited_message", "inline_query",
+			"callback_query", "chat_join_request",
+			"chat_member", "chosen_inline_result",
+		}
+		time.Sleep(1 * time.Second)
+
+		_, err = bot.Request(hook)
 		if err != nil {
+			fmt.Println("ошибка установки вебхука:", err)
+			return nil, err
+		}
+
+		time.Sleep(1 * time.Second)
+
+		_, err := bot.GetWebhookInfo()
+		if err != nil {
+			fmt.Println("ошибка", err)
 			return nil, err
 		}
 
