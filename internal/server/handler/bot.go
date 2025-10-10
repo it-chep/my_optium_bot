@@ -13,6 +13,7 @@ func (h *Handler) bot() http.HandlerFunc {
 		ctx := r.Context()
 		event, err := h.botParser.HandleUpdate(r)
 		if err != nil {
+			logger.Error(ctx, "Ошибка err: %v", err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -23,10 +24,14 @@ func (h *Handler) bot() http.HandlerFunc {
 			}
 			usrID := event.ChatMember.NewChatMember.User.ID
 			chat := event.ChatMember.Chat.ID
-			_ = h.botModule.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
+			err = h.botModule.Actions.InvitePatient.InvitePatient(ctx, usrID, chat)
+			if err != nil {
+				logger.Error(ctx, "Ошибка err: %v", err)
+			}
 		}
 
 		if event.FromChat() == nil || event.SentFrom() == nil {
+			logger.Message(ctx, "Невалидный хук")
 			return
 		}
 		logger.Message(ctx, "Обработка ивента")
@@ -72,7 +77,7 @@ func (h *Handler) bot() http.HandlerFunc {
 		}
 
 		if err = h.botModule.Route(ctx, msg); err != nil {
-			w.WriteHeader(http.StatusBadGateway)
+			logger.Error(ctx, "ошибка при обработке ивента err: %v", err)
 			return
 		}
 	}

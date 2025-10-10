@@ -2,13 +2,12 @@ package bot
 
 import (
 	"context"
-
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto"
 )
 
 func (b *Bot) Route(ctx context.Context, msg dto.Message) error {
 	switch msg.Text {
-	case "/init_bot":
+	case "/init_bot", "/init_chat":
 		return b.Actions.CreateDoctor.CreateDoctor(ctx, msg)
 	case "/admin_exit":
 		return b.Actions.Exit.Do(ctx, msg)

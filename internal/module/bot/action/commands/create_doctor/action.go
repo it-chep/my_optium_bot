@@ -2,6 +2,7 @@ package create_doctor
 
 import (
 	"context"
+	"github.com/it-chep/my_optium_bot.git/internal/pkg/logger"
 
 	create_doctor_dal "github.com/it-chep/my_optium_bot.git/internal/module/bot/action/commands/create_doctor/dal"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal"
@@ -28,11 +29,13 @@ func NewAction(pool *pgxpool.Pool, bot *tg_bot.Bot, common *dal.CommonDal) *Acti
 func (a *Action) CreateDoctor(ctx context.Context, msg dto.Message) (err error) {
 	user, err := a.upsertDoctor(ctx, msg)
 	if err != nil || !user.IsAdmin {
+		logger.Error(ctx, "CreateDoctor err: %v", err)
 		return err
 	}
 
 	scenario, err := a.common.GetScenario(ctx, 1)
 	if err != nil {
+		logger.Error(ctx, "GetScenario err: %v", err)
 		return err
 	}
 	step := scenario.Steps[0]
@@ -56,9 +59,10 @@ func (a *Action) upsertDoctor(ctx context.Context, msg dto.Message) (bot_dto.Use
 	}
 
 	if !user.IsAdmin {
-		return user, a.bot.SendMessage(bot_dto.Message{
-			Chat: msg.ChatID, Text: "Кажется, что вы не врач)",
-		})
+		return user, nil
+		//return user, a.bot.SendMessage(bot_dto.Message{
+		//	Chat: msg.ChatID, Text: "Кажется, что вы не врач)",
+		//})
 	}
 
 	return user, a.dal.UpsertDoctor(ctx, user)
