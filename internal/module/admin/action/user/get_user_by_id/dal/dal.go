@@ -78,7 +78,9 @@ func (d *Dal) GetUnsentPosts(ctx context.Context, userID int64) ([]dto.Informati
 
 func (d *Dal) GetScenarioInfo(ctx context.Context, userID int64) ([]dto.PatientScenario, error) {
 	sql := `
-		select * from patient_scenarios where patient_id = $1
+		select ps.* from patient_scenarios ps
+		    left join patients p on ps.patient_id = p.tg_id 
+		         where p.id = $1
 	`
 
 	var scenarios dao.PatientScenarios
