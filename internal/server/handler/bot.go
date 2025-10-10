@@ -34,7 +34,6 @@ func (h *Handler) bot() http.HandlerFunc {
 			logger.Message(ctx, "Невалидный хук")
 			return
 		}
-		logger.Message(ctx, "Обработка ивента")
 
 		txt := ""
 		mediaID := ""
