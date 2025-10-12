@@ -17,7 +17,7 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 
 // DeleteNewsletter удаление рассылки
 func (r *Repository) DeleteNewsletter(ctx context.Context, newsletterID int64) error {
-	sql := `delete from newsletters where id=$1 and status_id == 1`
+	sql := `DELETE FROM newsletters WHERE id = $1 AND status_id = 1`
 	// удаляем только черновики
 	_, err := r.pool.Exec(ctx, sql, newsletterID)
 	return err

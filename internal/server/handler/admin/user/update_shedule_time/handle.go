@@ -35,7 +35,7 @@ func (h *Handler) Handle() http.HandlerFunc {
 			return
 		}
 
-		err = h.adminModule.Actions.UpdateSheduleTime.Do(ctx, userID, req.NextDelay)
+		err = h.adminModule.Actions.UpdateSheduleTime.Do(ctx, userID, req.ScenarioID, req.NextDelay)
 		if err != nil {
 			http.Error(w, "failed to get user data: "+err.Error(), http.StatusInternalServerError)
 			return

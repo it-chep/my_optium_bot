@@ -18,11 +18,11 @@ func NewAction(pool *pgxpool.Pool) *Action {
 	}
 }
 
-func (a *Action) Do(ctx context.Context, userID int64, nextDelay string) error {
+func (a *Action) Do(ctx context.Context, userID, scenarioID int64, nextDelay string) error {
 	nextDelayTime, err := time.Parse(time.DateTime, nextDelay)
 	if err != nil {
 		return errors.New("Неправильно указан формат даты")
 	}
 
-	return a.dal.UpdateNextDelay(ctx, userID, nextDelayTime)
+	return a.dal.UpdateNextDelay(ctx, userID, scenarioID, nextDelayTime)
 }

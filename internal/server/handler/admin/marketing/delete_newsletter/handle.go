@@ -21,7 +21,7 @@ func (h *Handler) Handle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		newsletterIDStr := chi.URLParam(r, "newsletter_id")
+		newsletterIDStr := chi.URLParam(r, "newsletters_id")
 		newsletterID, err := strconv.ParseInt(newsletterIDStr, 10, 64)
 		if err != nil {
 			http.Error(w, "invalid newsletter ID", http.StatusBadRequest)

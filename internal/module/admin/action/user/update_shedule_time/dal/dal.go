@@ -16,11 +16,15 @@ func NewDal(pool *pgxpool.Pool) *Dal {
 	}
 }
 
-func (d *Dal) UpdateNextDelay(ctx context.Context, userID int64, nextDelay time.Time) error {
+func (d *Dal) UpdateNextDelay(ctx context.Context, userID, scenarioID int64, nextDelay time.Time) error {
 	sql := `
-		update patient_scenarios set scheduled_time = $1 where patient_id = $2;
+		UPDATE patient_scenarios ps 
+		SET scheduled_time = $1 
+		FROM patients p 
+		WHERE ps.patient_id = p.tg_id 
+		AND p.id = $2 and ps.scenario_id = $3;
 	`
 
-	_, err := d.pool.Exec(ctx, sql, nextDelay, userID)
+	_, err := d.pool.Exec(ctx, sql, nextDelay, userID, scenarioID)
 	return err
 }
