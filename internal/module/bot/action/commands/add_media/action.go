@@ -31,7 +31,7 @@ func (a *Action) Do(ctx context.Context, msg dto.Message) error {
 
 	step := scenario.Steps[0]
 	if msg.Text == "/add_media" {
-		err = a.common.UpdateDoctorStep(ctx, msg.User, dto.Step{ScenarioID: 11, Order: 1})
+		err = a.common.UpdateDoctorStep(ctx, msg.User, msg.ChatID, dto.Step{ScenarioID: 11, Order: 1})
 		if err != nil {
 			return err
 		}

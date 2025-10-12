@@ -41,7 +41,7 @@ func (a *Action) CreateDoctor(ctx context.Context, msg dto.Message) (err error) 
 	step := scenario.Steps[0]
 	defer func() {
 		if err == nil {
-			err = a.common.UpdateDoctorStep(ctx, user.ID, step)
+			err = a.common.UpdateDoctorStep(ctx, user.ID, msg.ChatID, step)
 		}
 	}()
 

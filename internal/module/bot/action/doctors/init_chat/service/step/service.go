@@ -12,7 +12,7 @@ import (
 )
 
 type Dal interface {
-	DoctorNextStep(ctx context.Context, usr user.User) (dto.Step, error)
+	DoctorNextStep(ctx context.Context, usr user.User, chatID int64) (dto.Step, error)
 }
 
 type Service struct {
@@ -39,7 +39,7 @@ func (s *Service) MoveToNextStep(ctx context.Context, usr user.User, msg dto.Mes
 func (s *Service) moveToNextStep(ctx context.Context, usr user.User, msg dto.Message) {
 	// todo проверка, точно ли мы должны подвинуть в стейте ?
 
-	step, err := s.stepDal.DoctorNextStep(ctx, usr)
+	step, err := s.stepDal.DoctorNextStep(ctx, usr, msg.ChatID)
 	if err != nil {
 		return
 	}

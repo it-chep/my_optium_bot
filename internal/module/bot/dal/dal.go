@@ -66,23 +66,24 @@ func (d *CommonDal) GetStep(ctx context.Context, scenarioID, stepID int64) (dto.
 	return step.ToDomain(buttons), nil
 }
 
-func (d *CommonDal) UpdateDoctorStep(ctx context.Context, doctorID int64, step dto.Step) error {
-	sql := `insert into doctors_scenarios (doctor_id, scenario_id, step) 
-				values ($1, $2, $3)
-			on conflict (doctor_id, scenario_id) do update
+func (d *CommonDal) UpdateDoctorStep(ctx context.Context, doctorID, chatID int64, step dto.Step) error {
+	sql := `insert into doctors_scenarios (doctor_id, scenario_id, step, chat_id) 
+				values ($1, $2, $3, $4)
+			on conflict (doctor_id, scenario_id, chat_id) do update
 				set step = excluded.step
 			`
 	args := []interface{}{
 		doctorID,
 		step.ScenarioID,
 		step.Order,
+		chatID,
 	}
 
 	_, err := d.pool.Exec(ctx, sql, args...)
 	return err
 }
 
-func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step, error) {
+func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User, chatID int64) (dto.Step, error) {
 	logger.Message(ctx, fmt.Sprintf("Получение шагов для определение финального. Тек Сценарий: %d, шаг: %d", usr.StepStat.ScenarioID, usr.StepStat.StepOrder))
 	sql := `select * from scenario_steps where scenario_id = $1 order by step_order`
 
@@ -101,8 +102,8 @@ func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step
 
 	if currentIsFinal {
 		logger.Message(ctx, "У пользователя финальный шаг, не двигаем его, завершаем сценарий")
-		sql = `update doctors_scenarios set completed_at = now() where doctor_id = $1 and scenario_id = $2`
-		_, err := d.pool.Exec(ctx, sql, usr.ID, usr.StepStat.ScenarioID)
+		sql = `update doctors_scenarios set completed_at = now() where doctor_id = $1 and scenario_id = $2 and chat_id = $3`
+		_, err := d.pool.Exec(ctx, sql, usr.ID, usr.StepStat.ScenarioID, chatID)
 		if err != nil {
 			return dto.Step{}, err
 		}
@@ -112,10 +113,10 @@ func (d *CommonDal) DoctorNextStep(ctx context.Context, usr user.User) (dto.Step
 
 	logger.Message(ctx, fmt.Sprintf("Двигаем пользователя на шаг вперед. Тек Сценарий: %d, шаг: %d", usr.StepStat.ScenarioID, usr.StepStat.StepOrder))
 	// Двигаем пользователя на 1 шаг вперед
-	sql = `update doctors_scenarios set step = $1 where doctor_id = $2`
+	sql = `update doctors_scenarios set step = $1 where doctor_id = $2 and chat_id = $3`
 	nextStep := usr.StepStat.StepOrder + 1
 
-	_, err := d.pool.Exec(ctx, sql, nextStep, usr.ID)
+	_, err := d.pool.Exec(ctx, sql, nextStep, usr.ID, chatID)
 	if err != nil {
 		return dto.Step{}, err
 	}
@@ -130,7 +131,7 @@ func (d *CommonDal) GetUser(ctx context.Context, id, chatID int64) (_ user.User,
 			select true as is_doctor, d.tg_id as id, ds.scenario_id, ds.step as step_order
 				from doctors d
          			left join doctors_scenarios ds on d.tg_id = ds.doctor_id
-			where d.tg_id = $1 and ds.completed_at is null
+			where d.tg_id = $1 and ds.completed_at is null and ds.chat_id = $2
 		`
 		patientSql = `
 			select false as is_doctor, p.tg_id, ps.scenario_id, ps.step as step_order
@@ -140,7 +141,7 @@ func (d *CommonDal) GetUser(ctx context.Context, id, chatID int64) (_ user.User,
 		`
 	)
 
-	if err = pgxscan.Get(ctx, d.pool, usr, doctorSql, id); err != nil {
+	if err = pgxscan.Get(ctx, d.pool, usr, doctorSql, id, chatID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return user.User{
 				ID: -1,
