@@ -109,7 +109,6 @@ func (d *JobDal) MoveToFuture(ctx context.Context, patientScenarioID int64, sche
 		sql = `update patient_scenarios 
 			   		set scheduled_time = $2, sent = false, active = false, answered = false
 				where id = $1	
-
 		`
 	)
 

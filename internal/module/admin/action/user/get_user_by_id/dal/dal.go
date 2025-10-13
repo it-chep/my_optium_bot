@@ -81,6 +81,7 @@ func (d *Dal) GetScenarioInfo(ctx context.Context, userID int64) ([]dto.PatientS
 		select ps.* from patient_scenarios ps
 		    left join patients p on ps.patient_id = p.tg_id 
 		         where p.id = $1
+		order by ps.scheduled_time
 	`
 
 	var scenarios dao.PatientScenarios

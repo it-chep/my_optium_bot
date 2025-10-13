@@ -82,7 +82,7 @@ func (a *Action) route(ctx context.Context, r route) error {
 			Step:     r.step.Order,
 			NextStep: lo.FromPtr(r.step.NextStep),
 			Delay:    lo.FromPtr(r.step.NextDelay),
-			Answered: false,
+			Answered: len(r.step.Buttons) == 0,
 		}); err != nil {
 			return err
 		}

@@ -4,6 +4,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/module/admin/dto"
 	"github.com/it-chep/my_optium_bot.git/pkg/xo"
 	"github.com/samber/lo"
+	"time"
 )
 
 type ScenarioDao struct {
@@ -46,7 +47,7 @@ func (ps PatientScenario) ToDomain() dto.PatientScenario {
 		Step:          int64(ps.Step),
 		Answered:      ps.Answered,
 		Sent:          ps.Sent,
-		ScheduledTime: ps.ScheduledTime,
+		ScheduledTime: ps.ScheduledTime.Add(3 * time.Hour),
 		Active:        ps.Active,
 		Repeatable:    ps.Repeatable,
 	}

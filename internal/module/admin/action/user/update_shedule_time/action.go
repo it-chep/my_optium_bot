@@ -24,5 +24,5 @@ func (a *Action) Do(ctx context.Context, userID, scenarioID int64, nextDelay str
 		return errors.New("Неправильно указан формат даты")
 	}
 
-	return a.dal.UpdateNextDelay(ctx, userID, scenarioID, nextDelayTime)
+	return a.dal.UpdateNextDelay(ctx, userID, scenarioID, nextDelayTime.Add(-3*time.Hour))
 }
