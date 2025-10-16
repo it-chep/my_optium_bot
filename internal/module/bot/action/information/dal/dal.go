@@ -60,10 +60,12 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 		from information_posts ip
 				 join posts_themes ps on ip.posts_theme_id = ps.id
 				 join patient_posts pp on ip.id = pp.post_id
-		where pp.patient_id = $1
+				 join patients p on pp.patient_id = p.id
+		where p.tg_id = $1
 		  and pp.is_received is false
 		  and ip.posts_theme_id != $2
-		order by ps.theme_order desc, ip.order_in_theme asc
+		order by ps.theme_order desc,
+				 ip.order_in_theme asc
 	`
 
 	var nextPosts []dao.InformationPostsDao
@@ -133,9 +135,12 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 // MarkPostSent помечает пост отправленным
 func (r *Repository) MarkPostSent(ctx context.Context, patientID, postID int64) error {
 	sql := `
-		update patient_posts 
+		update patient_posts pp 
 		set is_received = true, sent_time = now() 
-		where patient_id = $1 and post_id = $2 -- patient_id = tg_ID
+		from patients p
+		where pp.patient_id = p.id 
+		  and p.tg_id = $1 
+		  and pp.post_id = $2
 	`
 
 	_, err := r.pool.Exec(ctx, sql, patientID, postID)
