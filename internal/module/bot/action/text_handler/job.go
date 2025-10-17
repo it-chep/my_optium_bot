@@ -50,7 +50,7 @@ type route struct {
 	ps       dto.PatientScenario
 }
 
-func (a *Action) route(ctx context.Context, r route) error {
+func (a *Action) route(ctx context.Context, r route) (err error) {
 	sendMSG := func() error {
 		return a.bot.SendMessage(bot_dto.Message{
 			Chat:    r.ps.ChatID,
@@ -59,7 +59,13 @@ func (a *Action) route(ctx context.Context, r route) error {
 		})
 	}
 
-	if err := sendMSG(); err != nil {
+	defer func() {
+		if err == nil {
+			err = a.postAction(ctx, r.ps.ScenarioID, int64(lo.FromPtr(r.step.NextStep)), r.patient)
+		}
+	}()
+
+	if err = sendMSG(); err != nil {
 		return err
 	}
 
