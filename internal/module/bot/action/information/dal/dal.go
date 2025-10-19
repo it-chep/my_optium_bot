@@ -2,6 +2,7 @@ package dal
 
 import (
 	"context"
+	"time"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal/dao"
@@ -103,9 +104,15 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 
 		if lastSentPost.PostsThemeID == information.MotivationTheme {
 			// если подошло время для "подготовки ко второму этапу" то отправляем его
-			//if { //todo добавить join на пациентов запросить дату создания и по ней уже мерить + 2 месяца
-			//	break
-			//}
+			sql := `
+				select * from patients where tg_id = $1
+			`
+			var patient dao.Patient
+			_ = pgxscan.Get(ctx, r.pool, &patient, sql, patientID)
+			if patient.CreatedAt.Add(60*24*time.Hour).Before(time.Now()) && nextPost.PostsThemeID == 3 {
+				post = nextPost.ToDomain()
+				break
+			}
 			// иначе отправляем "обязательную тему"
 			if nextPost.PostsThemeID == 1 {
 				post = nextPost.ToDomain()
@@ -148,4 +155,27 @@ func (r *Repository) MarkPostSent(ctx context.Context, patientID, postID int64) 
 		return err
 	}
 	return nil
+}
+
+// GetSentPostsCount получение количества отправленных постов
+func (r *Repository) GetSentPostsCount(ctx context.Context, patientID int64) (count int64, err error) {
+	sql := `
+		select count(*) from patient_posts where patient_id = $1 and is_received is true
+	`
+
+	err = pgxscan.Get(ctx, r.pool, &count, sql, patientID)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+// FinishInformationScenario заканчивает информацию
+func (r *Repository) FinishInformationScenario(ctx context.Context, patientID int64) error {
+	sql := `
+		update patient_scenarios set completed_at = now(), active = false, sent = true where patient_id = $1 and scenario_id = 8
+	`
+
+	_, err := r.pool.Exec(ctx, sql, patientID)
+	return err
 }

@@ -35,3 +35,18 @@ func (s *Service) GetNextPost(ctx context.Context, ps dto.PatientScenario) (info
 func (s *Service) MarkPostSent(ctx context.Context, patientTgID, sentPostID int64) error {
 	return s.informationDal.MarkPostSent(ctx, patientTgID, sentPostID)
 }
+
+// FinishScenarioOrContinue заканчивает сценарий если он запустился 10 раз
+func (s *Service) FinishScenarioOrContinue(ctx context.Context, patientTgID int64) error {
+	count, err := s.informationDal.GetSentPostsCount(ctx, patientTgID)
+	if err != nil {
+		return err
+	}
+
+	if count == 10 {
+		err = s.informationDal.FinishInformationScenario(ctx, patientTgID)
+		return err
+	}
+
+	return nil
+}

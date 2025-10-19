@@ -67,6 +67,8 @@ func (a *Action) route(ctx context.Context, r route) error {
 		}
 	}
 
+	_ = a.service.FinishScenarioOrContinue(ctx, r.patient.TgID)
+
 	// Двигаем шаг пользователя
 	if r.step.NextStep != nil {
 		return a.common.MoveStepPatient(ctx, dal.MoveStep{
