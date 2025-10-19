@@ -69,6 +69,8 @@ func (h *Handler) setupRoutes(cfg Config) {
 		// Авторизация
 		r.Post("/auth", h.adminAgg.Users.Auth.Handle())
 
+		r.Post("/user/{user_id}/delete", h.adminAgg.Users.DeleteUser.Handle()) // POST  /admin/users/{id}/lists/{id}
+
 		// Пользователи
 		r.Route("/users", func(r chi.Router) {
 			r.Get("/", h.adminAgg.Users.GetUsers.Handle())             // GET /admin/users
@@ -81,7 +83,7 @@ func (h *Handler) setupRoutes(cfg Config) {
 
 			r.Post("/{user_id}/lists/{list_id}", h.adminAgg.Users.AddUserToList.Handle())        // POST /admin/users/{id}/lists/{id}
 			r.Delete("/{user_id}/lists/{list_id}", h.adminAgg.Users.DeleteUserFromList.Handle()) // DELETE  /admin/users/{id}/lists/{id}
-			r.Post("/{user_id}", h.adminAgg.Users.DeleteUser.Handle())                           // POST  /admin/users/{id}/lists/{id}
+			r.Post("/{user_id}/delete", h.adminAgg.Users.DeleteUser.Handle())                    // POST  /admin/users/{id}/lists/{id}
 		})
 
 		// Сценарии
