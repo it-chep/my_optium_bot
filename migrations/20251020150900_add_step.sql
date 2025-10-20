@@ -12,6 +12,9 @@ values (10, 99, '❗На контроль {{.FullName}}, {{date_format .BirthDat
 insert into admin_messages (scenario_id, next_step, message)
 values (10, 99, '❗На контроль ({{.FullName}}, {{date_format .BirthDate}}), клиент указал дату планирования {{.Text}}');
 
+insert into doctor_messages (scenario_id, next_step, message)
+values (10, 100, '❗На контроль {{.FullName}}, {{date_format .BirthDate}}, отменяет контроль: {{.Text}}');
+
 -- +goose StatementEnd
 
 -- +goose Down

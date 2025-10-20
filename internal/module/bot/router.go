@@ -46,6 +46,9 @@ func (b *Bot) routeScenario(ctx context.Context, msg dto.Message) error {
 		if b.commonDal.NeedToSendControl(ctx, msg.User, msg.ChatID) {
 			return b.sendControl(ctx, msg)
 		}
+		if b.commonDal.NeedToSendControlCancel(ctx, msg.User, msg.ChatID) {
+			return b.sendControlCancel(ctx, msg)
+		}
 		return nil
 	}
 
@@ -94,6 +97,36 @@ func (b *Bot) sendControl(ctx context.Context, msg dto.Message) error {
 	}
 
 	doctorMessages, err := b.commonDal.GetDoctorMessages(ctx, msg.User, 10, 99)
+	if err != nil {
+		return err
+	}
+	for _, message := range doctorMessages.Messages {
+		err = b.bot.SendMessage(bot_dto.Message{Chat: doctorMessages.DoctorID, Text: template.Execute(message, tmpl)}, tg_bot.WithDisabledPreview())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (b *Bot) sendControlCancel(ctx context.Context, msg dto.Message) error {
+	b.bot.SendMessage(bot_dto.Message{
+		Chat: msg.ChatID,
+		Text: "Спасибо за обратную связь, передам.",
+	})
+
+	patient, err := b.commonDal.GetPatient(ctx, msg.User)
+	if err != nil {
+		return err
+	}
+
+	tmpl := &ControlTpl{
+		Text:      msg.Text,
+		FullName:  patient.FullName,
+		BirthDate: patient.BirthDate,
+	}
+
+	doctorMessages, err := b.commonDal.GetDoctorMessages(ctx, msg.User, 10, 100)
 	if err != nil {
 		return err
 	}
