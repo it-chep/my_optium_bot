@@ -50,6 +50,16 @@ func (a *Action) Handle(ctx context.Context, usr user.User, msg dto.Message) (er
 	}()
 
 	if nextStep.IsFinal {
+		a.common.MoveStepPatient(ctx,
+			dal.MoveStep{
+				TgID:     patient.TgID,
+				ChatID:   msg.ChatID,
+				Scenario: usr.StepStat.ScenarioID,
+				Step:     int(usr.StepStat.StepOrder),
+				NextStep: nextStep.Order,
+				Delay:    lo.FromPtr(nextStep.NextDelay),
+				Answered: true,
+			})
 		return a.common.CompleteScenario(ctx, patient.TgID, msg.ChatID, usr.StepStat.ScenarioID)
 	}
 
