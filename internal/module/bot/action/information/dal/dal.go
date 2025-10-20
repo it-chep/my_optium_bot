@@ -80,6 +80,8 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 		return post, err
 	}
 
+	count, _ := r.GetSentPostsCount(ctx, patientID)
+
 	// получаем посты, которые еще не отправились, отсортированные сначала по теме, потом по номеру в теме
 	for _, nextPost := range nextPosts {
 		// берем первый пост
@@ -109,7 +111,7 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 			`
 			var patient dao.Patient
 			_ = pgxscan.Get(ctx, r.pool, &patient, sql, patientID)
-			if patient.CreatedAt.Add(60*24*time.Hour).Before(time.Now()) && nextPost.PostsThemeID == 3 {
+			if count >= 5 || patient.CreatedAt.Add(3*7*24*time.Hour).Before(time.Now()) && nextPost.PostsThemeID == 3 {
 				post = nextPost.ToDomain()
 				break
 			}
@@ -160,7 +162,7 @@ func (r *Repository) MarkPostSent(ctx context.Context, patientID, postID int64) 
 // GetSentPostsCount получение количества отправленных постов
 func (r *Repository) GetSentPostsCount(ctx context.Context, patientID int64) (count int64, err error) {
 	sql := `
-		select count(*) from patient_posts where patient_id = $1 and is_received is true
+		select count(*) from patient_posts pp join patients p on pp.patient_id = p.id where p.tg_id = $1 and pp.is_received is true
 	`
 
 	err = pgxscan.Get(ctx, r.pool, &count, sql, patientID)
