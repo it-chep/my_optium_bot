@@ -150,6 +150,50 @@ func (d *CommonDal) GetUser(ctx context.Context, id, chatID int64) (_ user.User,
 	return user.User{}, err
 }
 
+func (d *CommonDal) NeedToSendControl(ctx context.Context, id, chatID int64) bool {
+	var (
+		sc         = &dao.PatientScenario{}
+		patientSql = `
+			select * from patient_scenarios ps where 
+			        ps.patient_id = $1 and ps.chat_id = $2 and 
+         			ps.scenario_id = 10 and ps.step = 13 and completed_at is not null 
+		`
+	)
+
+	if err := pgxscan.Get(ctx, d.pool, sc, patientSql, id, chatID); err != nil {
+		return false
+	}
+
+	if sc.CompletedAt.Valid {
+		d.pool.Exec(ctx, "update patient_scenarios set step = 99 where id = $1 and completed_at is not null", sc.ID)
+		return time.Now().UTC().Sub(sc.CompletedAt.Time) <= 5*time.Minute
+	}
+
+	return false
+}
+
+func (d *CommonDal) NeedToSendControlCancel(ctx context.Context, id, chatID int64) bool {
+	var (
+		sc         = &dao.PatientScenario{}
+		patientSql = `
+			select * from patient_scenarios ps where 
+			        ps.patient_id = $1 and ps.chat_id = $2 and 
+         			ps.scenario_id = 10 and ps.step = 12 and completed_at is not null 
+		`
+	)
+
+	if err := pgxscan.Get(ctx, d.pool, sc, patientSql, id, chatID); err != nil {
+		return false
+	}
+
+	if sc.CompletedAt.Valid {
+		d.pool.Exec(ctx, "update patient_scenarios set step = 100 where id = $1 and completed_at is not null", sc.ID)
+		return time.Now().UTC().Sub(sc.CompletedAt.Time) <= 5*time.Minute
+	}
+
+	return false
+}
+
 func (d *CommonDal) GetDoctorAddMedia(ctx context.Context, tgID int64) (user.User, error) {
 	sql := `
 		select d.tg_id as id, ds.scenario_id, ds.step as step_order

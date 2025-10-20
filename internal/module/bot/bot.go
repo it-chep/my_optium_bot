@@ -25,6 +25,7 @@ type Bot struct {
 	JobActions     job_type.JobActions
 
 	Jobs *job.Aggregator
+	bot  *tg_bot.Bot
 }
 
 func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
@@ -57,5 +58,6 @@ func New(pool *pgxpool.Pool, bot *tg_bot.Bot) *Bot {
 		},
 		JobActions: jobActions,
 		Jobs:       job.NewAggregator(pool, jobActions),
+		bot:        bot,
 	}
 }
