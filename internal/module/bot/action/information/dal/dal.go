@@ -9,6 +9,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
+	"sort"
 )
 
 type Repository struct {
@@ -26,7 +28,8 @@ func (r *Repository) GetLastSentPost(ctx context.Context, patientID int64) (_ in
 	lastSentPostSql := `
 		select ip.* from information_posts ip
 		left join patient_posts pp on ip.id = pp.post_id
-		where pp.patient_id = $1 and pp.is_received is true
+		        join patients p on pp.patient_id = p.id
+		where p.tg_id = $1 and pp.is_received is true
 		order by pp.sent_time desc 
 		limit 1
 	`
@@ -63,8 +66,8 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 		where p.tg_id = $1
 		  and pp.is_received is false
 		  and ip.posts_theme_id != $2
-		order by ps.theme_order desc,
-				 ip.order_in_theme asc
+		order by ps.id,
+				 ip.order_in_theme
 	`
 
 	var nextPosts []dao.InformationPostsDao
@@ -80,63 +83,43 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 
 	count, _ := r.GetSentPostsCount(ctx, patientID)
 
-	// получаем посты, которые еще не отправились, отсортированные сначала по теме, потом по номеру в теме
+	themeMap := make(map[information.ThemeID][]dao.InformationPostsDao, 0)
 	for _, nextPost := range nextPosts {
-		// берем первый пост
-		if lastSentPost.ID == 0 {
-			post = nextPost.ToDomain()
-			break
-		}
-		// Если предыдущий был обязательной темой
-		if lastSentPost.PostsThemeID == information.RequiredTheme {
-			// Если у пользователя есть доп темы, то отправляем их
-			if nextPost.HasAdditionalThemes && nextPost.PostsThemeID > 3 {
-				post = nextPost.ToDomain()
-				break
-			}
-			// Иначе отправляем мотивацию
-			if nextPost.PostsThemeID == 2 {
-				post = nextPost.ToDomain()
-				break
-			}
-			continue
-		}
-
-		if lastSentPost.PostsThemeID == information.MotivationTheme {
-			// если подошло время для "подготовки ко второму этапу" то отправляем его
-			sql := `
-				select * from patients where tg_id = $1
-			`
-			var patient dao.Patient
-			_ = pgxscan.Get(ctx, r.pool, &patient, sql, patientID)
-			if count >= 8 {
-				post = nextPost.ToDomain()
-				break
-			}
-			// иначе отправляем "обязательную тему"
-			if nextPost.PostsThemeID == 1 {
-				post = nextPost.ToDomain()
-				break
-			}
-			continue
-		}
-		// Если крайний был подготовкой ко второму этапу, то надо отправить "обязательную тему"
-		if lastSentPost.PostsThemeID == information.PreparingToSecondTheme {
-			if nextPost.PostsThemeID == 1 {
-				post = nextPost.ToDomain()
-				break
-			}
-			continue
-		}
-
-		// Если дошли сюда, то у нас предыдущий был дополнительный, значит надо отправить мотивацию
-		if nextPost.PostsThemeID == 2 {
-			post = nextPost.ToDomain()
-			break
-		}
+		themeMap[information.ThemeID(nextPost.PostsThemeID)] = append(themeMap[information.ThemeID(nextPost.PostsThemeID)], nextPost)
 	}
 
-	return post, nil
+	if lastSentPost.ID == 0 {
+		return lo.FirstOrEmpty(themeMap[information.RequiredTheme]).ToDomain(), nil
+	}
+
+	if lastSentPost.PostsThemeID == information.RequiredTheme {
+		additionalThemesIDs := lo.Filter(lo.Keys(themeMap), func(item information.ThemeID, _ int) bool {
+			return !lo.Contains([]information.ThemeID{1, 2, 3}, item)
+		})
+
+		sort.Slice(additionalThemesIDs, func(i, j int) bool {
+			return additionalThemesIDs[i] < additionalThemesIDs[j]
+		})
+
+		for _, themeID := range additionalThemesIDs {
+			return lo.FirstOrEmpty(themeMap[themeID]).ToDomain(), nil
+		}
+
+		return lo.FirstOrEmpty(themeMap[information.MotivationTheme]).ToDomain(), nil
+	}
+
+	if lastSentPost.PostsThemeID == information.MotivationTheme {
+		if count >= 8 {
+			return lo.FirstOrEmpty(themeMap[information.PreparingToSecondTheme]).ToDomain(), nil
+		}
+		return lo.FirstOrEmpty(themeMap[information.RequiredTheme]).ToDomain(), nil
+	}
+
+	if lastSentPost.PostsThemeID == information.PreparingToSecondTheme {
+		return lo.FirstOrEmpty(themeMap[information.RequiredTheme]).ToDomain(), nil
+	}
+
+	return lo.FirstOrEmpty(themeMap[information.MotivationTheme]).ToDomain(), nil
 }
 
 // MarkPostSent помечает пост отправленным

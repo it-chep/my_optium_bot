@@ -36,6 +36,8 @@ func (d *Dal) GetPatientIDs(ctx context.Context, userID int64) (patientIDs Patie
 
 func (d *Dal) MoveScenarios(ctx context.Context, patientIDs PatientIds, scenarios []dto.Scenario) error {
 	var (
+		// ne chat gpt
+
 		sql = `
 			UPDATE patient_scenarios 
 			SET step = 1,
