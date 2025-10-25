@@ -10,6 +10,7 @@ import (
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/user/delete_user_from_list"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/user/get_user_by_id"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/user/get_users"
+	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/user/move_2_step"
 	"github.com/it-chep/my_optium_bot.git/internal/server/handler/admin/user/update_shedule_time"
 )
 
@@ -27,6 +28,7 @@ type HandlerGroup struct {
 
 	UpdateSheduleTime *update_shedule_time.Handler
 	DeleteUser        *delete_user.Handler
+	Move2Step         *move_2_step.Handler
 }
 
 func NewGroup(adminModule *admin.Module) *HandlerGroup {
@@ -44,5 +46,6 @@ func NewGroup(adminModule *admin.Module) *HandlerGroup {
 
 		UpdateSheduleTime: update_shedule_time.NewHandler(adminModule),
 		DeleteUser:        delete_user.NewHandler(adminModule),
+		Move2Step:         move_2_step.NewHandler(adminModule),
 	}
 }

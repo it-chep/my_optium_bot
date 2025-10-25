@@ -84,6 +84,7 @@ func (h *Handler) setupRoutes(cfg Config) {
 			r.Post("/{user_id}/lists/{list_id}", h.adminAgg.Users.AddUserToList.Handle())        // POST /admin/users/{id}/lists/{id}
 			r.Delete("/{user_id}/lists/{list_id}", h.adminAgg.Users.DeleteUserFromList.Handle()) // DELETE  /admin/users/{id}/lists/{id}
 			r.Post("/{user_id}/delete", h.adminAgg.Users.DeleteUser.Handle())                    // POST  /admin/users/{id}/lists/{id}
+			r.Post("/{user_id}/move_2_step", h.adminAgg.Users.Move2Step.Handle())                // POST /admin/users/{id}/move_2_step
 		})
 
 		// Сценарии

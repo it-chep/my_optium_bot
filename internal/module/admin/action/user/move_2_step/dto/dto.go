@@ -1,0 +1,35 @@
+package dto
+
+import "time"
+
+type Scenario struct {
+	ID            int64
+	ScheduledTime time.Time
+	Name          ScenarioName
+
+	Steps Steps
+}
+
+type Steps []Step
+
+type Step struct {
+	ID               int64
+	ScenarioID       int64
+	Order            int
+	Text             string
+	IsFinal          bool
+	NextStep         *int
+	NextDelay        *time.Duration
+	DelayFromPatient bool
+
+	Buttons StepButtons
+}
+
+type ScenarioName string
+
+type StepButtons []StepButton
+
+type StepButton struct {
+	Text          string
+	NextStepOrder int
+}
