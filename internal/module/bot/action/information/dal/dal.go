@@ -2,8 +2,6 @@ package dal
 
 import (
 	"context"
-	"time"
-
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dal/dao"
 	"github.com/it-chep/my_optium_bot.git/internal/module/bot/dto/information"
@@ -111,7 +109,7 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 			`
 			var patient dao.Patient
 			_ = pgxscan.Get(ctx, r.pool, &patient, sql, patientID)
-			if count >= 5 || patient.CreatedAt.Add(3*7*24*time.Hour).Before(time.Now()) && nextPost.PostsThemeID == 3 {
+			if count >= 8 {
 				post = nextPost.ToDomain()
 				break
 			}

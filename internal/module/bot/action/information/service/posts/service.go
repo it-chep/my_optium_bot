@@ -43,7 +43,7 @@ func (s *Service) FinishScenarioOrContinue(ctx context.Context, patientTgID int6
 		return err
 	}
 
-	if count == 10 {
+	if count == 14 {
 		err = s.informationDal.FinishInformationScenario(ctx, patientTgID)
 		return err
 	}
