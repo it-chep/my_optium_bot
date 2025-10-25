@@ -41,7 +41,10 @@ func (d *Dal) MoveScenarios(ctx context.Context, patientIDs PatientIds, scenario
 		sql = `
 			UPDATE patient_scenarios 
 			SET step = 1,
-				scheduled_time = data.new_scheduled_time
+				scheduled_time = data.new_scheduled_time,
+				completed_at = null,
+				sent = false,
+				answered = false
 			FROM (
 				SELECT 
 					unnest($3::bigint[]) as scenario_id,
