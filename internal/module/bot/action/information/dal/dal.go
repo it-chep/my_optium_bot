@@ -28,8 +28,7 @@ func (r *Repository) GetLastSentPost(ctx context.Context, patientID int64) (_ in
 	lastSentPostSql := `
 		select ip.* from information_posts ip
 		left join patient_posts pp on ip.id = pp.post_id
-		        join patients p on pp.patient_id = p.id
-		where p.tg_id = $1 and pp.is_received is true
+		where pp.patient_id = $1 and pp.is_received is true
 		order by pp.sent_time desc 
 		limit 1
 	`
@@ -53,9 +52,8 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 			select count(1) > 0 as has_any
 			from information_posts ip
 			join patient_posts pp on ip.id = pp.post_id
-			join patients p on pp.patient_id = p.id
 			where ip.posts_theme_id > 3
-			and p.tg_id = $1
+			and pp.patient_id = $1
 		)
 
 		select ip.*, 
@@ -127,10 +125,7 @@ func (r *Repository) MarkPostSent(ctx context.Context, patientID, postID int64) 
 	sql := `
 		update patient_posts pp 
 		set is_received = true, sent_time = now() 
-		from patients p
-		where pp.patient_id = p.id 
-		  and p.tg_id = $1 
-		  and pp.post_id = $2
+		where patient_id = $1 and post_id = $2 -- patient_id = tg_ID
 	`
 
 	_, err := r.pool.Exec(ctx, sql, patientID, postID)
@@ -143,7 +138,7 @@ func (r *Repository) MarkPostSent(ctx context.Context, patientID, postID int64) 
 // GetSentPostsCount получение количества отправленных постов
 func (r *Repository) GetSentPostsCount(ctx context.Context, patientID int64) (count int64, err error) {
 	sql := `
-		select count(*) from patient_posts pp join patients p on pp.patient_id = p.id where p.tg_id = $1 and pp.is_received is true
+		select count(*) from patient_posts pp where pp.patient_id = $1 and pp.is_received is true
 	`
 
 	err = pgxscan.Get(ctx, r.pool, &count, sql, patientID)
