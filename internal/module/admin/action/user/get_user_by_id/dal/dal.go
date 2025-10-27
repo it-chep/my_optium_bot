@@ -62,7 +62,8 @@ func (d *Dal) GetUnsentPosts(ctx context.Context, userID int64) ([]dto.Informati
 		 information_posts ip on pp.post_id = ip.id
 			 join
 		 posts_themes pt on ip.posts_theme_id = pt.id
-	where pp.patient_id = $1
+		join patients p on pp.patient_id = p.tg_id
+	where p.id = $1
 	  and (pp.is_received is false or pp.is_received is null)
 	order by pt.is_required desc, ip.name
 	`
