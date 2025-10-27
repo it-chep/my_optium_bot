@@ -135,9 +135,14 @@ func (a *Action) sendInformationPost(ctx context.Context, r route) error {
 	}
 
 	// Отправляем сообщение без медиа
-	return a.bot.SendMessage(bot_dto.Message{
+	err = a.bot.SendMessage(bot_dto.Message{
 		Chat:    r.msg.ChatID,
 		Text:    template.Execute(r.step.Text, tmpl),
 		Buttons: r.step.Buttons,
 	})
+	if err != nil {
+		logger.Error(ctx, fmt.Sprintf("Ошибка при отправке поста %d, юзер: %d", sentPostID, r.msg.ChatID), err)
+		return err
+	}
+	return nil
 }
