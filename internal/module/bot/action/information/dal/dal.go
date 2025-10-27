@@ -53,8 +53,9 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 			select count(1) > 0 as has_any
 			from information_posts ip
 			join patient_posts pp on ip.id = pp.post_id
+			join patients p on pp.patient_id = p.id
 			where ip.posts_theme_id > 3
-			and pp.patient_id = $1 
+			and p.tg_id = $1
 		)
 
 		select ip.*, 
@@ -62,8 +63,7 @@ func (r *Repository) GetNextPost(ctx context.Context, patientID int64, lastSentP
 		from information_posts ip
 				 join posts_themes ps on ip.posts_theme_id = ps.id
 				 join patient_posts pp on ip.id = pp.post_id
-				 join patients p on pp.patient_id = p.id
-		where p.tg_id = $1
+		where pp.patient_id = $1 -- tg_id
 		  and pp.is_received is false
 		  and ip.posts_theme_id != $2
 		order by ps.id,
