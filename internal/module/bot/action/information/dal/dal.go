@@ -202,7 +202,7 @@ func (r *Repository) GetAdditionalPost(ctx context.Context, patientTgID int64) (
 
 func (r *Repository) GetRepetitionsCount(ctx context.Context, patientTgID, scenarioID int64) (count int64, err error) {
 	sql := `
-		select count(*) from repetitions where patient_tg_id = $1 and scenario_id = $2
+		select repetitions_count from repetitions where patient_tg_id = $1 and scenario_id = $2
 	`
 
 	args := []interface{}{
