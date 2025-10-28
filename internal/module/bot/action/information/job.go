@@ -73,6 +73,7 @@ func (a *Action) routePost(ctx context.Context, r route) error {
 		shadowedPost, err := a.sendRequiredPost(ctx, r)
 		sentPostID = shadowedPost.ID
 		if err != nil {
+			logger.Error(ctx, fmt.Sprintf("Ошибка при получение RequiredPost: %d", sentPostID), err)
 			return err
 		}
 		post = shadowedPost
@@ -80,6 +81,7 @@ func (a *Action) routePost(ctx context.Context, r route) error {
 		shadowedPost, err := a.sendMotivationPost(ctx, r)
 		sentPostID = shadowedPost.ID
 		if err != nil {
+			logger.Error(ctx, fmt.Sprintf("Ошибка при получение MotivationPost: %d", sentPostID), err)
 			return err
 		}
 		post = shadowedPost
@@ -87,6 +89,7 @@ func (a *Action) routePost(ctx context.Context, r route) error {
 		shadowedPost, err := a.sendSecondPartPost(ctx, r)
 		sentPostID = shadowedPost.ID
 		if err != nil {
+			logger.Error(ctx, fmt.Sprintf("Ошибка при получение SecondPartPost: %d", sentPostID), err)
 			return err
 		}
 		post = shadowedPost
@@ -94,6 +97,7 @@ func (a *Action) routePost(ctx context.Context, r route) error {
 		shadowedPost, err := a.sendAdditionalPost(ctx, r)
 		sentPostID = shadowedPost.ID
 		if err != nil {
+			logger.Error(ctx, fmt.Sprintf("Ошибка при получение AdditionalPost: %d", sentPostID), err)
 			return err
 		}
 		post = shadowedPost
@@ -161,8 +165,8 @@ func (a *Action) movePatientStep(ctx context.Context, r route, post information.
 		}
 	case information.MotivationTheme:
 		// значит отправленный пост из темы мотивации
-		moveStep.NextStep = 3
-		if count >= 8 {
+		moveStep.NextStep = 2
+		if count >= 7 {
 			moveStep.NextStep = 7
 		} else {
 			moveStep.Delay = 4 * 24 * time.Hour
@@ -177,7 +181,7 @@ func (a *Action) movePatientStep(ctx context.Context, r route, post information.
 
 	case information.PreparingToSecondTheme:
 		// значит отправленный пост из подготовки ко 2 этапу
-		moveStep.NextStep = 3
+		moveStep.NextStep = 2
 		moveStep.Delay = 4 * 24 * time.Hour
 		_ = a.service.FinishScenarioOrContinue(ctx, r.patient.TgID)
 
