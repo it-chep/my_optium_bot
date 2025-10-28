@@ -147,10 +147,7 @@ func (a *Action) movePatientStep(ctx context.Context, r route, post information.
 		Answered: len(r.step.Buttons) == 0,
 	}
 
-	count, err := a.service.GetInformationScenRepetitionsNumber(ctx, r.patient.TgID)
-	if err != nil {
-		return err
-	}
+	count, _ := a.service.GetInformationScenRepetitionsNumber(ctx, r.patient.TgID)
 
 	switch post.PostsThemeID {
 	case information.RequiredTheme:
@@ -170,7 +167,7 @@ func (a *Action) movePatientStep(ctx context.Context, r route, post information.
 		} else {
 			moveStep.Delay = 4 * 24 * time.Hour
 			count++
-			err = a.service.UpdateCounter(ctx, r.patient.TgID, count)
+			err := a.service.UpdateCounter(ctx, r.patient.TgID, count)
 			if err != nil {
 				logger.Error(ctx, "Ошибка при обновлении коунтера", err)
 				return err
@@ -185,7 +182,7 @@ func (a *Action) movePatientStep(ctx context.Context, r route, post information.
 		_ = a.service.FinishScenarioOrContinue(ctx, r.patient.TgID)
 
 		count++
-		err = a.service.UpdateCounter(ctx, r.patient.TgID, count)
+		err := a.service.UpdateCounter(ctx, r.patient.TgID, count)
 		if err != nil {
 			logger.Error(ctx, "Ошибка при обновлении коунтера", err)
 			return err
