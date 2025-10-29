@@ -166,7 +166,7 @@ func (a *Action) movePatientStep(ctx context.Context, r route, post information.
 	case information.MotivationTheme:
 		// значит отправленный пост из темы мотивации
 		moveStep.NextStep = 2
-		if count >= 7 {
+		if count >= 5 {
 			moveStep.NextStep = 7
 		} else {
 			moveStep.Delay = 4 * 24 * time.Hour
