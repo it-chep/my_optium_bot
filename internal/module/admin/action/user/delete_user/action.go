@@ -38,6 +38,9 @@ func (a *Action) Do(ctx context.Context, patientID int64) (err error) {
 		return err
 	}
 	err = a.dal.DeleteUser(ctx, patientID)
-
+	if err != nil {
+		return err
+	}
+	err = a.dal.DeleteRepetitions(ctx, tgID)
 	return err
 }

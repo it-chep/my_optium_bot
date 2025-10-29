@@ -72,3 +72,12 @@ func (r *Repository) DeleteLists(ctx context.Context, userID int64) error {
 	}
 	return nil
 }
+
+func (r *Repository) DeleteRepetitions(ctx context.Context, tgID int64) error {
+	sql := `delete from repetitions where patient_tg_id = $1`
+	_, err := r.pool.Exec(ctx, sql, tgID)
+	if err != nil {
+		return errors.Wrap(err, "delete repetitions")
+	}
+	return nil
+}
