@@ -249,6 +249,27 @@ func (d *CommonDal) AssignScenarios(ctx context.Context, patient, chatID int64, 
 	return err
 }
 
+func (d *CommonDal) AssignScenario(ctx context.Context, patient, chatID int64, scenario dto.Scenario, step int) error {
+	if step == 0 {
+		step = 1
+	}
+	var (
+		sql = `insert into patient_scenarios (patient_id, step, chat_id, scenario_id, scheduled_time) 
+				select $1,$2,$3,$4,$5
+		`
+		args = []interface{}{
+			patient,
+			step,
+			chatID,
+			scenario.ID,
+			scenario.ScheduledTime.UTC(),
+		}
+	)
+
+	_, err := d.pool.Exec(ctx, sql, args...)
+	return err
+}
+
 type MoveStep struct {
 	TgID, ChatID, Scenario int64
 	Step, NextStep         int

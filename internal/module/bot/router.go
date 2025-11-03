@@ -71,6 +71,11 @@ func (b *Bot) sendControl(ctx context.Context, msg dto.Message) error {
 		Chat: msg.ChatID,
 		Text: "Спасибо, записал! Передам врачу и ассистенту клиники!",
 	})
+	defer func() {
+		b.commonDal.AssignScenario(ctx, msg.User, msg.ChatID,
+			dto.Scenario{ID: 10, ScheduledTime: time.Now().UTC().Add(24 * time.Hour * 14)}, 5,
+		)
+	}()
 
 	patient, err := b.commonDal.GetPatient(ctx, msg.User)
 	if err != nil {
