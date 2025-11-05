@@ -20,7 +20,7 @@ func NewJob(dal *dal.JobDal) *Job {
 }
 
 func (j *Job) Do(ctx context.Context) {
-	scenarios, err := j.dal.GetActiveOldScenarios(ctx, time.Hour)
+	scenarios, err := j.dal.GetActiveOldScenarios(ctx, 24*time.Hour)
 	if err != nil {
 		logger.Error(ctx, "не удалось получить активные сценарии для изменения", err)
 		return
@@ -31,7 +31,7 @@ func (j *Job) Do(ctx context.Context) {
 	}
 
 	for _, scenario := range scenarios {
-		if err = j.dal.MoveToFuture(ctx, scenario.ID, time.Now().UTC().Add(time.Hour)); err != nil {
+		if err = j.dal.MoveToFuture(ctx, scenario.ID, time.Now().UTC().Add(3*24*time.Hour)); err != nil {
 			logger.Error(ctx, "не удалось подвинуть сценарий в будущее", err)
 		}
 	}
