@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	commDurationLost = 24 * time.Hour * 21
+	commDurationLost = 24 * time.Hour * 60
 )
 
 // Do джоба запускает через Do отложенные сообщения
